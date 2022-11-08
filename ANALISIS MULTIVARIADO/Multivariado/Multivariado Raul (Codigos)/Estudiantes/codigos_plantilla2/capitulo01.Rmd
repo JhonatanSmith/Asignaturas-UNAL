@@ -1,0 +1,385 @@
+---
+author: "Nombre Completo Autor"
+date: "27/10/2017"
+documentclass: book
+forprint: true  # true: imprime a dos caras, false: libro digital
+fontsize: 12pt # 10pt,11pt
+geometry: margin = 2.5cm 
+bibliography: ["bib/library.bib", "bib/paquetes.bib"]
+# metodobib -> true: natbib (descomentar: citation_package: natbib) 
+#           -> false: pandoc (comentar: citation_package: natbib)
+metodobib: true
+#natbib: plainnat, abbrvnat, unsrtnat
+biblio-style: "plainnat"
+#Método 2 (pandoc): descomente una línea de las 2 siguientes en caso de usarlo
+csl: methods-in-ecology-and-evolution.csl      # no numera mejor en las citas
+#csl: acm-sig-proceedings-long-author-list.csl  # numera peor en las citas
+link-citations: yes
+output: 
+  pdf_document:
+    keep_tex: no
+    number_sections: yes
+    citation_package: natbib  # comentado usa: pandoc-citeproc
+    #toc: yes
+    fig_caption: yes
+    template: latex/plantilla_trabajos.tex
+    includes:
+      #before_body: portadas/latex_paginatitulo_modTFE.tex
+      #in_header: latex/latex_preambulo.tex
+      #after_body: latex/latex_antes_enddoc.tex
+---
+
+
+
+```{r include=FALSE}
+knitr::opts_chunk$set(fig.path = 'figurasR/',
+                      echo = FALSE, warning = FALSE, message = FALSE,
+                      fig.pos="H",fig.align="center",out.width="95%",
+                      cache=FALSE)
+
+```
+
+
+<!-- \setcounter{chapter}{2} -->
+<!-- \setcounter{chapter}{2} escribir 2 para capítulo 3  -->
+<!-- \pagenumbering{arabic} -->
+
+\ifdefined\ifprincipal
+\else
+\setlength{\parindent}{1em}
+\pagestyle{fancy}
+\setcounter{tocdepth}{4}
+\tableofcontents
+<!-- \nocite{*} -->
+\fi
+
+\ifdefined\ifdoblecara
+\fancyhead{}{}
+\fancyhead[LE,RO]{\scriptsize\rightmark}
+\fancyfoot[LO,RE]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[LE,RO]{\footnotesize\thepage}
+\else
+\fancyhead{}{}
+\fancyhead[RO]{\scriptsize\rightmark}
+\fancyfoot[LO]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[RO]{\footnotesize\thepage}
+\fi
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+
+# Resumen Descriptivo: Parte 1
+
+## Lectura de Datos
+
+```{r,include=FALSE} 
+uno <- read.table(file("datos/mineral_huesos.txt"),header=TRUE)
+```
+ 
+```{r, echo=TRUE}
+data1 <- uno
+dim(data1)
+knitr::kable(head(data1))
+knitr::kable(data1)
+sapply(data1,mean,na.rm=TRUE)
+fivenum(data1[,1])       #estadisticos de tukey:min,q1,median,q3,max
+library(Hmisc)
+describe(data1[,1])      #fucntion describe de Hmisc
+library(pastecs)
+stat.desc(data1[,1])     #fucntion stat,desc de pstecs
+library(psych)
+describe(data1[,1:2])      #fucntion describe de psych
+```
+
+```{r, echo=T,results="asis"}
+library(knitr)
+library(data.table)
+library(pastecs)
+tablita<-stat.desc(data1[,1:2])
+tablita1<-data.table(Estadisticos=rownames(tablita),tablita)
+kable(tablita,caption="Resumen de Datos",digits=3)
+kable(tablita1,caption="Resumen de Datos1",digits=4)
+```
+
+```{r, echo=T,results="asis",comment=FALSE,message=FALSE}
+library(stargazer)
+stargazer(data1[,1:2],header=FALSE,title = "Resumen de datos-3",digits=4)
+```
+
+
+```{r, echo=T,results="asis",comment=FALSE,message=FALSE}
+library(reporttools)              #para cruzar continuasxcategoricas
+cate<-factor(rep(c("A","B","C","D"),c(5,5,5,10)))
+data2<-cbind(data1,cate)
+titulo<-"Resumen de lso datos-5"
+vbles<-data2[,1:3]
+estadisticas<-list("mean","s",
+                   "c$_{\\mathrm{v}}\\%$"=
+                     function(x){
+                     return((sd(x)/mean(x))*100)
+                     },
+                   "min","median","max","n", "na"
+                     )
+#Cruece da vbles_cont con vbles_nominal
+tableContinuous(vars = vbles, group = data2[,7], stats = estadisticas,cap=titulo,
+                print.pval = "kruskal",longtable=FALSE)
+```
+
+
+```{r, echo=T,results="asis",comment=FALSE,message=FALSE}
+library(reporttools)              #para cruzar continuasxcategoricas
+cate<-factor(rep(c("A","B","C","D"),c(5,5,5,10)))
+cate1<-factor(rep(c("A","B","C","D"),c(10,5,5,5)))
+data2<-cbind(data1,cate,cate1)
+# solo tabla de vbles_nominales
+titulo2<-"Caracteristicas de las variables nominales"
+tableNominal(vars = data2[ ,7:8],cap=titulo2,vertical = FALSE,font.size = "scriptsize",
+             lab = "tab:nominal1",longtable = FALSE,cumsum = TRUE)
+```
+
+
+## Obtención del vector de media muestral
+
+```{r, echo=TRUE}
+vector_medias = medias<-apply(data1,2,mean);
+knitr::kable(round(vector_medias,3))
+```
+
+
+## obtención de la matriz de covarianza muestral
+
+```{r, echo=TRUE}
+var_cov <- cov(data1);
+knitr::kable(round(var_cov,3))
+```
+
+
+## obtención de la matriz de correlación muestral
+
+```{r, echo=T}
+corr <- cor(data1);
+knitr::kable(round(corr,3))
+```
+
+### Gráfica de la matriz de correlación
+
+```{r echo=T}
+library(ggplot2)
+library(corrplot)
+matcorrs.cor<-cor(data1,method="pearson")
+knitr::kable(round(matcorrs.cor,3))
+
+# Gráfico de la MAtriz de Correlación por default
+corrplot(matcorrs.cor)
+
+# Gráfica de la matriz de correlación 
+# metodo(forma),color-forma,color-etiquetas,inclinación-etiquetas
+corrplot(matcorrs.cor,method="shade",shade.col=NA,tl.col="black",tl.srt=45 )
+
+
+# Gráfica de la matriz de correlación 
+# addCoef.col,order
+corrplot(matcorrs.cor,method="shade",shade.col=NA,tl.col="black",
+         tl.srt=45,addCoef.col="black",addcolorlabel="no",order="AOE" )
+
+# Definir una paleta de colores
+col<-colorRampPalette(c("#BB4444","#EE9988","#FFFFFF","#77AADD","#4477AA"))
+
+# Gráfica de la matriz de correlación 
+# addCoef.col,order
+corrplot(matcorrs.cor,method="shade",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE" )
+
+# Gráfica Triagular
+corrplot(matcorrs.cor,method="shade",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE",type="lower" )
+
+
+corrplot(matcorrs.cor,method="shade",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE",type="upper" )
+
+
+corrplot(matcorrs.cor,method="shade",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE",type="upper",
+diag=F )
+
+
+corrplot(matcorrs.cor,method="shade",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE",type="upper",
+diag=F,addshade="all" )
+
+
+corrplot(matcorrs.cor,method="circle",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE",type="upper",
+diag=F,addshade="all" )
+
+
+corrplot(matcorrs.cor,method="ellipse",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE",type="upper",
+diag=F,addshade="all" )
+
+
+corrplot(matcorrs.cor,method="pie",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE",type="upper",
+diag=F,addshade="all" )
+
+
+corrplot(matcorrs.cor,method="color",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE",type="upper",
+diag=F,addshade="all" )
+
+
+corrplot(matcorrs.cor,method="square",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="AOE",type="upper",
+diag=F,addshade="all" )
+
+
+corrplot(matcorrs.cor,method="square",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="FPC",type="upper",
+diag=F,addshade="all" )
+
+
+corrplot(matcorrs.cor,method="square",shade.col=NA,tl.col="black",tl.srt=45,
+col=col(200),addCoef.col="black",addcolorlabel="no",order="hclust",type="upper",diag=F,addshade="all" )
+
+
+## Para fundir la matriz de correlación (la matriz de corr en forma de un data.frmae con dos columnas y una tercera con las corrs)
+
+library(reshape2)
+##head(matcorrs.cor)
+matcorrs.melt<-melt(matcorrs.cor)
+head(matcorrs.melt)
+
+ggplot(data=matcorrs.melt, aes(x=Var1 , y=Var2, fill=value))+
+   geom_tile()
+```
+
+## obtención del coeficiente de asimetría muestral
+
+```{r, echo=FALSE}
+skewness=function(x) {
+m3=mean((x-mean(x))^3)
+skew=m3/(sd(x)^3)
+skew}
+
+knitr::kable(round(skewness(data1$radio),3))
+```
+
+## obtención del coeficiente de curtosis muestral
+
+```{r, echo=FALSE}
+kurtosis=function(x) {
+m4=mean((x-mean(x))^4)
+kurt=m4/(sd(x)^4)
+kurt}
+
+knitr::kable(round(kurtosis(data1$radio),3))
+```
+
+<!--
+##### Performs D’Agostino test for skewness in normally distributed data
+###### Performs Anscombe-Glynn test of kurtosis for normal samples
+###### coeficientes de asimetria y kurtosis y momentos de orden 1,2,3, etc.
+###### This function performs the Jarque-Bera test on the given data sample to determine if the data are
+###### sample drawn from a normal population
+-->
+
+```{r, echo=FALSE}
+library(moments);
+radio<-as.vector(data1$radio);
+resul4<-all.moments(radio, order.max = 3);
+resul4
+resul1<-kurtosis(radio);
+resul2<-skewness(radio);
+resul3<-agostino.test(radio, alternative = "two.sided");
+resul3
+resul5<-anscombe.test(radio, alternative = "two.sided");
+resul5
+resul6<-jarque.test(radio);
+resul6
+tot <- "Resultados: "
+msg2 <- paste(tot,"Curtosis = ", resul1, "Asimetría = ", resul2)
+print(noquote( msg2))
+```
+
+## Gráficos Varios
+
+### Gráfico de Puntos
+
+```{r, echo=FALSE}
+#### par(mfrow=c(3,2))
+stripchart(data1$radio, method="overplot", ylab = "Cantidad de datos", xlab = "Radio", main = "Gráfico de Puntos")
+stripchart(data1$radio, method="stack",add = TRUE, at = 1.2)
+stripchart(data1$radio, method="jitter",add = TRUE, at = 0.7)
+
+hist(data1$radio)
+
+boxplot(data1$radio,xlab = "Radio",main = "Box Plot de: Radio")
+
+boxplot(data1$radio,horizontal=TRUE,xlab = "Radio",main = "Box Plot de: Radio")
+
+plot(data1$radio, data1$cubito)
+```
+
+
+```{r, echo=FALSE}
+boxplot(data1$radio,xlab = "Radio",main = "Box Plot de: Radio")
+```
+
+
+### Scatterplot con Histograma lateral
+
+
+```{r, echo=FALSE}
+scatterhist = function(x, y, xlab="", ylab=""){
+  zones=matrix(c(2,0,1,3), ncol=2, byrow=TRUE)
+  layout(zones, widths=c(4/5,1/5), heights=c(1/5,4/5))
+  xhist = hist(x, plot=FALSE)
+  yhist = hist(y, plot=FALSE)
+  top = max(c(xhist$counts, yhist$counts))
+  par(mar=c(3,3,1,1))
+  plot(x,y)
+  par(mar=c(0,3,1,1))
+  barplot(xhist$counts, axes=FALSE, ylim=c(0, top), space=0)
+  par(mar=c(3,0,1,1))
+  barplot(yhist$counts, axes=FALSE, xlim=c(0, top), space=0, horiz=TRUE)
+  par(oma=c(3,3,0,0))
+  mtext(xlab, side=1, line=1, outer=TRUE, adj=0, 
+    at=.8 * (mean(x) - min(x))/(max(x)-min(x)))
+  mtext(ylab, side=2, line=1, outer=TRUE, adj=0, 
+    at=(.8 * (mean(y) - min(y))/(max(y) - min(y))))
+}
+
+scatterhist(data1$radio,data1$cubito, xlab="", ylab="")
+```
+
+### Scatterplot con box-plot
+
+```{r, echo=FALSE}
+par(fig=c(0,0.8,0,0.8), new=TRUE)
+plot(data1$radio,data1$cubito, xlab="radio", ylab="cubito")
+par(fig=c(0,0.8,0.15,0.9), new=TRUE)
+boxplot(data1$radio, horizontal=TRUE,axes=FALSE)
+par(fig=c(0.35,0.9,0,0.8),new=TRUE)
+boxplot(data1$cubito, axes=FALSE)
+```
+
+## CRUCE DE VBLES CUALITATIVAS vs UNA CUALITATIVA DICOTÓMICA
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(reporttools)   #para cruzar continuasxcategoricas
+datos <- read.table(file("datos/T11-7.DAT"))
+cate<-factor(rep(c("A","B","C","D"),c(15,8,15,18)))
+cate2<-factor(rep(c("SI","NO"),c(28,28)))
+data2<-cbind(datos,cate,cate2)
+# solo tabla de vbles_nominales
+titulo3<-"Caracteristicas de las variables nominales"
+tableNominal(vars = data2[,6:7], group=data2[,8], cap=titulo3,vertical = FALSE,
+             font.size = "scriptsize", print.pval="chi2", fisher.B="fisher.test",
+             lab = "tab:nominal1",longtable = FALSE,cumsum = TRUE)
+```
+
+
+

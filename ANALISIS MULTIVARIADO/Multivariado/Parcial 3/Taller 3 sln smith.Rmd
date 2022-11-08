@@ -1,0 +1,267 @@
+---
+title: | 
+  <center> Taller 3 Multivariado </center>
+  <center> IAM </center>
+author: | 
+  <center> Jhonatan Smith Garcia M </center>
+
+  
+date: "Mayo, 2022"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+source("FuncionesPH.R", local = knitr::knit_global())
+source("funciones.R", local = knitr::knit_global())
+source("Functions.R", local = knitr::knit_global())
+
+
+```
+
+Insercion base de datos a trabajar:
+
+```{r}
+library(MVN)
+library(tidyverse)
+bd <- read.table("datos6.txt", sep = "", header = T)
+```
+
+
+# 1: Realizar grafico de dispersion por pares de variables junto con su contorno de probabilidad al 95y 90%
+
+
+```{r}
+plot(bd[,-4])
+```
+
+```{r}
+par(mfrow=c(2,3))
+hist(bd$X1)
+hist(bd$X2)
+hist(bd$X3)
+```
+En apariencia, los datos tienen una distribucion normal.
+Se procede a realziar pruebas formales.
+
+```{r}
+library(kableExtra)
+r1 <-mvn(bd[,-4])
+kable(r1)
+```
+
+Se asume normalidad multivariada.
+
+```{r}
+r1 <- mvn(data =bd[,-4], mvnTest = "mardia")
+kable(r1)
+```
+
+Ahora, segun el test de Mardia, se cumple normalidad multivariada.
+
+
+
+
+### **Contorno de Probabilidad del $90\%$**
+
+```{r}
+
+representa1c_ng(bd[,-4],0.9)   
+
+```
+
+### **Contornos de probabilidad del $90\%$ y $95\%$**
+
+```{r}
+representa2c_ng(bd[,-4],0.9,0.95)   
+```
+
+# 3: Graficar las regiones de confianza de los IC simultaneos t-studen, T2, Bonferroni y chi cuadrado.
+
+```{r}
+alfa = 0.05
+elipse_conf(bd[,-4],alfa,1000)   # la elipse que forma esta es tri dimensional. Selecione el numero de vbles que desee trabajar y le crea lo que pide
+```
+
+### **Región de Confianza para $\underline{\mu}$ del `r (1-alfa)*100`$\%$**
+
+```{r}
+elipse_conf_IC23_T2(bd[,-4], alfa, 1000)
+```
+
+
+```{r}
+elipse_conf_IC_tstud(bd[,-4],alfa,1000)   # Todo en uno. Para 3 variables
+```
+
+```{r}
+elipse_conf_IC_tstud(bd[,1:2],alfa,1000) # para dos variables
+```
+
+```{r}
+elipse_conf_IC_T2(bd[,1:2],alfa,1000) # para dos variables
+```
+
+```{r}
+elipse_conf_IC23_T2(bd[,1:2],alfa,1000) # para dos variables
+```
+
+
+# 3: Se quiere observar si las medias grupo 2 son iguales a las de grupo 3
+
+```{r}
+
+g1 <- bd %>% filter(Grupos==1)
+g2 <- bd %>% filter(Grupos==2)
+g3 <- bd %>% filter(Grupos==3)
+
+
+```
+
+Se desea probar si las medias de los grupos 2 y 3 son iguales. Para ello primero se debe analizar la matriz sigma, puesto que no se dice nada acerca de dicha matriz, se asume es desconocida. 
+
+Entonces, falta verificar si son iguales. Entonces
+
+```{r}
+a<- M_test(list(g1[, -4], g2[, -4]), 0.05)
+a
+```
+Esta fn realiza la prueba de Boxpara detectar si las matrices son iguales.
+
+
+M_test de Box
+
+H0: MatrizSigma1 = MatrizSigma2 = MatrizSigma
+H1: Matrices var-cov diferentes
+
+Dado el valor p no se rechaza la hipotesis nula y se asume que las matrices sigma son iguales
+
+```{r}
+two_mu_sigmaequals_unknown(g1[, -4], g2[, -4], 0.05)
+```
+No se rechaza la hipotesis nula a favor de la alterna.
+
+H0: Medias las dos poblaciones son iguales
+H1: Medias diferentes
+
+
+Se concluye que las medias de ambas poblaciones son iguales
+
+```{r}
+# comparando medias de las poblaciones
+
+apply(g1,MARGIN =2,FUN = mean )
+apply(g2,MARGIN =2,FUN = mean )
+
+```
+En escenca, son iguales. POr consecuencia, se esperaria que la prueba de hipotesis se cumpla.
+
+# 5: Se quiere saber si la media de una poblacion toma un valor especifico
+
+```{r}
+mu0 <- c(1.5,2.5,3.5)
+mu_nosigma(mu0, g2[, -4], 0.05)
+
+```
+La hipotesis a plantear aca es:
+
+ Recuerde que H0: Mu=Mu0 donde Mu0 es la media a comparar vs H1: Mu!=Mu0
+ 
+ Como p< alfa a 0.05 se rechaza hipotesis nula a favor de la alterna y se concluye que las medias son diferentes. Observemos las medias.
+ 
+```{r}
+
+apply(g2[,-4], MARGIN = 2, FUN = mean)
+
+```
+ Este es el vector de medias muestrales. Es claramente muy alejado de los valores de las pruebas de hipotesis. Por tanto los analisisson consistentes. 
+ 
+# Ejercicio 6: Media todo df es el vector que piden.
+
+```{r}
+
+# Aqui se asume que se tiene una poblacion completa con n>50.
+# Un resultado asintotico entonces
+mu0 <- c(1.5,2.5, 3.5)
+mu_nosigma_lct(mu0, bd[, -4], 0.05)
+
+# Basicamente, coja todos los datos y cuando mu=mu0 sin sigma
+
+# Se rechaza H0 a favor Ha y se concluye medias diferentes
+
+
+```
+Se rechaza H0 y se concluye que las medias son diferentes. Analizando nuevamente comparemos si tiene logica.
+
+```{r}
+apply(bd[,-4],MARGIN = 2, FUN = mean)
+```
+Radicalmente diferentes al vector mu0
+
+# 7: Se requiere probar que:
+
+```{r}
+
+C <- matrix(c(1,0,-2,
+              1, 1, -1), byrow = T, ncol = 3)
+
+gamma <- c(2, 1) # Vector al cual se igualan las pruebas de hipotesis
+
+contrast_sigma_unknown(g2[, -4], C, gamma, 0.05)
+
+
+```
+Se rechaza la hipotesis nula a favor de la alterna y se concluye que C*Mu0 != gamma =c(2,1)
+
+#8: Para el dato completo, pruebe contraste de media planteado.
+
+```{r}
+C <- matrix(c(1,0,-2,
+              1, 1, -1), byrow = T, ncol = 3)
+
+contrast_tlc(bd[,-4],C,gamma = c(0,1), alpha = 0.05)
+```
+
+Se rechaza hipotesis nula y se concluye que Mu0 =! Mu*C=gamma no son iguales. 
+
+
+#9: Considere la matriz dada:
+
+Se procese a usar la fn sigma_normal_lrt.
+
+Aca se debe de mirar si n es pequeño o grande. La fn lo hace automaticamente
+
+
+# Está raro... USAR LAS FNES DE RAUL Y ESTA, POR SI ACASO
+```{r}
+sigma0 <- matrix(c(6.5, -0.05, -2.5,
+                   -0.05,5.5,0.5,
+                   -2.5,-0.5,7.5), byrow = T, ncol = 3)
+sigma_normal_lrt(sigma0 = sigma0, datos = g1[,1:3],alpha = 0.05, aprox = T)
+```
+# PARA N GRANDE
+res_sigma0<-sigma_sigma0_ngrande(grupo1[,1:3],Sigma_0,0.05) 
+kable(res_sigma0)
+
+```{r}
+res_sigma0<-sigma_sigma0_ngrande(g1[,1:3],sigma0,0.05) 
+kable(res_sigma0)
+
+```
+
+#PARA N PEQUEÑO
+res_sigma0npqna<-sigma_sigma0_npqna(grupo1[,1:3],Sigma_0,0.05) 
+kable(res_sigma0npqna)
+
+```{r}
+res_sigma0npqna<-sigma_sigma0_npqna(g1[,1:3],sigma0,0.05) 
+kable(res_sigma0npqna)
+```
+

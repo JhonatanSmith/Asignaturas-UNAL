@@ -1,0 +1,51 @@
+---
+title: "Ejemplo 1"
+author: "Cristian Gañan"
+date: ""
+output: 
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    code_folding: hide
+    theme: 'lumen'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.align = 'center')
+
+library(tidyverse)
+
+```
+
+# Datos
+
+```{r}
+head(iris, 5)
+```
+
+# Grafico 
+
+```{r, fig.align='center', fig.height=3, fig.width=5}
+ggplot(iris, mapping = aes(x= Sepal.Length, y= Sepal.Width, 
+                           color= Species)) +
+  geom_point()
+```
+
+# Media
+
+La formula de la media es: $$\mu= \frac{\sum_{i= 1}^{n}x_{i}}{n}$$
+
+```{r}
+iris %>% group_by(Species) %>% 
+  summarise_if(is.numeric, mean)
+```
+
+
+
+
+
+
+
+

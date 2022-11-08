@@ -1,0 +1,146 @@
+---
+title: "Get Started"
+output: flexdashboard::flex_dashboard
+---
+
+```{r setup, include = F, message = F}
+if(!require(pacman)){install.packages("pacman"); library(pacman)}
+pacman::p_load("tidyverse", "ggplot2", "pBrackets", "knitr", "HH", "car", "rgl","latex2exp","magrittr","ICSNP","rrcov","readr", "sampling","biotools","flexdashboard","MASS","mvtnorm","MVN")
+source("funcionesR/funciones.R", local = knitr::knit_global())
+#source("funcionesR/Functions.R", local = knitr::knit_global())
+```
+
+**PH para $\underline{\mu}_0$**
+=========================================
+
+Column 1 pag 1
+--------------------------------------------------
+
+### **PH para $\underline{\mu}_0$ Población Normal**
+
+```{r}
+alfa<-c(0.05)
+
+mu=c(2,4)
+sigma<-matrix(c(4,-3,-3,4),ncol=2)
+datos<-round(mvrnorm(n=100, mu,sigma),3)
+#datos6<-read.table("G:\\Mi unidad\\1_A_A_CURSOS_UNAL\\1_MULTIVARIADO\\2022_I\\tableros_IAM\\datos\\datos6.txt",header=TRUE)
+datos6 <- read.table("D:/Google Drive/1_A_A_CURSOS_UNAL/1_MULTIVARIADO/2022_I/tableros_IAM/datos/datos6.txt",header=TRUE)
+datos6$Grupos %<>% as.factor()
+grupo1<-datos6 %>% filter(Grupos=="1")
+grupo2<-datos6 %>% filter(Grupos=="2")
+grupo3<-datos6 %>% filter(Grupos=="3")
+#datos<-grupo1[,1:2]
+mu_0=c(2,4)
+xbar<-apply(datos, 2, mean)
+var<-var(datos)
+```
+**Datos Generados de una Normal Bivariada con parámetros**:
+$$
+\underline{\mu}=\begin{bmatrix}\mu_1 \\ \mu_2 \end{bmatrix}= \begin{bmatrix} `r mu[1]` \\ `r mu[2]`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{\Sigma}= \begin{bmatrix} \sigma_{11} & \sigma_{12} \\ \sigma_{21} & \sigma_{22} \end{bmatrix}=\begin{bmatrix} `r sigma[1,1]` & `r sigma[1,2]` \\ `r sigma[2,1]` & `r sigma[2,2]` \end{bmatrix} $$
+**Las estimaciones muestrales de los parámetros son**:
+$$
+\underline{\overline{x}}=\begin{bmatrix} \overline{x}_1 \\ \overline{x}_2  \end{bmatrix}= \begin{bmatrix} `r  round(xbar[1],3)` \\ `r round(xbar[2],3)`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{S}=\begin{bmatrix} s_{11} & s_{12} \\ s_{21} & s_{22} \end{bmatrix} =  \begin{bmatrix} `r round(var[1,1],3)` & `r round(var[1,2],3)` \\ `r round(var[2,1],3)` & `r round(var[2,2],3)` \end{bmatrix} 
+$$
+**La correlación entre la dos variables es: $Cor(X_1,X_2)=\rho$ = `r var[1,2]/sqrt(var[1,1]*var[2,2])`**.
+
+**Se desea realizar la siguiente prueba de hipótesis**:
+$$
+\begin{cases}
+H_0\ : \ \underline{\mu} = \underline{\mu_0} \\ \\
+H_a\ : \ \underline{\mu} \neq \underline{\mu_0} \\
+\end{cases}
+$$
+**El estadístico de prueba es**: 
+$$
+T_0^2=n(\overline{\underline{\boldsymbol{x}}}-\underline{\mu}_0)^t \boldsymbol{S}^{-1}  (\overline{\underline{\boldsymbol{x}}}-\underline{\mu}_0) \sim kF \ \ \ , \ \ \ \text{con:} \ \ \  k=\frac{(n-1)p}{(n-p)}
+$$
+**Rechazamos $H_0$, si $T_0^2 > k\ F_{1-\alpha\ ; \ p\ ,\ n-p}$  o equivalentemente, si: $F_0=\frac{1}{k}T_0^2 >  F_{1-\alpha\ ;\ p\ ,\ n-p}$**.
+
+
+Column 2 pag 1 
+--------------------------------------------------
+
+### **Prueba de Hipótesis: $H_0 \ : \ \underline{\mu}=\underline{\mu}_0$**
+
+````{r echo=TRUE}
+res_mu0<-HT2_mu0(datos,mu_0,0.05)
+kable(res_mu0)
+````
+
+### **Grafica de la Región de Rechazo y Valor-p**
+
+
+**PH $\underline{\mu}_0$ con R**
+=========================================
+
+Column 1 pag 2
+--------------------------------------------------
+
+### **Función `T2.test` del paquete `rrcov`**
+
+```{r echo=TRUE}
+T2.test(datos, mu = mu_0)
+```
+
+### **Grafica de la Región de Rechazo y Valor-p**
+
+
+Column 2 pag 2
+--------------------------------------------------
+
+### **Función `HotellingsT2` del paquete `ICSNP`**
+
+```{r echo=TRUE}
+HotellingsT2(datos,mu=mu_0)
+```
+
+
+### **Grafica de la Región de Rechazo y Valor-p**
+
+
+**PH para $\underline{\mu}_0$ $n$-grande**
+=========================================
+
+Column 1 pag 3
+--------------------------------------------------
+
+### **PH para $\underline{\mu}_0$ $n$-grande**
+
+**Las estimaciones muestrales de los parámetros son**:
+$$
+\underline{\overline{x}}=\begin{bmatrix} \overline{x}_1 \\ \overline{x}_2  \end{bmatrix}= \begin{bmatrix} `r  round(xbar[1],3)` \\ `r round(xbar[2],3)`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{S}=\begin{bmatrix} s_{11} & s_{12} \\ s_{21} & s_{22} \end{bmatrix} =  \begin{bmatrix} `r round(var[1,1],3)` & `r round(var[1,2],3)` \\ `r round(var[2,1],3)` & `r round(var[2,2],3)` \end{bmatrix} 
+$$
+**La correlación entre las dos variables es: $Cor(X_1,X_2)=\rho$ = `r var[1,2]/sqrt(var[1,1]*var[2,2])`**.
+
+**Se desea realizar la siguiente prueba de hipótesis**:
+$$
+\begin{cases}
+H_0\ : \ \underline{\mu} = \underline{\mu_0} \\ \\
+H_a\ : \ \underline{\mu} \neq \underline{\mu_0} \\
+\end{cases}
+$$
+**El estadístico de prueba utilizado es**:
+$$
+\chi_0^2=n(\overline{\underline{\boldsymbol{x}}}- \underline{\mu}_0)^t \boldsymbol{S}^{-1} (\overline{\underline{\boldsymbol{x}}}- \underline{\mu}_0)  \underset{\text{Bajo} \ H_0}{\sim} \chi_{(p)}^2
+$$
+**Rechazamos $H_0$ si $\chi_0^2 > \chi_{\alpha;p}^2$**.
+
+
+Column 2 pag 3
+--------------------------------------------------
+
+### **Prueba de Hipótesis: $H_0 \ : \ \underline{\mu}=\underline{\mu}_0$**
+
+```{r echo=TRUE}
+res_mu0ngrande<-HT2_mu0_ngrande(datos, mu_0, 0.05)
+kable(res_mu0ngrande)
+```
+
+### **Resultados utilizando la Función `HotellingsT2`**
+
+```{r echo=TRUE}
+HotellingsT2(datos,mu=mu_0,test="chi")
+```
+
+

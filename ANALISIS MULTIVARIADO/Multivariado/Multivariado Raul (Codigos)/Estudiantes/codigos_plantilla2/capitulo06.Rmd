@@ -1,0 +1,158 @@
+---
+author: "Nombre Completo Autor"
+date: "27/10/2017"
+documentclass: book
+forprint: true  # true: imprime a dos caras, false: libro digital
+fontsize: 12pt # 10pt,11pt
+geometry: margin = 2.5cm 
+bibliography: ["bib/library.bib", "bib/paquetes.bib"]
+# metodobib -> true: natbib (descomentar: citation_package: natbib) 
+#           -> false: pandoc (comentar: citation_package: natbib)
+metodobib: true
+#natbib: plainnat, abbrvnat, unsrtnat
+biblio-style: "plainnat"
+#Método 2 (pandoc): descomente una línea de las 2 siguientes en caso de usarlo
+csl: methods-in-ecology-and-evolution.csl      # no numera mejor en las citas
+#csl: acm-sig-proceedings-long-author-list.csl  # numera peor en las citas
+link-citations: yes
+output: 
+  pdf_document:
+    keep_tex: no
+    number_sections: yes
+    citation_package: natbib  # comentado usa: pandoc-citeproc
+    #toc: yes
+    fig_caption: yes
+    template: latex/plantilla_trabajos.tex
+    includes:
+      #before_body: portadas/latex_paginatitulo_modTFE.tex
+      #in_header: latex/latex_preambulo.tex
+      #after_body: latex/latex_antes_enddoc.tex
+---
+
+
+
+```{r include=FALSE}
+knitr::opts_chunk$set(fig.path = 'figurasR/',
+                      echo = FALSE, warning = FALSE, message = FALSE,
+                      fig.pos="H",fig.align="center",out.width="95%",
+                      cache=FALSE)
+```
+
+```{r setup, include = F, message = F}
+if(!require(pacman)){install.packages("pacman"); library(pacman)}
+pacman::p_load("tidyverse", "ggplot2", "pBrackets", "knitr", "HH", "car", "rgl", "sampling")
+source("funcionesR/funciones.R", local = knitr::knit_global())
+```
+
+
+<!-- \setcounter{chapter}{2} -->
+<!-- \setcounter{chapter}{2} escribir 2 para capítulo 3  -->
+<!-- \pagenumbering{arabic} -->
+
+\ifdefined\ifprincipal
+\else
+\setlength{\parindent}{1em}
+\pagestyle{fancy}
+\setcounter{tocdepth}{4}
+\tableofcontents
+<!-- \nocite{*} -->
+\fi
+
+\ifdefined\ifdoblecara
+\fancyhead{}{}
+\fancyhead[LE,RO]{\scriptsize\rightmark}
+\fancyfoot[LO,RE]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[LE,RO]{\footnotesize\thepage}
+\else
+\fancyhead{}{}
+\fancyhead[RO]{\scriptsize\rightmark}
+\fancyfoot[LO]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[RO]{\footnotesize\thepage}
+\fi
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+
+# Gráficos Varios
+
+## Gráfico de puntos
+
+```{r echo=FALSE}
+mineral<-read.table("datos/mineral_huesos.txt", header = TRUE)
+attach(mineral)
+```
+El Coeficiente de asimetria de la variable radio es: `r asimetria(radio)`
+
+El Coeficiente de kurtosis de la variable radio es: `r kurtosis(radio)`
+
+**Gráficos de puntos para Radio:**
+
+```{r echo=FALSE}
+stripchart(radio, method="overplot", ylab = "Cantidad de datos", xlab = "Valores de la Variables Radio",main = "Gráfico de Puntos: overplot, stack,jitter")
+stripchart(radio, method="stack",add = TRUE, at = 1.2)
+stripchart(radio, method="jitter",add = TRUE, at = 0.7)
+```
+
+**Gráficos de puntos para Datos Normales:**
+
+```{r echo=FALSE}
+x <- stats::rnorm(50)
+xr <- round(x, 1)
+stripchart(x,ylab = "Cantidad de datos", xlab = "Valores de la Variable",
+main = "Gráfico de Puntos: overplot, stack,jitter" )  
+stripchart(xr, method = "stack", add = TRUE, at = 1.2)
+stripchart(xr, method = "jitter", add = TRUE, at = 0.7)
+```
+
+## Scatterplot con Histogramas paralelos
+
+```{r echo=FALSE}
+scatterhist(radio,cubito, xlab="radio", ylab="cubito")
+```
+
+## Scatterplot con box-plot
+
+```{r echo=FALSE}
+par(fig=c(0,0.8,0,0.8), new=TRUE)
+plot(radio,cubito, xlab="radio", ylab="cubito")
+par(fig=c(0,0.8,0.5,1), new=TRUE)
+boxplot(radio, horizontal=TRUE, axes=FALSE)
+par(fig=c(0.7,1,0,0.8),new=TRUE)
+boxplot(cubito, axes=FALSE)
+```
+
+## Scatterplot con grafico de puntos
+
+```{r echo=FALSE, message=FALSE, comment=FALSE, results="asis"}
+par(fig=c(0,0.8,0,0.8), new=TRUE)
+plot(radio,cubito, xlab="radio", ylab="cubito")
+par(fig=c(0,0.8,0.55,1), new=TRUE)
+stripchart(radio, method="jitter",horizontal=TRUE, axes=FALSE)
+par(fig=c(0.65,1,0,0.8),new=TRUE)
+stripchart(cubito, method="jitter", vertical="TRUE",  axes=FALSE)
+```
+
+## Matriz de Dispersión
+
+### Matriz de gráficas de dispersión con boxplots y correlaciones
+
+```{r, echo = F, fig.align = 'center', fig.height = 6, fig.width = 6, out.width = '80%'}
+pairs(mineral, lower.panel = myPanel.cor, upper.panel = panel.smooth, diag.panel=myPanel.box, labels = names(mineral) )
+```
+
+### Matriz de gráficas de dispersión con histogramas y correlaciones
+
+```{r, echo = F, fig.align = 'center', fig.height = 6, fig.width = 6, out.width = '80%'}
+pairs(mineral, lower.panel = myPanel.cor, upper.panel = panel.smooth, diag.panel=myPanel.hist, labels = names(mineral) )
+```
+
+### Matriz de gráficas de dispersión con Correlaciones
+
+```{r, echo = F, fig.align = 'center', fig.height = 6, fig.width = 6, out.width = '80%'}
+pairs(mineral, lower.panel = myPanel.cor, upper.panel = panel.smooth, labels = names(mineral) )
+```
+
+
+

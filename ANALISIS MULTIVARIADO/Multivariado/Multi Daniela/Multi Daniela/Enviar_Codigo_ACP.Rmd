@@ -1,0 +1,662 @@
+---
+title: "Codigo de Ayuda para Realizar un ACP Con Software R"
+subtitle: "Paquetes Utilizados: FactoineR, ade4, stats"
+author: "Estudiantes De IAM"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
+```
+
+-----------------------------------------------------------------
+<!--**CARGAR LIBRARIAS NECESARIAS**-->
+-----------------------------------------------------------------
+```{r}
+library(rmarkdown)
+library(fpp2)
+library(xtable)
+library(tinytex)
+library(tidyverse)
+library(treemap)
+library(GGally)
+library(viridis)
+library(funModeling)
+library(knitr)
+library(patchwork)
+library(ggrepel)
+```
+
+
+\section{Descripción del problema}
+En este trabajo se realiza una ACP .........  
+
+-----------------------------------------------------------------
+<!--**DIRECTORIO DE TRABAJO**-->
+-----------------------------------------------------------------
+
+```{r}
+#setwd("G:/Mi unidad/A_A_CURSOS-UNAL/1_MULTIVARIADO/2020-II-Maestria1/Tareas_2020-II/TRABAJO_ACP")
+```
+
+-----------------------------------------------------------------
+<!--**LECTURA DE DATOS**-->
+-----------------------------------------------------------------
+
+```{r}
+datos<-read.table("datos_ejemplo_notas.txt",header=TRUE)
+```
+\vspace{-3.0cm}
+```{r}
+library(kableExtra)
+datos %>% 
+  kable("latex", booktabs = T, caption = "Conjunto de Datos") %>%
+  kable_styling(position = "center", latex_options = c("striped", "condensed", "HOLD_position"),full_width = TRUE,font_size=8)
+```
+
+-----------------------------------------------------------------
+<!--**Resumen de los Datos**-->
+-----------------------------------------------------------------
+
+<!--
+```{r}
+#library(stargazer)
+#stargazer(data.frame(datos),header=FALSE)
+```
+-->
+\vspace{-1.0cm}
+
+\begin{center}
+\textbf{Resumen descriptivo con la función \textit{stargazer} del paquete stargazer}
+\end{center}
+\scriptsize
+\begin{table}[!h]
+\caption{Resuemn Descriptivo de los Datos} \centering
+ \begin{tabular}{@{\extracolsep{5pt}}lccccccc}
+ \\[-1.8ex]\hline
+ \hline \\[-1.8ex]
+ Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Pctl(25)} & \multicolumn{1}{c}{Pctl(75)} & \multicolumn{1}{c}{Max} \\
+ \hline \\[-1.8ex]
+ x1 & 14 & 4.323 & 2.075 & 1.523 & 2.766 & 6.322 & 8.044 \\
+ x2 & 14 & 14.014 & 1.329 & 12.200 & 13.025 & 14.850 & 17.000 \\
+ x3 & 14 & 1.952 & 0.895 & 0.597 & 1.267 & 2.541 & 3.641 \\
+ x4 & 14 & 2.171 & 1.403 & 0.750 & 1.050 & 2.473 & 5.520 \\
+ x5 & 14 & 2.454 & 0.710 & 1.720 & 1.880 & 2.843 & 4.250 \\
+ \hline \\[-1.8ex]
+ \end{tabular}
+ \end{table}
+ \normalsize
+ 
+ \newpage
+\vspace{4.0cm}
+\begin{center}
+\textbf{Resumen descriptivo con la función summarise-all}
+\end{center}
+
+```{r, echo=FALSE, message=FALSE}
+datos %>% 
+  select(colnames(datos)) %>% 
+  pivot_longer(cols = colnames(datos)) %>% 
+  rename(Variable = "name") %>% 
+  group_by(Variable) %>% 
+  summarise_all(.funs = list("Minimo" = min, "Maximo" = max, "Media" = mean, "IQR "=IQR,  "SD" =sd)) %>% 
+  kable("latex", booktabs = T, caption = "Estadisticos Básicos de las Variables") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+
+\begin{center}
+\textbf{Resumen de Correlaciones mas altas por pares}
+\end{center}
+
+```{r}
+mosthighlycorrelated <- function(mydataframe,numtoreport)
+  {
+     # find the correlations
+     cormatrix <- cor(mydataframe)
+     # set the correlations on the diagonal or lower triangle to zero,
+     # so they will not be reported as the highest ones:
+     diag(cormatrix) <- 0
+     cormatrix[lower.tri(cormatrix)] <- 0
+     # flatten the matrix into a dataframe for easy sorting
+     fm <- as.data.frame(as.table(cormatrix))
+     # assign human-friendly names
+     names(fm) <- c("First.Variable", "Second.Variable","Correlation")
+     # sort and print the top n correlations
+     head(fm[order(abs(fm$Correlation),decreasing=T),],n=numtoreport)
+  }
+```
+
+
+```{r}
+mosthighlycorrelated(datos, 15) %>%
+  kable("latex", booktabs = T, caption = "Coorrelaciones mayores en pares de vbles") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+```
+\newpage
+\begin{center}
+\textbf{Gráfico de MAtriz de Correlaciones}
+\end{center}
+
+```{r vargender3, fig.cap="Matriz de Correlación",echo=FALSE,fig.width=6, fig.height=4, dpi=300, echo=FALSE, message=FALSE }
+library(ggcorrplot)
+library(scatterplot3d)
+datos %>% 
+  select(colnames(datos)) %>% 
+  cor() %>% 
+  ggcorrplot(hc.order = TRUE, outline.col = "white", lab = T, type = "lower", lab_size = 3) +
+  theme_classic() +
+  scale_fill_viridis_c(direction = -1) +
+  scale_x_discrete("") +
+  scale_y_discrete("")+
+   guides(fill=guide_legend(title="Corr")) +
+    theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(angle = 75, hjust = 1),
+        axis.ticks.x=element_blank())
+```
+<!--
+#------------------------------------------------------------------------
+#
+#             ACP con función PCA del Paquete FactoMineR		 
+#
+#-------------------------------------------------------------------------
+-->
+\newpage 
+
+\section{ACP con función PCA del Paquete FactoMineR}
+
+A continuación se presentan los resultados de un ACP utilizando la función \textit{PCA} del paquete FactoMineR. El Análisis se realzia por defaull NORMADO.
+
+
+```{r}
+library(FactoMineR)  
+res.pca <- PCA(datos,graph =F,scale.unit=F)
+
+#res.pca <- PCA(datos,graph =T,scale.unit=F)
+
+#res.pca <- PCA(datos,graph =T,scale.unit=T)
+#names(res.pca)
+```
+
+<!--
+--------------------------------------------------------------------------
+ Descripción total de las dimensiones
+--------------------------------------------------------------------------
+-->
+
+
+<!--
+#----------------------------------------------------------------------------
+#			 Análsisi de las variables
+#-----------------------------------------------------------------------------
+-->
+
+<!--
+#----------------------------------------------------------------------------
+#	 Coordneadas, cosenos cuadrados y contribuciones de las variables sobre los ejes, ie. sobre las CPs
+#-----------------------------------------------------------------------------
+-->
+
+```{r}
+#library(FactoMineR)  
+
+resultados<-round(cbind(res.pca$var$coord[,1:2],res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2],
+                        res.pca$var$cor[,1:2]),3)
+
+resultados %>% 
+  kable("latex", booktabs = T, caption = "Coord, Cos2, Contrib. y Correlaciones de las vbles sobre ejes-12") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position")
+
+res.pca$var$coord[,1:2] %>% 
+  kable("latex", booktabs = T, caption = "Coordenadas de las vbles sobre ejes-12") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position")
+
+res.pca$var$cos2[,1:2] %>% 
+  kable("latex", booktabs = T, caption = "Cosenos Cuadrados de las vbles sobre ejes-12") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position")
+
+res.pca$var$contrib[,1:2] %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones de las vbles sobre ejes-12") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position")
+
+res.pca$var$cor[,1:2] %>% 
+  kable("latex", booktabs = T, caption = "Correlaciones de las vbles sobre ejes-12") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position")
+```
+
+**Resultados con la función _get_pca_ del paquete factoextra**
+
+```{r}
+library(factoextra)
+get_pca(res.pca)$cor %>% 
+  kable("latex", booktabs = T, caption = "Correlaciones de las vbles sobre ejes") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+
+get_pca_var(res.pca)$cor %>% 
+  kable("latex", booktabs = T, caption = "Correlaciones de las vbles sobre ejes") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+round(get_pca_ind(res.pca)$contrib,4) %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones de las vbles sobre ejes") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+get_pca_var(res.pca)$contrib[,1:3] %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones de las vbles sobre ejes-123") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+
+
+```{r}
+resultados<-round(cbind(res.pca$var$coord[,1:3],res.pca$var$cos2[,1:3],res.pca$var$contrib[,1:3]),3)
+resultados %>% 
+  kable("latex", booktabs = T, caption = "Coordneadas, cosenos cuadrados y contribuciones de las variables sobre los ejes 1,2,3") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+
+
+```{r}
+resultados<-round(res.pca$var$cos2[,1:3],3)
+resultados %>% 
+  kable("latex", booktabs = T, caption = "Cosenos cuadrados de las var. sobre los ejes, ie. sobre las CPs") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position")
+```
+
+<!--
+#----------------------------------------------------------------------------
+#		 Análsisi de los individuos
+#----------------------------------------------------------------------------
+-->
+
+<!--
+#----------------------------------------------------------------------------
+# Coordneadas, cosenos cuadrados y contribuciones de los individuos sobre los ejes, ie. sobre las CPs
+#----------------------------------------------------------------------------
+-->
+
+```{r}
+#library(FactoMineR)  
+
+resultados<-round(cbind(res.pca$ind$coord[,1:3],res.pca$ind$cos2[,1:3],res.pca$ind$contrib[,1:3]),4)
+
+resultados %>% 
+  kable("latex", booktabs = T, caption = "Coord, Cos2, y Contrib. de los Individuos sobre ejes-123") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+round(res.pca$ind$coord[,1:3],4) %>% 
+  kable("latex", booktabs = T, caption = "Coordenadas de los Individuos sobre ejes-123") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+round(res.pca$ind$cos2[,1:3],4) %>% 
+  kable("latex", booktabs = T, caption = "Cosenos Cuadrados de los Individuos sobre ejes-123") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+round(res.pca$ind$contrib[,1:3],4) %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones de los Individuos  sobre ejes-123") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+<!--
+#---------------------------------------------------------------------------
+#		 Mas sobre resultados 
+-->
+```{r}
+S_comp<-round(var(res.pca$ind$coord),5)
+S<-var(datos)
+
+n<-nrow(datos)
+S_n<-((n-1)/n)*S
+vectores<-eigen(S_n)
+
+round(vectores$vectors,4) %>% 
+  kable("latex", booktabs = T, caption = "Vectores Propios (Loadings)") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+
+
+<!--
+#----------------------------------------------------------------------------
+#		   GRAFICOS BIPLOT Y OTRAS VARIAS   
+#---------------------------------------------------------------------------
+-->
+\newpage
+\begin{center}
+\textbf{Gráfico de Valores Propios}
+\end{center}
+```{r graf_val_propios, fig.cap="Gráfico de Valores Propios",echo=FALSE,fig.width=8, fig.height=3, dpi=300, echo=FALSE, message=FALSE, warning=FALSE}
+#library(factoextra) 
+
+g1 <- fviz_eig(res.pca) + ggtitle("Valores Propios con fviz_eig")+
+  scale_y_continuous("Porcentajes de Var. Exp.")+
+  scale_x_discrete("Valores Propios") + 
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle=45))
+
+g2 <- fviz_screeplot(res.pca) + ggtitle("Valores Propios confviz_screeplot")+
+  scale_y_continuous("Porcentajes de Var. Exp.")+
+  scale_x_discrete("Valores Propios") + 
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle=45))
+
+(g1+g2)
+```
+
+```{r}
+library(gridExtra)
+grid.arrange(g1,g2, nrow = 2)
+#grid.arrange(g1,g2, arrangeGrob(g1, g2, ncol=2), nrow = 2)
+```
+
+
+
+\newpage
+\begin{center}
+\textbf{Gráfico de Variables e Individuos}
+\end{center}
+```{r}
+library(gridExtra)	
+grid.arrange(
+fviz_pca_var(res.pca),
+fviz_pca_ind(res.pca),ncol=2
+)
+```
+```{r graf_var_Ind, fig.cap="Gráfico de Variables e Individuos",echo=FALSE,fig.width=8, fig.height=3, dpi=300, echo=FALSE, message=FALSE, message=FALSE, warning=FALSE}
+#library(factoextra) 
+
+g1 <- fviz_pca_var(res.pca) + ggtitle("Grafico de Var. con fviz_pca_var")+
+  scale_y_continuous("")+
+  scale_x_discrete("") + 
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle=45))
+
+g2 <- fviz_pca_ind(res.pca) + ggtitle("Gráfico de Ind. con fviz_pca_ind")+
+  scale_y_continuous("")+
+  scale_x_discrete("") + 
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle=45))
+
+(g1+g2)
+```
+
+\newpage
+\begin{center}
+\textbf{Contribuciones de Variables e Individuos Sobre Eje-1}
+\end{center}
+```{r}
+grid.arrange(
+fviz_contrib(res.pca,choice="var"),
+fviz_contrib(res.pca,choice="ind")
+)
+```
+
+```{r graf_contrib, fig.cap="Contribuciones de Variables e Individuos Sobre Eje-1",echo=FALSE,fig.width=8, fig.height=3, dpi=300, echo=FALSE, message=FALSE, message=FALSE, warning=FALSE}
+#library(factoextra) 
+
+g1 <- fviz_contrib(res.pca,choice="var") + ggtitle("Grafico de Contrib con fviz_contrib")+
+  scale_y_continuous("")+
+  scale_x_discrete("") + 
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle=45))
+
+g2 <- fviz_contrib(res.pca,choice="ind") + ggtitle("Gráfico de contrib. con fviz_contrib")+
+  scale_y_continuous("")+
+  scale_x_discrete("") + 
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle=45))
+
+(g1+g2)
+```
+
+\newpage
+\begin{center}
+\textbf{Gráfico Biplot}
+\end{center}
+```{r}
+fviz_pca_biplot(res.pca,repel=TRUE)
+```
+
+\newpage
+```{r graf_varias, fig.cap="Gráficas Resúmen-1",echo=FALSE,fig.width=8, fig.height=3, dpi=300, echo=FALSE, message=FALSE, message=FALSE, warning=FALSE}
+library(factoextra) 
+library(gridExtra) 
+
+grid.arrange(
+
+plot(res.pca,choix="var",select="",title="Círculo de Correlaciones")
+,
+plot.PCA(res.pca,choix="var",select="",title="Círculo de Correlaciones")
+,
+
+fviz_pca_var(res.pca, col.var = "cos2", geom.var = c("arrow","text"), labelsize = 5, repel = FALSE,
+title="Calidad de Representación de las Vbles") 
+, 
+plot(res.pca,choix="ind",xlab="",title="Gráfico de Individuos")  
+)
+```
+
+```{r graf_varias2, fig.cap="Gráficas Resúmen-2",echo=FALSE,fig.width=8, fig.height=3, dpi=300, echo=FALSE, message=FALSE, message=FALSE, warning=FALSE}
+library(factoextra) 
+library(gridExtra) 
+
+grid.arrange(
+
+fviz_pca_biplot(res.pca, axes = c(1,2), col.ind = "black",labelsize = 5,
+  fill.ind = "white", col.var = "steelblue", fill.var = "white",
+  gradient.cols = NULL, label = "all", repel = FALSE, habillage = "none", palette = NULL,
+  addEllipses = F, title = "Biplot del ACP")
+,
+fviz_pca_biplot(res.pca, axes = c(1, 2), col.ind = "red", choix="ind", select.ind = list(name =c("1","2","3") ),
+  fill.ind = "white", col.var = "steelblue", fill.var = "blue", geom.ind = c("arrow", "text"),
+  gradient.cols = NULL, label = "all", choix="var", select.var = list(name = c("x","y") ),
+  repel = TRUE, habillage = "none", title = "dgfjjdsf ",xlab="",ylab="")
+,
+fviz_pca_biplot(res.pca, axes = c(1, 2), col.ind = "black", choix="ind",   select.ind = list(name =c("1","2","3") ),
+  fill.ind = "white", col.var = "steelblue", fill.var = "blue", geom.ind = c("", "text"),
+  gradient.cols = NULL, label = "all", choix="var",   select.var = list(name = c("x","y") ),
+  repel = TRUE, habillage = "none", title = "dgfjjdsf ",xlab="",ylab="")
+,
+fviz_pca_biplot(res.pca, axes = c(1, 2), col.ind = "red", choix="ind",   select.ind = list(name =c("1","2","3") ),
+  fill.ind = "black", col.var = "steelblue", fill.var = "blue", geom.ind = c("", "text"),geom.var = c("arrow", "text"),
+  gradient.cols = NULL, label = "all", choix="var",   select.var = list(name = c("x1","x2") ),
+  repel = TRUE, habillage = "none", title = "dgfjjdsf ",xlab="",ylab="")
+)
+```
+\newpage
+<!--
+#--------------------------------------------------------------------------
+#
+#             ACP con la función: dudi.pca de Ade4		 
+#
+#------------------------------------------------------------------------
+-->
+
+\section{ACP con la función: dudi.pca del paquete Ade4}
+
+A continuación se presentan los resultados de un ACP utilizando la función \textit{dudi.pca} del paquete Ade4. El Análisis se realzia por defaull NORMADO.
+
+
+```{r}
+library(ade4)             ### Function: dudi.pca(xxxx)
+
+##res.dudi.pca <- dudi.pca(datos,center=T,scannf=T)
+
+#res.dudi.pca <- dudi.pca(datos,center=F,scale=F,scannf=F,n=5)   #Datos crudos
+
+res.dudi.pca <- dudi.pca(datos,center=T,scale=F,scannf=F,n=5)   #Datos centrados
+
+#res.dudi.pca <- dudi.pca(datos,center=T,scale=T,scannf=F,n=5)   #Datos Centrados y Escalados, ie. Normalizados
+
+#res.dudi.pca
+t(names(res.dudi.pca)) %>% 
+  kable("latex", booktabs = T, caption = "Elementos del objeto de salida de los resultados: res.dudi.pca") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+
+A continuación se tienen los valores propios, valore spropios acumulados y los Porcentajes de Varianza Acumulados explicados por las CPs.
+
+```{r}
+summary(inertia(res.dudi.pca)) 
+#%>% 
+#  kable("latex", booktabs = T, caption = "Porcentaje de Var. Explicada por Cada Eje") %>%
+#  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position")
+
+inertia(res.dudi.pca)$tot.inertia %>% 
+  kable("latex", booktabs = T, caption = "Resumen de Valores Propios") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+
+```{r}
+res.dudi.pca$tab		%>% 
+  kable("latex", booktabs = T, caption = "Datos Utilizados en el Análisis (Crudos/centrados/escalados)") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+res.dudi.pca$li   %>% 
+  kable("latex", booktabs = T, caption = "Scores o puntuaciones de los Individuos (CPs)") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+#res.dudi.pca$l1		### the row normed scores, ie.  VECTORES PROPIOS DE XX^T
+
+res.dudi.pca$co	%>% 
+  kable("latex", booktabs = T, caption = "Coordenadas de las Variables") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+res.dudi.pca$c1	%>% 
+  kable("latex", booktabs = T, caption = "Vectores Propios-Normalizados (Coeficientes de las CPs. o Loadings)") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+### the column normed scores, ie. antiguos ejes unitarios de las vables, ie. VECTORES PROPIOS DE X^tX, ie.  the principal axes, ie. Coeficientes de las CPS
+
+t(res.dudi.pca$cent)  %>% 
+  kable("latex", booktabs = T, caption = "Vector de Medias de los Datos Crudos") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position")
+
+
+#------------------------------------------------------------------------
+fviz_pca_biplot(res.dudi.pca, axes = c(1,2), col.ind = "black",labelsize = 5,
+  fill.ind = "white", col.var = "steelblue", fill.var = "white",
+  gradient.cols = NULL, label = "all", repel = FALSE, habillage = "none", palette = NULL,
+  addEllipses = F, title = "Biplot del ACP")
+#----------------------------------------------------------------------------
+
+t(inertia.dudi(res.dudi.pca,,T)$col.contrib ) %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones de las Variables a la Varianza Total") %>%
+kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+round(inertia.dudi(res.dudi.pca,,T)$col.abs,4) %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones Absolutas de las Variables a las CPs") %>%
+kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+round(inertia.dudi(res.dudi.pca,,T)$col.rel,4) %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones Relativas de las Variables a las CPs (Cos2-con signos)") %>%
+kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+round(inertia.dudi(res.dudi.pca,,T)$col.cum,4) %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones Absolutas Acumuladas de las Variables a las CPs") %>%
+kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+
+round(inertia.dudi(res.dudi.pca,T,)$row.abs,4) %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones Absolutas de los Individuos a las CPs") %>%
+kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+round(inertia.dudi(res.dudi.pca,T,)$row.rel,4) %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones Relativas de los Individuos a las CPs (Cos2-con signos)") %>%
+kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+round(inertia.dudi(res.dudi.pca,T,)$row.cum,4) %>% 
+  kable("latex", booktabs = T, caption = "Contribuciones Absolutas Acumuladas de los Individuos a las CPs") %>%
+kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+#inertia(res.dudi.pca, col = TRUE, row = FALSE)
+#inertia(res.dudi.pca, col = FALSE, row = TRUE)
+#inertia(res.dudi.pca, col = TRUE, row = TRUE)
+
+#------------------------------------------------------------------------
+#		  Gráfico scree
+#---------------------------------------------------------------------------
+plot(res.dudi.pca$eig,type="b") # gráfica de valores propios
+
+
+#-------------------------------------------------------------------------------------
+#		   individuos sobre el primer plano factorial
+s.label(res.dudi.pca$li,clabel=0.8,grid = FALSE)
+
+#-------------------------------------------------------------------------------------
+#		  Círculo de correlaciones
+s.corcircle(res.dudi.pca$co,grid=FALSE,clabel = 0.8)
+
+#-------------------------------------------------------------------------------------
+# 		  Individuos sobre el primer plano factorial con biplot
+
+s.label(res.dudi.pca$li,clabel=0.9,grid = FALSE,boxes =FALSE)
+s.corcircle(res.dudi.pca$co,grid=FALSE,add=TRUE,clabel = 0.9)
+
+scatter(res.dudi.pca)
+```
+
+\newpage
+<!--
+#--------------------------------------------------------------------------
+#
+#             ACP con la función: princomp de stats		 
+#
+#-------------------------------------------------------------------------
+-->
+
+\section{ACP con la función: princomp del paquete stats}
+
+```{r}
+res.princomp <- princomp(datos,scores=T,cor=F)
+#res.princomp
+
+PVE <- 100*res.princomp$sdev^2/sum(res.princomp$sdev^2)
+
+t(PVE)	%>% 
+  kable("latex", booktabs = T, caption = "Porcentajes de Var Explicada") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+\begin{center}
+\textbf{Gráfico de Valores Propios}
+\end{center}
+
+```{r}
+ par(mfrow = c(1,2))
+ plot(PVE, type = "o",ylab = "PVE",xlab = "Componente Principal",col = "blue")
+ plot(cumsum(PVE), type = "o", ylab = "PVE Acumulada",xlab = "Componente Principal",col = "brown3")
+```
+
+\begin{center}
+\textbf{Vectores Propios (Loadings)}
+\end{center}
+```{r}
+round(res.princomp$loadings[,1:5],4)	%>% 
+  kable("latex", booktabs = T, caption = "Vectores Propios (Loadings)") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+\begin{center}
+\textbf{Puntajes de las CPs, ie. Scores o Puntajes}
+\end{center}
+```{r}
+round(res.princomp$scores,4) %>% 
+  kable("latex", booktabs = T, caption = "Scores o Puntajes, ie. CPs") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+
+```{r}
+library(stats)
+fviz_pca_biplot(res.princomp, axes = c(1,2), col.ind = "black",labelsize = 5,
+                fill.ind = "white", col.var = "steelblue", fill.var = "white",
+                gradient.cols = NULL, label = "all", repel = FALSE, habillage = "none", palette = NULL,
+                addEllipses = F, title = "Biplot del ACP")
+
+```
+\newpage
+\begin{center}
+\textbf{Gráfico de Coeficientes}
+\end{center}
+```{r graf_Coefic, fig.cap="Gráfico de Coeficientes",echo=FALSE,fig.width=8, fig.height=3, dpi=300, echo=FALSE, message=FALSE, warning=FALSE}
+#library(factoextra) 
+barplot(loadings(res.princomp),beside=TRUE) 
+```
+
+
+

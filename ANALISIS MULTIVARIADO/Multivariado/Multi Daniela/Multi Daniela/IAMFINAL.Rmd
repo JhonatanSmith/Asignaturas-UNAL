@@ -1,0 +1,217 @@
+---
+title: "IAM final"
+author: "Daniela Pico Arredondo"
+date: "27/8/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+library(rmarkdown)
+library(fpp2)
+library(xtable)
+library(tinytex)
+library(tidyverse)
+library(GGally)
+library(viridis)
+library(funModeling)
+library(knitr)
+library(patchwork)
+library(ggrepel)
+```
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+library(readr)
+datos <- read_delim("C:/Users/Usuario/Downloads/BDIAM.csv", 
+    ";", escape_double = FALSE, trim_ws = TRUE)
+View(datos)
+```
+ 
+ 
+La siguiente base de datos proporciona información recolectada de un estudio sobre la eficacia del control de infecciones nosocomiales, cuyo objetivo principal fue determinar si los programas de vigilancia y control de infecciones han reducido las tasas de infección nosocomial (adquiridas en los hospitales) en hospitales de Estados Unidos. Estos datos consisten de una muestra aleatoria de n =33 hospitales, respectivamente, seleccionados de los 338 hospitales originales investigados.Los datos presentados corresponden al periodo de estudio 1975-76. Las 12 variables son descritas en
+la Tabla1.
+
+
+```{r echo=FALSE, out.width = "500px", out.height="250px",fig.align='center'}
+knitr::include_graphics("C:/Users/Usuario/Desktop/tablaiam.PNG")
+
+```
+
+En el siguiente informe se realizará el análisis de componentes para las variables númerias, DPERM,EDAD,RINF,RRC,RRX,NCAMAS,PDP,
+NENFERM,FSD; recordemos que tiene sentido realizar un analisis de componentes principales cuando hay presencia de varias varibles ya que estas pueden estar altamente correlacionadas y terminan midiendo lo mismo por lo cual se puede simplificar, existen factores o componentes que puedan representar ese conjunto de variables sin tener que recurrir a la totalidad de varibales de esta manera el ACP ayuda a simplificar el estudio de los objetos, de esta manera, se realizará un analisis de la correlación de los datos
+
+
+\newpage
+\begin{center}
+\textbf{Resumen de Correlaciones mas altas por pares}
+\end{center}
+
+```{r,echo=FALSE}
+mosthighlycorrelated <- function(mydataframe,numtoreport)
+  {
+     # find the correlations
+     cormatrix <- cor(mydataframe)
+     # set the correlations on the diagonal or lower triangle to zero,
+     # so they will not be reported as the highest ones:
+     diag(cormatrix) <- 0
+     cormatrix[lower.tri(cormatrix)] <- 0
+     # flatten the matrix into a dataframe for easy sorting
+     fm <- as.data.frame(as.table(cormatrix))
+     # assign human-friendly names
+     names(fm) <- c("First.Variable", "Second.Variable","Correlation")
+     # sort and print the top n correlations
+     head(fm[order(abs(fm$Correlation),decreasing=T),],n=numtoreport)
+  }
+```
+
+```{r,echo=FALSE}
+mosthighlycorrelated(datos, 15) %>%
+  kable("latex", booktabs = T, caption = "Coorrelaciones mayores en pares de vbles") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+
+```
+\begin{center}
+\textbf{Gráfico de Matriz de Correlaciones}
+\end{center}
+
+```{r vargender3, fig.cap="Matriz de Correlación",echo=FALSE,fig.width=6, fig.height=4, dpi=300, echo=FALSE, message=FALSE,warning=FALSE}
+library(ggcorrplot)
+library(scatterplot3d)
+datos %>% 
+  select(colnames(datos)) %>% 
+  cor() %>% 
+  ggcorrplot(hc.order = TRUE, outline.col = "white", lab = T, type = "lower", lab_size = 3) +
+  theme_classic() +
+  scale_fill_viridis_c(direction = -1) +
+  scale_x_discrete("") +
+  scale_y_discrete("")+
+   guides(fill=guide_legend(title="Corr")) +
+    theme(axis.title.x=element_blank(),
+        axis.text.x=element_text(angle = 75, hjust = 1),
+        axis.ticks.x=element_blank())
+```
+
+El resumen de correlaciones indica que hay una alta dependencia lineal entre las variables Numero de camas y Censo promedio diario, igualmente entre las variables Numero de camas y Numero de enfermeras. En general se observan correlaciones altas entre varios pares de variables, por lo cual es pertinente realizar un análisis de componentes principales.
+
+
+\section{ACP con la función: princomp del paquete stats}
+
+Se tiene la siguiente matriz de varianzas-covarianzas
+
+```{r,echo=FALSE,out.width = "60%",warning=FALSE,message=FALSE}
+cat("\n Matriz de var-cov s: \n")
+var=var(datos)
+kable(var)
+  
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+library(FactoMineR)  
+res.pca <- PCA(datos,graph =F,scale.unit=F)
+```
+
+```{r,echo=FALSE,message=FALSE}
+library(factoextra)
+get_pca(res.pca)$cor %>% 
+  kable("latex", booktabs = T, caption = "Correlaciones de las vbles sobre ejes") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+
+Recordemos que las correlaciones son los cosenos del angulo que forma la variable con la componente, La columna de correlaciones representa la correlación entre las componentes principales y la variables, estas correlaciones se usan para mirar la calidad de cada variable sobre los ejes, pero con las correlaciones al cuadrado que hacen referencia a los cosenos cuadrados y se presentan en la siguiente tabla 
+
+
+```{r,echo=FALSE}
+resultados<-round(cbind(res.pca$var$coord[,1:2],res.pca$var$cos2[,1:2],res.pca$var$contrib[,1:2]),3)
+resultados %>% 
+  kable("latex", booktabs = T, caption = "Coordneadas, cosenos cuadrados y contribuciones de las variables sobre los ejes 1,2,3") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+Esta tabla muestra la información de las coordenadas, cosenos cuadrados y contribuciones respectivamente, en dos dimensiones cada una, las columnas de los cosenos cuadrados representan la calidad de cada variable sobre los ejes, por ejemplo, la variable que mejor contribuyen de manera significativa a la formación de la componente 1 son NCAMAS y PDP ya que tienen valores de 0.921 y 0.897   
+
+Las contribucciones hacen referencia a la proyección de la variables, entre mas grande es la magnitud de la proyección más grande es la contribucción de la variable, en la tabla se representan en porcentajes, cada componente explica un porcentaje de la variación total, es decir, la columna 5 explica en cada entrada cierto porcentaje de la varianza del componente 1. 
+
+
+\begin{center}
+\textbf{Vectores Propios }
+\end{center}
+
+```{r,echo=FALSE}
+res.princomp <- princomp(datos,scores=T,cor=F)
+round(res.princomp$loadings[,1:5],4)	%>% 
+  kable("latex", booktabs = T, caption = "Vectores Propios (Loadings)") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+\begin{center}
+\textbf{Valores Propios}
+\end{center}
+
+```{r,echo=FALSE}
+valores_propios=eigen(var)$values
+kable(t(valores_propios))
+
+```
+
+Las respectivas primeras componentes principales son:
+
+
+```{r,echo=FALSE}
+res.princomp <- princomp(datos,scores=T,cor=F)
+#res.princomp
+
+PVE <- 100*res.princomp$sdev^2/sum(res.princomp$sdev^2)
+
+t(PVE)	%>% 
+  kable("latex", booktabs = T, caption = "Porcentajes de Var Explicada") %>%
+  kableExtra::kable_styling(position = "center", latex_options = "HOLD_position",font_size=8)
+```
+De la tabla anterior se observa que la componente 1 explica el 96.11339 de la variabilidad total, y las dos primeras componentes principales explican el 98.785247% de dicha variabilidad.
+
+A continuación se presentaran algunas tablas que representan lo analizado en las tablas anteriores 
+
+\newpage
+\begin{center}
+\textbf{Gráfico de Valores Propios}
+\end{center}
+
+```{r,echo=FALSE,fig.align="center"}
+ par(mfrow = c(1,2))
+ plot(PVE, type = "o",ylab = "PVE",xlab = "Componente Principal",col = "blue")
+
+```
+
+En la Gráfica se codos se observa que después del numero 2 en el eje X la tendencia de los puntos se empieza a estabilizar, esto indica que las dos primeras componentes pueden explicar gran parte de la variabilidad total
+
+
+
+
+```{r,echo=FALSE,message=FALSE}
+library("FactoMineR")
+library("factoextra")
+res.princomp <- princomp(datos,scores=T,cor=F)
+fviz_pca_biplot(res.princomp, axes = c(1,2),xlim=c(-500,1000),ylim=c(-500,500), col.ind = "black",labelsize = 5,
+                fill.ind = "white", col.var = "steelblue", fill.var = "white",
+                gradient.cols = NULL, label = "all", repel = FALSE, habillage = "none", palette = NULL,
+                addEllipses = F, title = "Biplot del ACP")
+
+```
+\newpage
+\begin{center}
+\textbf{Gráfico de Coeficientes}
+\end{center}
+
+```{r graf_Coefic, fig.cap="Gráfico de Coeficientes",echo=FALSE,fig.width=8, fig.height=3, dpi=300, echo=FALSE, message=FALSE, warning=FALSE}
+#library(factoextra) 
+barplot(loadings(res.princomp),beside=TRUE) 
+```
+
+
+
+
+
+
+
+
+

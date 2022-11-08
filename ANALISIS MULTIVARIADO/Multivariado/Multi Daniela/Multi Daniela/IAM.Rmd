@@ -1,0 +1,119 @@
+---
+title: "Tarea 1 IAM"
+author: "Daniela Pico Arredondo, Juan Sebastián Falcón"
+date: "13/3/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+
+
+```
+
+```{r}
+IAM1<- read.csv("C:/Users/Usuario/Desktop/IAM1.txt",header=TRUE)
+IAM2<- read.csv("C:/Users/Usuario/Desktop/IAM2.txt",header=TRUE)
+IAM<- read.csv("C:/Users/Usuario/Desktop/IAM.txt",header=TRUE)
+
+```
+
+
+
+
+
+
+```{r}
+vector_medias1 <-apply(IAM1[,2:3],2,mean);
+kable(round(vector_medias1,3))
+```
+Con esto se obtiene que el vector de medias para las variables Longitud de antenas y Longitud de alas para la categoria AF es: $\overline{X}$=(1,413   ,   1,749)
+
+
+```{r}
+vector_medias2 <-apply(IAM2[,2:3],2,mean);
+kable(round(vector_medias2,3))
+
+
+```
+Con esto se obtiene que el vector de medias para las variables Longitud de antenas y Longitud de alas para la categoria APF es: $\overline{Y}$=(1,212   ,   1,920)
+```{r}
+var_cov1 <- cov(IAM1[,2:3]);
+kable(round(var_cov1,3))
+```
+
+
+```{r}
+var_cov2 <- cov(IAM2[,2:3]);
+kable(round(var_cov2,3))
+
+```
+```{r}
+corr1 <- cor(IAM1[,2:3]);
+kable(round(corr1,3))
+```
+
+
+```{r}
+corr2 <- cor(IAM2[,2:3]);
+kable(round(corr2,3))
+
+
+```
+```{r}
+vtotal<-sum(diag(var_cov1))
+kable(round(vtotal,5))
+```
+
+
+```{r}
+vtotal<-sum(diag(var_cov2))
+kable(round(vtotal,5))
+
+```
+
+```{r}
+vtotal<-sum(diag(var_cov1))
+kable(round(vtotal,3))
+```
+
+
+
+```{r}
+vgen1<-det(var_cov1)
+kable(round(vgen1,5))
+```
+
+
+
+```{r}
+vgen<-det(var_cov2)
+kable(round(vgen,5))
+```
+```{r}
+distancias1<-mahalanobis(cbind(IAM1$X, IAM1$Y),vector_medias1,var_cov1)
+kable(t(round(distancias1,3)),caption="Distancia Mahalanobis")
+```
+
+
+```{r}
+distancias2<-mahalanobis(cbind(IAM2$X, IAM2$Y),vector_medias2,var_cov2)
+kable(t(round(distancias2,3)),caption="Distancia Mahalanobis")
+```
+```{r}
+dist_eucli1<-dist(cbind(IAM1$X, IAM1$Y),method="euclidean",diag=FALSE,upper=FALSE)
+dist_eucli1<-as.matrix(dist_eucli1)
+kable(round(dist_eucli1,3),caption="Distancia Euclideana")
+```
+
+
+```{r}
+dist_eucli2<-dist(cbind(IAM2$X, IAM2$Y),method="euclidean",diag=FALSE,upper=FALSE)
+dist_eucli2<-as.matrix(dist_eucli2)
+kable(round(dist_eucli2,3),caption="Distancia Euclideana")
+```
+

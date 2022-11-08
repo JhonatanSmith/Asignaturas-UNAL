@@ -1,0 +1,605 @@
+---
+title: "Sobre Pruebas de Hipótesis"
+subtitle: "Evaluación, Generación, Gráficos, PH etc."
+author: "Para: Estudiantes de IAM"
+date: "`r Sys.Date()`"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+\renewcommand\tablename{Tabla}
+
+```{r}
+library(readr)
+datos <- read_delim("C:/Users/Usuario/Downloads/datos6.txt", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+View(datos6)
+```
+
+
+```{r include = F}
+library(biotools)
+```
+
+# LECTURA DE DATOS
+
+A continuación se da una vista previa del conjunto de datos:
+
+```{r, echo=F,results="asis",message=FALSE}
+library(kableExtra)
+datos1<-datos6 
+Grupos<-factor(datos1$Grupos)
+datos<-cbind(datos1[,1:3],Grupos)
+
+rbind(head(datos, n = 3), rep(".", ncol(datos)), rep(".", ncol(datos)), rep(".", ncol(datos)), tail(datos, n = 3)) %>% 
+  kable(booktabs = TRUE,format = "latex",caption="\\label{datos-1}Emcabezado de Datos",
+        digits =c(3,3,3,NA), align = 'cccc') %>% 
+kable_styling(latex_options = c("striped","condensed","HOLD_position"),
+  position = "center",full_width = FALSE) 
+```
+
+## Resumen de los Datos
+
+```{r, results="asis",echo = FALSE,message=FALSE}
+summary(datos6) %>% 
+  kable(booktabs = TRUE,format = "latex",caption="\\label{Resumen-1}Resumen de Datos") %>% 
+  kable_styling(latex_options = c("striped", "condensed","HOLD_position"),
+  position = "center",full_width = FALSE)
+```
+
+#  DATOS POR GRUPOS
+
+```{r, results="asis",echo = FALSE}
+grupo1<-subset(datos,Grupos==1)
+grupo2<-subset(datos,Grupos==2)
+grupo3<-subset(datos,Grupos==3)
+```
+
+```{r, results="asis",echo = FALSE,message=FALSE}
+descriptivos<-resumen_xgrupos(datos[1:3],datos[4])
+
+descriptivos[1] %>%
+  kable(booktabs = TRUE,format = "latex",caption="\\label{medias}Medias por Grupos") %>% 
+  kable_styling(latex_options = c("striped", "condensed","HOLD_position"),
+  position = "center",full_width = FALSE)
+
+descriptivos[2] %>%
+  kable(booktabs = TRUE,format = "latex",caption="\\label{desviaciones}Desviaciones Estándar por Grupos") %>% 
+  kable_styling(latex_options = c("striped", "condensed","HOLD_position"),
+  position = "center",full_width = FALSE)
+
+descriptivos[3] %>%
+  kable(booktabs = TRUE,format = "latex",caption="\\label{varianzas}Varianzas por Grupos") %>% 
+  kable_styling(latex_options = c("striped", "condensed","HOLD_position"),
+  position = "center",full_width = FALSE)
+
+descriptivos[4] %>%
+  kable(booktabs = TRUE,format = "latex",caption="\\label{medianas}Medianas por Grupos") %>% 
+  kable_styling(latex_options = c("striped", "condensed","HOLD_position"),
+  position = "center",full_width = FALSE)
+```
+
+# Pruebas de Normalidad Multivariadas
+
+```{r, echo=T,results="asis",echo = FALSE,message=FALSE}
+library(MVN)
+res_todos<-mvn(datos[,1:3],mvnTest=c("mardia"),univariateTest=c("SW"))
+
+res1<-mvn(grupo1[,1:3],mvnTest = c("mardia"),univariateTest = c("SW"))
+
+res2<-mvn(grupo2[,1:3],mvnTest=c("mardia"), univariateTest = c("SW"))
+
+res3<-mvn(grupo3[,1:3],mvnTest=c("mardia"),univariateTest = c("SW"))
+
+res1A<-mvn(grupo2[,1:3],mvnTest = c("mardia"),univariateTest = c("AD"),
+          bc=T, bcType="optimal")   
+
+res_todos %>% 
+  kable(booktabs = TRUE,format = "latex",caption="\\label{Resultados-1}Resultados de NM") %>% 
+  kable_styling(latex_options = c("striped", "condensed","HOLD_position"),
+  position = "center",full_width = FALSE)
+res1 %>% 
+  kable(booktabs = TRUE,format = "latex",caption="\\label{Resultados-1}Resultados de NM") %>% 
+  kable_styling(latex_options = c("striped", "condensed","HOLD_position"),
+  position = "center",full_width = FALSE)
+```
+### Pruebas de Shapito Wilk Multivariada
+
+```{r,results="asis",echo = FALSE,message=FALSE}
+library(mvnormtest)
+res_shapiro1<-mshapiro.test(t(datos[,1:3]))
+```
+
+```{r,results="asis",echo = FALSE,message=FALSE}
+library(RVAideMemoire)
+res_shapiro2<-mshapiro.test(datos[,1:3])
+```
+
+\begin{tabular}{ccccc}
+Método & Paquete & Función & Estadística & $p$-Valor\\\hline
+`r res_shapiro1$method` & mvnormtest & mshapiro.test &`r res_shapiro1$statistic` & `r res_shapiro1$p.value` \\ 
+`r res_shapiro2$method` & RVAideMemoire & mshapiro.test & `r res_shapiro2$statistic` & `r res_shapiro2$p.value` \\\hline
+\end{tabular}
+
+
+\pagebreak
+
+# Prueba M-Box para Matrices de Var-Cov ($\Sigma_1=\Sigma_2$), $n  \geq  20$)
+
+```{r, results="asis",echo = FALSE}
+x<-subset(datos1,datos1$Grupos==1)
+x<-x[,1:3]
+y<-subset(datos1,datos1$Grupos==2)
+y<-y[,1:3]
+# Uso de la función de usuario prueba_M_Box2()
+res_box<-prueba_M_Box2(x,y,0.05)
+```
+
+\begin{tabular}{cccccc}
+$M$ & $U$ & $C$ & $gl=df$ & $\chi$-Tabla &  Valor-$p$ \\\hline
+`r res_box[1]`&`r res_box[2]` &`r res_box[3]`&`r res_box[4]`&`r res_box[5]`&`r res_box[6]` 
+\end{tabular}
+
+### Resultados de esta PH Utilizando la función boxM del paquete biotools del R:
+
+```{r,results="asis",echo = FALSE,message=FALSE}
+#library(biotools)
+Grupos1<-Grupos[1:55]
+mbox<-boxM(datos[1:55,1:3],Grupos1)
+mbox 
+```
+
+# Prueba T2-Hotelling para: $\underline{\mu}_1-\underline{\mu}_2=\underline{\delta}_0$.
+
+##  $\Sigma_1=\Sigma_2=\Sigma$-Pob. Normal
+
+Se desea contrastar las hipótesis:\ \ 
+$$ 
+\begin{cases}
+H_0 \ : \  \underline{\mu}_1-\underline{\mu}_2
+=\underline{\mathbf{\delta}}_0\\ \\
+H_a \ : \  \underline{\mu}_1-  \underline{\mu}_2\neq \underline{\mathbf{\delta}}_0
+\end{cases}
+$$
+
+En este caso, se usa como estimador de $\mathbf{\Sigma}$ a la varianza ponderada dada por:
+$$
+S_p= \hat{\mathbf{\Sigma}}=\frac{(n-1)S_1+(m-1)S_2}{n+m-2},
+$$
+Bajo $H_0$-cierto, el estadístico de prueba es:
+\begin{align*}
+\hspace{-1.5cm} T^2=\frac{nm}{n+m} \bigl(\overline{\underline{\mathbf{x}}}-
+\overline{\underline{\mathbf{y}}}-\underline{\mathbf{\delta}}_0 \bigr)^t
+\mathbf{S}_p^{-1}
+\bigl(\overline{\underline{\mathbf{x}}}-
+\overline{\underline{\mathbf{y}}} -\underline{\mathbf{\delta}}_0\bigr)
+& \sim \frac{(n+m-2)p}{n+m-p-1}F_{p ; \ n+m-p-1}=kF
+\end{align*}
+con:
+$$
+k=\frac{(n+m-2)p}{n+m-p-1}
+$$
+\textcolor{red}{Rechazamos $H_0$ si:} 
+$$
+T_0^2 > kF=\frac{(n+m-2)p}{n+m-p-1}F_{\alpha\ : \  p \ , \ n+m-p-1}
+$$
+\textcolor{red}{O equivalentemente, rechazamos $H_0$ si:} 
+$$
+F_0=\frac{1}{k}T_0^2=\frac{n+m-p-1}{(n+m-2)p}T_0^2 > F_{tabla}=F_{\alpha\ : \  p \ , \ n+m-p-1}
+$$
+Se crea una función de usuario llamada: _HT2_sigmas_iguales_ la cual se utiliza a continuación.
+
+```{r, results="asis",echo = T}
+mu_0<-c(0,0,0)
+# Uso de la función de usuario HT2_sigmas_iguales()
+res2p<-HT2_sigmas_iguales(x,y,mu_0,0.05)
+```
+
+\begin{tabular}{ccccccc}
+$T2$ & $K$ & $F_0$ & $df_1$ & $df_2$ & $F_{Tabla}$ &  Valor-$p$ \\\hline
+`r res2p[3]`&`r res2p[4]` &`r res2p[5]`&`r res2p[6]`&`r res2p[7]`&`r res2p[8]` &  `r res2p[9]`
+\end{tabular}
+$\newline$ 
+
+
+\pagebreak
+
+**Existen varias funciones en distintos paquetes del R que se utilizan para esta prueba de hipótesis cuando $\Sigma_1=\Sigma_2=\Sigma$-Desconocida, Pob. Normal, las cuales se ilustran a continuación.**
+
+### Resultados de esta prueba Utilizando la función HotellingsT2 del paquete ICNP del R:
+
+```{r,results="asis",echo = T,message=FALSE}
+library(ICSNP)
+
+HotellingsT2(x,y)
+```
+
+### Resultados de esta prueba Utilizando la función T2.test del paquete rrcov del R:
+
+```{r,results="asis",echo = T,message=FALSE}
+library(rrcov)
+
+resT2<-T2.test(x,y)
+resT2
+```
+$\newline$
+
+\begin{center}
+\begin{tabular}{ccccc}
+$T2$ & $F$ & $df_1$ & $df_2$ & $Valor-p$ \\\hline
+`r resT2$statistic[1]`&`r resT2$statistic[2]` &`r resT2$parameter[1]`&`r resT2$parameter[2]`&`r resT2$p.value`
+\end{tabular}
+\end{center}
+
+```{r,results="asis",echo = FALSE}
+resT2$estimate %>%
+  kable(booktabs = TRUE,format = "latex",caption="\\label{Resultados-2}Medias de Resultados con T2.test") %>% 
+  kable_styling(latex_options = c("striped", "condensed","HOLD_position"),
+  position = "center",full_width = FALSE)
+```
+
+### Resultados de esta prueba Utilizando la función hotelling.test del paquete Hotelling del R:
+
+```{r,results="asis",echo = T,message=FALSE}
+library(Hotelling)
+resh<-hotelling.test(x, y)
+resh
+```
+
+**Estadísticas de la función hotelling.test del paquete Hotelling del R**
+\newline
+
+\begin{center}
+\begin{tabular}{ccccccc}
+$T2$ & $1/K$ & $df_1$ & $df_2$ & $n_x$ &  $n_y$ & $p$ \\\hline
+`r resh$stats[1]`&`r resh$stats[2]` &`r resh$stats[3]$df[1]`&`r resh$stats[3]$df[2]`&`r resh$stats[4]`&`r resh$stats[5]` &  `r resh$stats[6]`
+\end{tabular}
+\end{center}
+
+\large 
+\textbf{Ahora, Para Muestras Grandes}, (igualmente para la PH con: 
+$\Sigma_1 = \Sigma_2 = \Sigma$ -Desconocida)
+\normalsize
+
+Se desea contrastar las hipótesis:\ \ 
+$$ 
+\begin{cases}
+H_0 \ : \  \underline{\mu}_1-\underline{\mu}_2
+=\underline{\mathbf{\delta}}_0\\ \\
+H_a \ : \  \underline{\mu}_1-  \underline{\mu}_2\neq \underline{\mathbf{\delta}}_0
+\end{cases}
+$$
+\textcolor{red}{Donde el tamaño de muestra utilizado \bf{$n$-es grande}}.
+$\newline$
+
+Bajo $H_0$-cierto, el estadístico de prueba es:
+\begin{align*}
+\hspace{-1.5cm} \chi^2=\frac{nm}{n+m} \bigl(\overline{\underline{\mathbf{x}}}-
+\overline{\underline{\mathbf{y}}}-\underline{\mathbf{\delta}}_0 \bigr)^t
+\mathbf{S}_p^{-1}
+\bigl(\overline{\underline{\mathbf{x}}}-
+\overline{\underline{\mathbf{y}}} -\underline{\mathbf{\delta}}_0\bigr)
+& \sim \chi_p^2
+\end{align*}
+\textcolor{red}{Rechazamos $H_0$ si:} 
+$$
+\chi_0^2 > \chi_{\alpha\ ;\ p }
+$$
+Se crea una función de usuario llamada: _HT2_sigmas_iguales_ngrande_ la cual se utiliza a continuación.
+
+```{r, results="asis",echo = T}
+mu_0<-c(0,0,0)
+# Uso de la función de usuario HT2_sigmas_iguales_ngrande()
+res2p_ngrande<-HT2_sigmas_iguales_ngrande(x,y,mu_0,0.05)
+```
+
+\begin{tabular}{cccc}
+$\chi_0^2$ & $df$ & $\chi_{Tabla}$ &  Valor-$p$ \\\hline
+`r res2p_ngrande[3]`&`r res2p_ngrande[4]` &`r res2p_ngrande[5]`&`r res2p_ngrande[6]`
+\end{tabular}
+
+### Resultados de esta PH Utilizando la función HotellingsT2 del paquete ICNP del R:
+
+```{r, results="asis",echo = T}
+HotellingsT2(x,y,test="chi")
+```
+$\newline$
+
+\pagebreak
+
+##  $\Sigma_1\neq \Sigma_2$-Pob. Normal
+
+Se desea contrastar las hipótesis:
+$$
+\begin{cases}
+H_0 \ : \  \underline{\mu}_1-\underline{\mu}_2
+=\underline{\mathbf{\delta}}_0\\ \\
+H_a \ : \  \underline{\mu}_1-  \underline{\mu}_2\neq \underline{\mathbf{\delta}}_0
+\end{cases}
+$$
+
+Bajo $H_0$-cierto, el estadístico de prueba es:
+$$
+\hspace{-1.0cm} T^2= \bigl(\overline{\underline{\mathbf{x}}}-
+\overline{\underline{\mathbf{y}}}-\underline{\mathbf{\delta}}_0 \bigr)^t
+\left[\frac{S_1}{n}+\frac{S_2}{m} \right]^{-1}
+\bigl(\overline{\underline{\mathbf{x}}}-
+\overline{\underline{\mathbf{y}}} -\underline{\mathbf{\delta}}_0\bigr)
+\sim \frac{vp}{v-p+1}F_{p \ ; \ v-p+1}=kF
+$$
+$$
+ \text{con:} \ \ \ k=\frac{vp}{v-p+1}\ \ \ \ \text{y} \ \ \   v=\frac{tr(S_e)+\bigl[tr(S_e)\bigr]^2}{\sum_{i=1}^2 \frac{1}{n_i-1}\biggl\{  tr(V_i)+[tr(V_i)]^2\biggr\}  }
+$$
+es decir:
+$$
+v=\frac{tr(S_e)+\bigl[tr(S_e)\bigr]^2}{\frac{1}{n_1-1}\biggl\{  tr(V_1)+[tr(V_1)]^2+tr(V_2)+[tr(V_2)]^2\biggr\}  }
+$$
+
+$$
+V_i=\frac{S_i}{n_i}\ \ \ \text{y} \ \ \ S_e=V_1+V_2=\frac{S_1}{n}+\frac{S_2}{m}.
+$$
+$\newline$
+
+\textcolor{red}{Rechazamos $H_0$ si: \ \ \  $T_0^2 > kF \ \ \ \  \text{ó}\ \  \ \ \  F_0=\frac{1}{k}T_0^2>F_{tabla}$}
+$\newline$
+
+Se crea una función de usuario llamada: _HT2_sigmas_diferentes_ la cual se utiliza a continuación.
+$\newline$
+
+```{r, results="asis",echo = FALSE}
+mu_0<-c(0,0,0)
+# Uso de la función de usuario HT2_sigmas_diferentes()
+res_sigmasdif<-res2p<-HT2_sigmas_diferentes(x,y,mu_0,0.05)
+```
+
+\begin{tabular}{cccccccc}
+$T2$ & v & $K=vp/(v-p+1)$ & $F_0$ & $df_1$ & $df_2$ & $F_{Tabla}$ &  Valor-$p$ \\\hline
+`r res_sigmasdif[3]`& `r res_sigmasdif[4]` & `r res_sigmasdif[5]` &`r res_sigmasdif[6]`&`r res_sigmasdif[7]`&`r res_sigmasdif[8]`&`r res_sigmasdif[9]` &  `r res_sigmasdif[10]`
+\end{tabular}
+$\newline$
+
+Para este caso de $\Sigma_1 \neq \Sigma_2$-Desconocida, Pob. Normal, \textbf{No conozco si existen funciones en R} para realizar dicha prueba, si conocen alguna me la hacen saber por favor.
+
+
+# Prueba de Hipótesis para $\mu=\mu_0$. 
+
+### Pob. Normal
+
+Se desean contrastar las hipótesis:
+
+$$
+\hspace{-1.5cm} \begin{cases}
+H_0\ : \ \underline{\mu} = \underline{\mu_0} \\ \\
+H_a\ : \ \underline{\mu} \neq \underline{\mu_0} \\
+\end{cases} 
+$$
+El estadístico de prueba es:
+$$
+T^2= \left(\overline{\underline{\mathbf{x}}}-\underline{\mu}_0 \right)^t \left(  \frac{1}{n}\mathbf{S} \right)^{-1}  \left( \overline{\underline{\mathbf{x}}}-\underline{\mu}_0 \right)
+= n(\overline{\underline{\mathbf{x}}}-\underline{\mu}_0)^t \mathbf{S}^{-1}  (\overline{\underline{\mathbf{x}}}-\underline{\mu}_0),
+$$
+\textcolor{blue}{ \bf {Se utiliza el siguiente resultado:}}
+$$
+T^2 \ \sim \ \frac{(n-1)p}{(n-p)}F_{p ,n-p}=kF, \ \ \text{con:}\ \ \textcolor{blue}{k=\frac{(n-1)p}{(n-p)}}  
+$$
+o equivalentemente: \ \ \ 
+$$
+F=\frac{1}{k}T^2=\frac{(n-p)}{(n-1)p} T^2 \ \sim \ F_{p ,n-p},
+$$
+donde, $F_p,n-p$-denota una v.a con distribución $F$ con $p$ y $n-p$ grados de libertad respectivamente.
+
+\textcolor{red}{ Al nivel de significancia del $\alpha\%$, rechazamos $H_0 \ : \ \underline{\mu}=\underline{\mu}_0 $, en favor de: $H_a \ : \ \underline{\mu}\neq \underline{\mu}_0 $}, si el valor de: 
+$$
+T_0^2=n(\overline{\underline{\mathbf{x}}}-\underline{\mu}_0)^t \mathbf{S}^{-1}  (\overline{\underline{\mathbf{x}}}-\underline{\mu}_0)>kF=  \frac{(n-1)p}{(n-p)}F_{\alpha; p ,n-p} ,
+$$
+
+\textcolor{red}{ o equivalentemente, rechazamos $H_0$ si:}
+
+$$
+F_0=\frac{(n-p)}{(n-1)p}T^2=\frac{1}{k}T_0^2>  F_{\alpha; p ,n-p} ,
+$$
+\newline
+
+Se crea una función de usuario llamada: _HT2_mu0_ con la cual se obtinen los siguinetes resultados:
+$\newline$
+
+```{r, results="asis",echo = T,message=FALSE}
+mu_0<-c(0,0,0)
+# Uso de la función de usuario HT2_mu0()
+res_mu0<-HT2_mu0(grupo1[,1:3],mu_0,0.05)
+```
+
+\begin{tabular}{ccccccc}
+$T2$ & $K$ & $F_0$ & $df_1$ & $df_2$ & $F_{Tabla}$ &  Valor-$p$ \\\hline
+`r res_mu0[2]`&`r res_mu0[3]` &`r res_mu0[4]`&`r res_mu0[5]`&`r res_mu0[6]`&`r res_mu0[7]` &  `r res_mu0[8]`
+\end{tabular}
+\newline \newline
+
+**En R existen varias funciones en distintos paquetes o librerias, las cuales se utilizan para realizar este tipo de pruebas de hipóteis. A continuación se ilustran varias de ellas**. 
+\newline
+
+Se recomienda leer muy bien las ayudas que existen sobre estas funciones para utilizarlas de manera adecuada y definir de de forma apropiada sus respectivos argumentos.
+
+### Resultados de esta PH utilizando la función HottellingsT2 del paquete ICSNP del R.
+
+```{r, results="asis",echo = T,message=FALSE}
+x<-subset(datos1,datos1$Grupos==1)
+x<-x[,1:3]
+HotellingsT2(x)
+```
+
+### Resultados de esta PH Utilizando la función T2.test del paquete rrcov del R.
+
+```{r, results="asis",echo = T,message=FALSE}
+T2.test(x)
+```
+
+### Prueba de Hipótesis para $\mu=\mu_0$. 
+
+### $n$-Grande.
+
+En esta caso, el estadístico de prueba utilizado es:
+$$
+\chi_0^2=n(\overline{\underline{\mathbf{x}}}- \underline{\mu}_0)^t \mathbf{S}^{-1} (\overline{\underline{\mathbf{x}}}- \underline{\mu}_0)  \underset{\text{Bajo} \ H_0}{\sim} \chi_{(p)}^2
+$$
+La regla de decisión es: \textcolor{red}{Rechazar $H_0$ si $\chi_0^2 > \chi_{\alpha;p}^2$}.
+$\newline$
+
+Para este se creo una función de usuario llamada: _HT2_mu0_ngrande_ la cual se utiliza a continuación.
+
+```{r, results="asis",echo = T,message=FALSE}
+mu_0<-c(0,0,0)
+# Uso de la función de usuario HT2_mu0_ngrande()
+res_mu0ngrande<-HT2_mu0_ngrande(grupo1[,1:3],mu_0,0.05)
+```
+
+\begin{center}
+\begin{tabular}{cccc}
+$\chi_0^2$ & $df$ & $\chi_{Tabla}$ &  Valor-$p$ \\\hline
+`r res_mu0ngrande[2]`&`r res_mu0ngrande[3]` &`r res_mu0ngrande[4]`&`r res_mu0ngrande[5]`
+\end{tabular}
+\end{center}
+
+Igualmente, también se puede suar la función _HotellingsT2_ del R de la siguiente forma.
+
+### Resultados utilizando la Función HotellingsT2 del R
+
+```{r, results="asis",echo = T,message=FALSE}
+HotellingsT2(grupo1[,1:3],mu=mu_0,test="chi")
+```
+
+# Prueba T2-Hotelling para contrastes de medias: $C\mu=\delta_0$. 
+
+### Pob. Normal.
+
+Se desea contrastar las hipótesis:
+$$
+\begin{cases}
+H_0 \ : \  C \underline{\mu} = \underline{\gamma} \\ \\
+H_0 \ : \  C \underline{\mu} \neq \underline{\gamma} 
+\end{cases} \ , \ \ \ \text{con} \ \ \ \underline{\gamma}=\begin{pmatrix}
+\gamma_1 \\ \gamma_2 \\ \vdots \\ \gamma_k
+\end{pmatrix}-\text{Vector de Constantes}.
+$$
+Un estimador insesgado para $C\underline{\mu}$ es:
+$C\underline{\overline{\mathbf{x}}}$, el cual tiene la siguiente distribución:
+$$
+C \underline{\overline{\mathbf{x}}} \sim N_k \biggl(C \underline{\mu} \ , \ C \mathbf{\Sigma}_{\underline{\overline{\mathbf{x}}}} C^T  \biggr) \ \ , \ \ \text{es decir}:
+$$
+$$
+C\underline{\overline{\mathbf{x}}} \sim N_k \biggl(C \underline{\mu} \ , \  \frac{1}{n} C \mathbf{\Sigma} C^t  \biggr), \ \ \ \text{pues}:\ \ \ \mathbf{\Sigma}_{\underline{\overline{\mathbf{x}}}}=\frac{\mathbf{\Sigma}}{n}.
+$$
+Como $\mathbf{\Sigma}$-es desconocida se usa la estadística de prueba:
+$$
+T_0^2= n \bigl(C \underline{\overline{\mathbf{x}}} - \underline{\gamma}\bigr)^t \bigl[C \mathbf{S} C^t\bigr]^{-1}\bigl(C \underline{\overline{\mathbf{x}}} - \underline{\gamma}\bigr) \sim \frac{(n-1)k}{n-k}F_{k,n-k}=cF
+$$
+
+\textcolor{red}{ Se rechaza $H_0$  si:\ \ \  $T_0^2 > cF \ \ \ \ \text{ó}\ \ \ \ \ F_0=\frac{1}{c}T_0^2>F_{tabla}$}, \ \ $c=\frac{(n-1)k}{n-k}$.
+$\newline$
+
+Se crea una función de usuario llamada: _HT2_CU_ con la cual se obtinen los siguinetes resultados:
+$\newline$
+
+```{r, results="asis",echo = FALSE,message=FALSE}
+C<-matrix(c(1,0,2,1,1,-1),byrow=T,ncol=3)
+mu_0<-c(2,1)
+# Uso de la función de usuario HT2_CU()
+res_CU<-HT2_CU(grupo1[,1:3],C,mu_0,0.05)
+```
+
+\begin{tabular}{ccccccc}
+$T2$ & $c$ & $F_0$ & $df_1$ & $df_2$ & $F_{Tabla}$ &  Valor-$p$ \\\hline
+`r res_CU[2]`&`r res_CU[3]` &`r res_CU[4]`&`r res_CU[5]`&`r res_CU[6]`&`r res_CU[7]` &  `r res_CU[8]`
+\end{tabular}
+
+
+### Prueba T2-Hotelling para contrastes de medias: $C\mu=\delta_0$.
+
+### $n$-Grande.
+
+En este caso el estadístico de prueba es:
+$$
+\chi_0^2= n \bigl(C \underline{\overline{\mathbf{x}}} - \underline{\gamma}\bigr)^t \bigl[C \mathbf{S} C^t\bigr]^{-1}\bigl(C \underline{\overline{\mathbf{x}}} - \underline{\gamma}\bigr) \sim \chi_k^2
+$$
+\textcolor{red}{Se rechaza $H_0$  si:}\ \ \  
+$\textcolor{red}{\chi_0^2 > \chi_{Tabla}=\chi_{\alpha;k} }$
+$\newline$
+
+Se crea una función de usuario llamada: _HT2_CU_ngrande_ con la cual se obtinen los siguinetes resultados:
+$\newline$
+
+```{r, results="asis",echo = FALSE,message=FALSE}
+C<-matrix(c(1,0,2,1,1,-1),byrow=T,ncol=3)
+mu_0<-c(2,1)
+# Uso de la función de usuario HT2_CU_ngrande()
+res_CUng<-HT2_CU_ngrande(grupo1[,1:3],C,mu_0,0.05)
+```
+
+\begin{center}
+\begin{tabular}{cccc}
+$\chi_0^2$ & $df$ & $\chi_{Tabla}$ &  Valor-$p$ \\\hline
+`r res_CUng[2]`&`r res_CUng[3]` &`r res_CUng[4]`&`r res_CUng[5]`
+\end{tabular}
+\end{center}
+
+
+# Prueba de Razón de Ver. de una Matriz de Var-Cov:  $\Sigma=\Sigma_0$.
+
+### Pob. Normal.
+
+Se tiene interés en la siguiente PH:
+$$
+\begin{cases}
+H_0 \  : \ \mathbf{\Sigma} = \mathbf{\Sigma}_0 \\ \\ 
+H_a \  : \ \mathbf{\Sigma} \neq \mathbf{\Sigma}_0 
+\end{cases}
+$$
+La Estadística de Razon de Verosimilitud para esta PH es:
+
+$$
+ \lambda= \frac{|\mathbf{S}|^{\frac{v}{2}}}{|\mathbf{\Sigma}_0|^{\frac{v}{2}}}  \text{Exp}\left\{-\frac{1}{2} \left[v \text{tr}(\mathbf{S}\mathbf{\Sigma}_0^{-1} ) -vp  \right] \right\} 
+$$
+ y haciendo \large \textcolor{red}{$\lambda^\star=-2\text{log}\lambda$}, \normalsize se tiene que:
+\Large
+$$
+\lambda^\star = v \left[ \text{Log}|\mathbf{\Sigma}_0| -  \text{Log}|\mathbf{S}| + \text{tr}(\mathbf{S}\mathbf{\Sigma}_0^{-1} ) -p \right]\ 
+$$
+\normalsize
+
+\textcolor{blue}{ Bajo $H_0$-cierta, se tiene que}: \ \  
+\Large
+$$
+\lambda^\star \sim \chi_{k}^2 \  , \ \ \ \textcolor{red}{{para} \  \ \ n-1\ \  \text{grande}}
+$$
+\normalsize
+con, \Large  $k=\frac{p(p+1)}{2}$. 
+\normalsize
+
+\textcolor{blue}{Rechazamos $H_0$ si.}
+\Large
+$$
+\lambda^\star > \chi_{\alpha\ ;\ k}^2 
+$$
+\normalsize
+
+Para este se creo una función de usuario llamada: _sigma_sigma0_ la cual se utiliza a continuación.
+
+```{r, results="asis",echo = FALSE,message=FALSE}
+Sigma_0<-matrix(c(6.5, -0.05, -2.5,-0.05, 5.5, 0.5, -2.5 ,0.5, 7.5),byrow=TRUE,ncol=3)
+# Uso de la función de usuario sigma_sigma0()
+res_sigma0<-sigma_sigma0(grupo1[,1:3],Sigma_0,0.05) 
+```
+
+\begin{center}
+\begin{tabular}{cccc}
+$\lambda_0^{\star}$ & $df$ & $\chi_{Tabla}$ &  Valor-$p$ \\\hline
+`r res_sigma0[1]`&`r res_sigma0[2]` &`r res_sigma0[3]`&`r res_sigma0[4]`
+\end{tabular}
+\end{center}
+
+
+
+
+

@@ -1,0 +1,120 @@
+---
+title: | 
+  <center> Actividad # 3 </center>
+  <center> IAM </center>
+author: |
+  <center> Jhonatan Smith Garcia</center>
+  <center> c.c 1039705595</center>
+date: "Mayo, 2022"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# 4.28
+
+Primero, se procede a insertar la base de datos.
+
+```{r}
+datos <- read.table("Datos 4-28.txt", sep= " ", header = T)
+```
+
+Para este ejercicio se solicita realizar un analisis de normalidad con el grafico qqmnorm.
+Entonces:
+
+```{r}
+df.norm <- data.frame(datos[1:5])
+```
+
+
+```{r echo=FALSE, message=FALSE, comment=FALSE, results="asis"}
+library(mvtnorm)
+library(RVAideMemoire)
+mqqnorm(df.norm,main="Gráfico QQ-Plot para Normalidad Multivariada")
+```
+
+
+```{r echo=FALSE, message=FALSE, comment=FALSE, results="asis"}
+library(RVAideMemoire)
+library(mvnormtest)
+mshapiro.test(t(df.norm))
+```
+
+Dado el juego de hipotesis:
+
+$$
+
+H_0: datos \space normales \space vs \space H_1: datos \space No \space normales
+$$
+
+Entonces se concluye que los datos no distribuyen normal puesto que el valor p del estadistico de Shapiro Wilk es menor que un nivel de significancia dado. Por tanto, los datos no son normales.
+
+# 4.29
+
+Se pide realziar un analisis de normalidad bivariada para X5 y X6. Entonces:
+
+```{r}
+df.bi <- datos[,5:6]
+head(df.bi)
+```
+
+**a: Distancia de Mahalanobis**
+
+```{r}
+library(data.table)
+library(kableExtra)
+library(pastecs)
+
+x1 <- df.bi$NO2
+x2 <- df.bi$O3
+x <-  cbind(x1,x2)
+
+#kable(x,caption="Datos")
+t(x)  %>% 
+  kable(booktabs = TRUE,format = "latex", digits=2, caption = "\\label{datos2}Datos") %>%
+  kable_styling(latex_options = c("striped", "condensed","hold_position"), 
+   position = "center",full_width = FALSE)
+
+
+# Vector de medias
+
+media <- apply(x, 2,mean)
+
+#Matriz de var-cov
+var<-var(x) 
+# Uso de la función: mahalanobis
+
+distancias2<-mahalanobis(x,media,var)
+#round(distancias2,3)    #distancias al cuadrado
+
+#Matriz de var-cov
+var<-var(x) 
+var  %>% 
+  kable(booktabs = TRUE,format = "latex", digits=4, caption = "\\label{var_cov}Matriz de Var-Cov") %>%
+  kable_styling(latex_options = c("striped", "condensed","hold_position"), 
+   position = "center",full_width = FALSE)
+
+# Uso de la función: mahalanobis
+distancias2<-mahalanobis(x,media,var)
+#round(distancias2,3)    #distancias al cuadrado
+
+distancias2
+
+#kable(round(dist_ord,3),caption="Dist-Orden")
+dist_ord<-sort(distancias2)           # Dist. ordenadas
+
+
+menores<-dist_ord<=qchisq(0.5,2) #Menores que el cuantil 0.5 de una chi2
+menores
+
+n_menores<-sum(menores)         # Número de Menores
+n_menores
+```
+
+

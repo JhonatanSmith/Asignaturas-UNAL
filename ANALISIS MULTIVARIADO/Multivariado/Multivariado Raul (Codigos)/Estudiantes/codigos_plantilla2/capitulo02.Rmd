@@ -1,0 +1,554 @@
+---
+author: "Nombre Completo Autor"
+date: "27/10/2017"
+documentclass: book
+forprint: true  # true: imprime a dos caras, false: libro digital
+fontsize: 12pt # 10pt,11pt
+geometry: margin = 2.5cm 
+bibliography: ["bib/library.bib", "bib/paquetes.bib"]
+# metodobib -> true: natbib (descomentar: citation_package: natbib) 
+#           -> false: pandoc (comentar: citation_package: natbib)
+metodobib: true
+#natbib: plainnat, abbrvnat, unsrtnat
+biblio-style: "plainnat"
+#Método 2 (pandoc): descomente una línea de las 2 siguientes en caso de usarlo
+csl: methods-in-ecology-and-evolution.csl      # no numera mejor en las citas
+#csl: acm-sig-proceedings-long-author-list.csl  # numera peor en las citas
+link-citations: yes
+output: 
+  pdf_document:
+    keep_tex: no
+    number_sections: yes
+    citation_package: natbib  # comentado usa: pandoc-citeproc
+    #toc: yes
+    fig_caption: yes
+    template: latex/plantilla_trabajos.tex
+    includes:
+      #before_body: portadas/latex_paginatitulo_modTFE.tex
+      #in_header: latex/latex_preambulo.tex
+      #after_body: latex/latex_antes_enddoc.tex
+---
+
+
+
+```{r include=FALSE}
+knitr::opts_chunk$set(fig.path = 'figurasR/',
+                      echo = FALSE, warning = FALSE, message = FALSE,
+                      fig.pos="H",fig.align="center",out.width="95%",
+                      cache=FALSE)
+
+```
+
+
+<!-- \setcounter{chapter}{2} -->
+<!-- \setcounter{chapter}{2} escribir 2 para capítulo 3  -->
+<!-- \pagenumbering{arabic} -->
+
+\ifdefined\ifprincipal
+\else
+\setlength{\parindent}{1em}
+\pagestyle{fancy}
+\setcounter{tocdepth}{4}
+\tableofcontents
+<!-- \nocite{*} -->
+\fi
+
+\ifdefined\ifdoblecara
+\fancyhead{}{}
+\fancyhead[LE,RO]{\scriptsize\rightmark}
+\fancyfoot[LO,RE]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[LE,RO]{\footnotesize\thepage}
+\else
+\fancyhead{}{}
+\fancyhead[RO]{\scriptsize\rightmark}
+\fancyfoot[LO]{\scriptsize\slshape \leftmark}
+\fancyfoot[C]{}
+\fancyfoot[RO]{\footnotesize\thepage}
+\fi
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+
+# Resumen Descriptivo Parte 2
+
+```{r,include=FALSE} 
+uno <- read.table(file("datos/T11-7.DAT"))
+```
+
+
+```{r, results='asis',echo=TRUE}
+datos <- uno
+dim(datos)
+library(knitr)
+library(data.table)
+library(pastecs)
+kable(head(datos),caption="Emcabezado de Datos")
+```
+
+\pagebreak
+
+```{r, results='asis',echo=TRUE}
+kable(datos,caption="Datos completos")
+```
+
+
+\pagebreak
+
+```{r results='asis',echo=TRUE}
+#library(xtable)
+#print(xtable(datos[1:28,]))
+#print(xtable(datos[29:56,]))
+```
+
+\begin{tabular}{cc}\hline
+\begin{tabular}{rrrrrrl}
+  \hline
+ & V1 & V2 & V3 & V4 & V5 & V6 \\ 
+  \hline
+1 & 3.90 & 51.00 & 0.20 & 7.06 & 12.19 & Wilhelm \\ 
+  2 & 2.70 & 49.00 & 0.07 & 7.14 & 12.23 & Wilhelm \\ 
+  3 & 2.80 & 36.00 & 0.30 & 7.00 & 11.30 & Wilhelm \\ 
+  4 & 3.10 & 45.00 & 0.08 & 7.20 & 13.01 & Wilhelm \\ 
+  5 & 3.50 & 46.00 & 0.10 & 7.81 & 12.63 & Wilhelm \\ 
+  6 & 3.90 & 43.00 & 0.07 & 6.25 & 10.42 & Wilhelm \\ 
+  7 & 2.70 & 35.00 & 0.00 & 5.11 & 9.00 & Wilhelm \\ 
+  8 & 5.00 & 47.00 & 0.07 & 7.06 & 6.10 & SubMuli \\ 
+  9 & 3.40 & 32.00 & 0.20 & 5.82 & 4.69 & SubMuli \\ 
+  10 & 1.20 & 12.00 & 0.00 & 5.54 & 3.15 & SubMuli \\ 
+  11 & 8.40 & 17.00 & 0.07 & 6.31 & 4.55 & SubMuli \\ 
+  12 & 4.20 & 36.00 & 0.50 & 9.25 & 4.95 & SubMuli \\ 
+  13 & 4.20 & 35.00 & 0.50 & 5.69 & 2.22 & SubMuli \\ 
+  14 & 3.90 & 41.00 & 0.10 & 5.63 & 2.94 & SubMuli \\ 
+  15 & 3.90 & 36.00 & 0.07 & 6.19 & 2.27 & SubMuli \\ 
+  16 & 7.30 & 32.00 & 0.30 & 8.02 & 12.92 & SubMuli \\ 
+  17 & 4.40 & 46.00 & 0.07 & 7.54 & 5.76 & SubMuli \\ 
+  18 & 3.00 & 30.00 & 0.00 & 5.12 & 10.77 & SubMuli \\ 
+  19 & 6.30 & 13.00 & 0.50 & 4.24 & 8.27 & Upper \\ 
+  20 & 1.70 & 5.60 & 1.00 & 5.69 & 4.64 & Upper \\ 
+  21 & 7.30 & 24.00 & 0.00 & 4.34 & 2.99 & Upper \\ 
+  22 & 7.80 & 18.00 & 0.50 & 3.92 & 6.09 & Upper \\ 
+  23 & 7.80 & 25.00 & 0.70 & 5.39 & 6.20 & Upper \\ 
+  24 & 7.80 & 26.00 & 1.00 & 5.02 & 2.50 & Upper \\ 
+  25 & 9.50 & 17.00 & 0.05 & 3.52 & 5.71 & Upper \\ 
+  26 & 7.70 & 14.00 & 0.30 & 4.65 & 8.63 & Upper \\ 
+  27 & 11.00 & 20.00 & 0.50 & 4.27 & 8.40 & Upper \\ 
+  28 & 8.00 & 14.00 & 0.30 & 4.32 & 7.87 & Upper \\ 
+   \hline
+\end{tabular}&
+\begin{tabular}{rrrrrrl}
+  \hline
+ & V1 & V2 & V3 & V4 & V5 & V6 \\ 
+  \hline
+29 & 8.40 & 18.00 & 0.20 & 4.38 & 7.98 & Upper \\ 
+  30 & 10.00 & 18.00 & 0.10 & 3.06 & 7.67 & Upper \\ 
+  31 & 7.30 & 15.00 & 0.05 & 3.76 & 6.84 & Upper \\ 
+  32 & 9.50 & 22.00 & 0.30 & 3.98 & 5.02 & Upper \\ 
+  33 & 8.40 & 15.00 & 0.20 & 5.02 & 10.12 & Upper \\ 
+  34 & 8.40 & 17.00 & 0.20 & 4.42 & 8.25 & Upper \\ 
+  35 & 9.50 & 25.00 & 0.50 & 4.44 & 5.95 & Upper \\ 
+  36 & 7.20 & 22.00 & 1.00 & 4.70 & 3.49 & Upper \\ 
+  37 & 4.00 & 12.00 & 0.50 & 5.71 & 6.32 & Upper \\ 
+  38 & 6.70 & 52.00 & 0.50 & 4.80 & 3.20 & Upper \\ 
+  39 & 9.00 & 27.00 & 0.30 & 3.69 & 3.30 & Upper \\ 
+  40 & 7.80 & 29.00 & 1.50 & 6.72 & 5.75 & Upper \\ 
+  41 & 4.50 & 41.00 & 0.50 & 3.33 & 2.27 & Upper \\ 
+  42 & 6.20 & 34.00 & 0.70 & 7.56 & 6.93 & Upper \\ 
+  43 & 5.60 & 20.00 & 0.50 & 5.07 & 6.70 & Upper \\ 
+  44 & 9.00 & 17.00 & 0.20 & 4.39 & 8.33 & Upper \\ 
+  45 & 8.40 & 20.00 & 0.10 & 3.74 & 3.77 & Upper \\ 
+  46 & 9.50 & 19.00 & 0.50 & 3.72 & 7.37 & Upper \\ 
+  47 & 9.00 & 20.00 & 0.50 & 5.97 & 11.17 & Upper \\ 
+  48 & 6.20 & 16.00 & 0.05 & 4.23 & 4.18 & Upper \\ 
+  49 & 7.30 & 20.00 & 0.50 & 4.39 & 3.50 & Upper \\ 
+  50 & 3.60 & 15.00 & 0.70 & 7.00 & 4.82 & Upper \\ 
+  51 & 6.20 & 34.00 & 0.07 & 4.84 & 2.37 & Upper \\ 
+  52 & 7.30 & 22.00 & 0.00 & 4.13 & 2.70 & Upper \\ 
+  53 & 4.10 & 29.00 & 0.70 & 5.78 & 7.76 & Upper \\ 
+  54 & 5.40 & 29.00 & 0.20 & 4.64 & 2.65 & Upper \\ 
+  55 & 5.00 & 34.00 & 0.70 & 4.21 & 6.50 & Upper \\ 
+  56 & 6.20 & 27.00 & 0.30 & 3.97 & 2.97 & Upper \\ 
+   \hline
+\end{tabular}
+\end{tabular}
+
+\pagebreak
+
+##  RESUMENES DESCRIPTIVOS DE UNA VARIABEL
+
+```{r, results='asis', echo=TRUE}
+fivenum(datos[,1])       #estadisticos de tukey:min,q1,median,q3,max
+```
+
+```{r, results='asis', echo=TRUE}
+library(Hmisc)
+describe(datos[,1])      #fucntion describe de Hmisc
+```
+
+```{r, results='asis', echo=TRUE}
+library(pastecs)
+stat.desc(datos[,1])     #fucntion stat,desc de pstecs
+```
+
+```{r, results='asis', echo=TRUE}
+library(psych)
+describe(datos[,1] )     #fucntion describe de psych
+```
+
+\pagebreak
+
+## RESUMENES DESCRIPTIVOS PARA TODOS LOS DATOS
+
+```{r, echo=T,results="asis"}
+library(pastecs)
+tablita<-stat.desc(datos[,1:5])
+kable(tablita,caption="Resumen de Datos con stat.desc de PASTECS",digits=3)
+```
+
+
+```{r, echo=T,results="asis"}
+library(data.table)
+tablita2<-data.table(Estadisticos=rownames(tablita),tablita)
+kable(tablita2,caption="Resumen de Datos con data.table de DATA.TABLE",digits=4)
+```
+
+
+```{r, echo=T,results="asis",comment=FALSE,message=FALSE}
+library(stargazer)
+stargazer(datos,header=FALSE,title = "Resumen de Datos con stargazer",digits=4)
+```
+
+## RESUMEN PARA CRUCE DA VBLES CUANTI CON VBLES CUALI
+
+```{r, echo=T,results="asis",comment=FALSE,message=FALSE}
+library(reporttools)                      #para cruzar continuasxcategoricas
+titulo<-"Resumen de los Datos con reporttools (cruce de cuantixcuali)"
+vbles<-datos[,1:4]
+estadisticas<-list("mean","s",
+                   "c$_{\\mathrm{v}}\\%$"=
+                     function(x){
+                     return((sd(x)/mean(x))*100)
+                     },
+                   "min","median","max","iqr","n", "na",
+                   "skewness"=function(x) {
+                          m3=mean((x-mean(x))^3)
+                          skew=m3/(sd(x)^3)
+                          return(skew)},
+                    "kurtosis"=function(x) {
+                          m4=mean((x-mean(x))^4)
+                          kurt=m4/(sd(x)^4)
+                          return(kurt)}
+                     )
+#Cruece da vbles_cont con vbles_nominal
+tableContinuous(vars = vbles, group = datos[,6], stats = estadisticas,cap=titulo,
+                print.pval = "kruskal",longtable=FALSE)
+```
+
+\pagebreak
+
+```{r, echo=T,results="asis",comment=FALSE,message=FALSE}
+library(reporttools)                      #para cruzar continuasxcategoricas
+titulo<-"Resumen de los Datos con reporttools (cruce de cuantixcuali)"
+vbles<-datos[,1:4]
+estadisticas<-list("mean","s",
+                   "c$_{\\mathrm{v}}\\%$"=
+                     function(x){
+                     return((sd(x)/mean(x))*100)
+                     },
+                   "min","median","max","iqr","n", "na",
+                   "skewness"=function(x) {
+                          m3=mean((x-mean(x))^3)
+                          skew=m3/(sd(x)^3)
+                          return(skew)},
+                    "kurtosis"=function(x) {
+                          m4=mean((x-mean(x))^4)
+                          kurt=m4/(sd(x)^4)
+                          return(kurt)}
+                     )
+#Cruece da vbles_cont con vbles_nominal
+tableContinuous(vars = vbles, stats = estadisticas,cap=titulo,longtable=FALSE)
+```
+
+
+
+\pagebreak
+
+## CRUCE DE VBLES CUALITATIVAS (cualixcuali)
+
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(reporttools)              #para cruzar continuasxcategoricas
+cate<-factor(rep(c("A","B","C","D"),c(15,8,15,18)))
+data2<-cbind(datos,cate)
+# solo tabla de vbles_nominales
+titulo2<-"Caracteristicas de las variables nominales"
+tableNominal(vars = data2[,6:7],cap=titulo2,vertical = FALSE,font.size = "scriptsize",
+             lab = "tab:nominal1",longtable = FALSE,cumsum = TRUE)
+```
+
+\pagebreak
+
+
+## GRÁFICOS CON GGPLOT2
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+ggplot(datos,aes(x=datos[,2]))+geom_histogram()
+```
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+datos3<-data.frame(cbind(rnorm(100,0,1) , rnorm(100,0,1)))
+ggplot(datos3,aes(x=datos3[,1])) + 
+  geom_histogram(aes(y =  ..density..) , color="black", fill="white") + geom_density(alpha=0.2,fill="blue")
+```
+
+\pagebreak
+
+## Box_plot
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+ggplot(datos, aes(datos[,6],datos[,1])) + 
+  geom_boxplot()
+```
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+p<-ggplot(datos, aes(datos[,6],datos[,1]))
+p+geom_boxplot()+geom_jitter(width = 0.2)
+```
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+p<-ggplot(datos, aes(datos[,6],datos[,1])) 
+  p + geom_boxplot() + coord_flip()
+```
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+p<-ggplot(datos, aes(datos[,6],datos[,1])) 
+  p + geom_boxplot(notch = TRUE) 
+```
+
+\pagebreak
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+p<-ggplot(datos, aes(datos[,6],datos[,1])) 
+  p + geom_boxplot(varwidth = TRUE) 
+```
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+p<-ggplot(datos, aes(datos[,6],datos[,1])) 
+  p + geom_boxplot(varwidth = FALSE) 
+```
+
+
+
+\pagebreak
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+cate<-factor(rep(c("A","B","C","D"),c(15,8,15,18)))
+cate2<-factor(rep(c("SI","NO"),c(28,28)))
+data2<-cbind(datos,cate,cate2)
+p<-ggplot(data2, aes(data2[,7],datos[,1])) 
+  p + geom_boxplot(aes(colour = data2[,8])) 
+```
+
+
+
+```{r, echo=TRUE,results="asis",comment=FALSE,message=FALSE,header=FALSE}
+library(ggplot2)              #para cruzar continuasxcategoricas
+cate<-factor(rep(c("A","B","C","D"),c(15,8,15,18)))
+cate2<-factor(rep(c("SI","NO"),c(28,28)))
+data2<-cbind(datos,cate,cate2)
+p<-ggplot(data2, aes(data2[,8],datos[,1])) 
+  p + geom_boxplot(aes(colour = data2[,7])) 
+```
+
+\pagebreak
+
+## Obtención del vector de media muestral
+
+```{r, echo=TRUE}
+vector_medias <-apply(datos[,1:5],2,mean);
+kable(round(vector_medias,3))
+```
+
+
+## obtención de la matriz de covarianza muestral
+
+```{r, echo=TRUE}
+var_cov <- cov(datos[,1:5]);
+kable(round(var_cov,3))
+```
+
+## obtención de la matriz de correlación muestral
+
+```{r, echo=T}
+corr <- cor(datos[,1:5]);
+kable(round(corr,3))
+```
+
+\pagebreak
+
+
+## Gráfica de la matriz de correlación
+
+```{r echo=T}
+#library(ggplot2)
+library(corrplot)
+mat.cor<-cor(datos[,1:5],method="pearson")
+kable(round(mat.cor,3))
+```
+
+### Gráfico de la MAtriz de Correlación por default
+
+```{r echo=T}
+corrplot(mat.cor)
+```
+
+### metodo(forma),color-forma,color-etiquetas,inclinación-etiquetas
+
+```{r echo=T}
+corrplot(mat.cor,method="shade",shade.col=NA,tl.col="black",tl.srt=45 )
+```
+
+\pagebreak
+
+### Con: addCoef.col,order
+
+```{r echo=T}
+corrplot(mat.cor,method="shade",shade.col=NA,tl.col="black",
+         tl.srt=45,addCoef.col="black",addcolorlabel="no",order="AOE" )
+```
+
+\pagebreak
+
+### Con: addCoef.col,order
+
+
+```{r echo=T}
+datos4 <- read.table(file("datos/T8-6.DAT"),row.names = 1)
+mat.cor4<-cor(datos4,method="pearson")
+kable(round(mat.cor4,3))
+corrplot(mat.cor4,method="shade",shade.col=NA,tl.col="black",
+         tl.srt=45,addCoef.col="black",addcolorlabel="no",order="AOE" )
+```
+
+
+\pagebreak
+
+### Con: addCoef.col,order, Gráfica Triagular
+
+```{r echo=T}
+corrplot(mat.cor4,method="shade",shade.col=NA,tl.col="black",tl.srt=45,
+addCoef.col="black",addcolorlabel="no",order="AOE",type="lower" )
+```
+
+
+\pagebreak
+
+### Con: addCoef.col,order, Gráfica Triagular
+
+```{r echo=T}
+corrplot(mat.cor4,method="shade",shade.col=NA,tl.col="black",tl.srt=45,
+addCoef.col="black",addcolorlabel="no",order="AOE",type="upper" )
+```
+
+
+\pagebreak
+
+### Con: addCoef.col,order, Gráfica Triagular, sin Diagonal
+
+```{r echo=T}
+corrplot(mat.cor4,method="shade",shade.col=NA,tl.col="black",tl.srt=45,
+addCoef.col="black",addcolorlabel="no",order="AOE",type="upper",
+diag=F,addshade="all" )
+```
+
+\pagebreak
+
+### Con: addCoef.col,order, Gráfica Triagular, sin Diagonal, con cuadrados
+
+```{r echo=T}
+corrplot(mat.cor4,method="square",shade.col=NA,tl.col="black",tl.srt=45,
+addCoef.col="black",addcolorlabel="no",order="FPC",type="upper",
+diag=F,addshade="all" )
+```
+
+\pagebreak
+
+### Con: addCoef.col,order, Gráfica Triagular, sin Diagonal, con elipses
+
+```{r echo=T}
+corrplot(mat.cor4,method="ellipse",shade.col=NA,tl.col="black",tl.srt=45,
+addCoef.col="black",addcolorlabel="no",order="FPC",type="upper",
+diag=F,addshade="all" )
+```
+
+\pagebreak
+
+### Con: addCoef.col,order, Gráfica Triagular, sin Diagonal, con circulos
+
+```{r echo=T}
+corrplot(mat.cor4,method="circle",shade.col=NA,tl.col="black",tl.srt=45,
+addCoef.col="black",addcolorlabel="no",order="FPC",type="upper",
+diag=F,addshade="all" )
+```
+
+
+\pagebreak
+
+### Con: addCoef.col,order, Gráfica Triagular, sin Diagonal, con torta
+
+```{r echo=T}
+corrplot(mat.cor4,method="pie",shade.col=NA,tl.col="black",tl.srt=45,
+addCoef.col="black",addcolorlabel="no",order="FPC",type="upper",
+diag=F,addshade="all" )
+```
+
+
+
+\pagebreak
+
+### Con: addCoef.col,order, Gráfica Triagular, sin Diagonal, con cuadros(shade)
+
+```{r echo=T}
+corrplot(mat.cor4,method="shade",shade.col=NA,tl.col="black",tl.srt=45,
+addCoef.col="black",addcolorlabel="no",order="FPC",type="upper",
+diag=F,addshade="all" )
+```
+
+
+\pagebreak
+
+## Para fundir la matriz de correlación (la matriz de corr en forma de un data.frmae con dos columnas y una tercera con las corrs)
+
+```{r echo=T}
+library(reshape2)
+##head(matcorrs.cor)
+mat.melt4<-melt(mat.cor4)        # fucnión melt, par afundir la matriz de var-cov
+kable(head(mat.melt4))
+kable(mat.melt4)
+# gráfico d ela matriz fundida
+ggplot(data=mat.melt4, aes(x=Var1 , y=Var2, fill=value))+
+   geom_tile()
+```
+
+
+
+
+

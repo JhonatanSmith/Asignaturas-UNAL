@@ -1,0 +1,264 @@
+---
+title: ''
+author: ''
+date: ''
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+**IAM-inferencia - Parcial 3\hspace{0.2cm}- Profesor: Raúl Alberto Peréz **
+$\rule{2.0in}{1pt}$
+**Daniela Pico Arredondo**
+
+```{r,echo=FALSE}
+datos=read.csv("C:/Users/Usuario/Desktop/datosssssssssssssssssssssssssssssssss.txt", header=TRUE,sep =" ")
+
+
+
+datos1<- subset(datos, datos$grupos==1)
+datos2<- subset(datos, datos$grupos==2)
+
+
+
+```
+
+**Realizar la prueba de igualdad de vectores de medias poblacionales para las dos poblaciones consideradas**
+
+**verificacion de normalidad grupo 1 **
+
+```{r,echo=FALSE}
+library(MVN)
+mvn(datos1[,1:9],mvnTest=c("mardia"),univariateTest=c("SW"))
+```
+
+Como la prueba de mardiadio  un valorP=0.941357767216254, no se rechaza la hipotesis nula ($H_0=$ se distribuye normal) y se concluye que los datos del grupo 1  se distribuyen de forma normal 
+
+**normalidad grupo2**
+
+```{r,echo=FALSE}
+library(MVN)
+mvn(datos2[,1:9],mvnTest=c("mardia"),univariateTest=c("SW"))
+```
+
+Como la prueba de mardiadio  un valorP=0.985335690562065, no se rechaza la hipotesis nula ($H_0=$ se distribuye normal) y se concluye que los datos del grupo 2  se distribuyen de forma normal 
+
+
+**Pueba de igualdad de matrices de varianzas-covarianzas para las dos poblaciones consideradas**
+ se desea probar:
+ 
+$$H_0=\Sigma_1=\Sigma_2=\Sigma$$ $$vs$$ $$H_a=\Sigma_1\neq\Sigma_2\neq\Sigma$$
+```{r, echo=F}
+prueba_M_Box2=function(x,y,alfa){
+  g<-2
+  n=nrow(x);m=nrow(y);p=ncol(x) 
+  s1=var(x);s2=var(y)       
+  v<-n+m-2
+  sp<-( (n-1)*s1+(m-1)*s2 )/v   
+  M<-v*log( det(sp) )-( (n-1)*log( det(s1) ) + (m-1)*log( det(s2) ) )
+  u<-( ( 1/(n-1) ) + ( 1/(m-1) ) - (1/v) )*( (2*p^2 + 3*p - 1)/(6*(p+1)*(g-1)) )
+  c<-(1-u)*M
+  df=( p*(p+1)*(g-1) )/2  # Grados de liber del num de la chi-cuadrado
+  chi_tabla=qchisq(1-alfa,df) # Valor crítico de la chi o Chi-de la tabla
+  valor_p=1-pchisq(c,df)  # valor-p de la prueba
+  resultados=list(M=M,U=u,C=c,df=df,Chi_Tabla=chi_tabla,Valor_p=valor_p) 
+  resultados
+}
+
+x<-array(datos1[,1:9])
+y<-array(datos2[,1:9])
+res_box<-prueba_M_Box2(x,y,0.05)
+```
+
+\begin{tabular}{cccccc}
+$M$ & $U$ & $C$ & $gl=df$ & $\chi$-Tabla &  Valor-$p$ \\\hline
+`r res_box[1]`&`r res_box[2]` &`r res_box[3]`&`r res_box[4]`&`r res_box[5]`&`r res_box[6]` 
+\end{tabular}
+
+Según la prueba M-box para determinar varianzas iguales se obtiene un valor p=0.5893355>0.05, por tanto no se rechaza la hipotesis nula y se concluye que $\Sigma_1=\Sigma_2$
+
+Dado que en la prueba anterior se concluyo que las  $\Sigma_1=\Sigma_2$ iguales pero desconocidas se realiza la siguiente prueba para determinar si las medias se comportan en promedio de forma similar cuando n es pequeña
+
+$$H_0= \underline{\mu_1}- \underline{\mu_1}=0$$ $$vs$$ $$H_a= \underline{\mu_1}- \underline{\mu_2}\neq0$$
+
+```{r, echo=F}
+
+HT2_sigmas_iguales=function(x,y,mu_0,alfa){
+  mux=apply(x,2,mean);muy=apply(y,2,mean) 
+  sx<-var(x);sy<-var(y)          
+  n=nrow(x);m=nrow(y);p=ncol(x)         
+  df1=p;df2<-n+m-p-1 # Grados de libertad del num y denom de la F
+  sp<-( (n-1)*sx + (m-1)*sy )/(n+m-2) 
+  T_2<-( (n*m)/(n+m) )*t(mux-muy-mu_0)%*%solve(sp)%*%(mux-muy-mu_0) 
+  k<-( (n+m-2)*p )/(n+m-p-1)
+  F0<-(1/k)*T_2               # Estadística F_0=(1/k)T2
+  F_tabla=qf(1-alfa,df1,df2)  # Valor crítico de la F o F-de la Tabla
+  valor_p=1-pf(F0,df1,df2)    # valor-p de la prueba
+  resultados<-list(Media_x=mux,Media_y=muy,T2=T_2,k=k,F0=F0,
+                   df1=df1,df2=df2,F_Tabla=F_tabla,Valor_p=valor_p) 
+  resultados
+}
+
+
+mu<-c(0,0,0,0,0,0,0,0,0)
+res2p<-HT2_sigmas_iguales(x,y,mu,0.05)
+```
+
+\begin{tabular}{ccccccc}
+$T2$ & $K$ & $F_0$ & $df_1$ & $df_2$ & $F_{Tabla}$ &  Valor-$p$ \\\hline
+`r res2p[3]`&`r res2p[4]` &`r res2p[5]`&`r res2p[6]`&`r res2p[7]`&`r res2p[8]` &  `r res2p[9]`
+\end{tabular}
+$\newline$ 
+
+
+Con un valorp de 0.1505981>0.05, no se rechaza la hipotesis nula y se concluye que son iguales los vectores de medias poblacionales para las dos poblaciones(grupo1 y grupo2)
+
+**parte b**
+**realizar la siguiente prueba de hipotesis acerca del vector de medias de la poblacion 1**
+
+Se desea probar:
+
+$$\mu=\mu_0$$ $$vs$$ $$\mu\neq\mu_0$$
+con $\mu_0$= $(1, 9, 4, 7, 5, 5, 9, 3, 3)^{T}$
+
+Como la poblacion 1 es normal y tiene una n pequeña se realiza una prueba de $T^{2}$ 
+
+```{r,echo=FALSE}
+mu_01<-rbind(1,9,4,7,5,5,9,3,3)
+
+HT2_mu0=function(x,mu_0,alfa){
+  mu=apply(x,2,mean);s=var(x)          
+  n=nrow(x);p=ncol(x)         
+  df1=p;df2=n-p           
+  T2<-n*t(mu-mu_0)%*%solve(s)%*%(mu-mu_0)   
+  k<-( (n-1)*p )/(n-p)
+  F0<-(1/k)*T2 
+  F_tabla=qf(1-alfa,df1,df2)          
+  valor_p=1-pf(F0,df1,df2)
+  resultados=list(Media=mu,T2=T2,K=k,F0=F0,df1=df1,df2=df2,
+                  F_Tabla=F_tabla,Valor_p=valor_p) 
+  resultados
+}
+
+res_mu0=HT2_mu0(x,mu_01,0.05)
+
+```
+
+\begin{tabular}{ccccccc}
+$T2$ & $K$ & $F_0$ & $df_1$ & $df_2$ & $F_{Tabla}$ &  Valor-$p$ \\\hline
+`r res_mu0[2]`&`r res_mu0[3]` &`r res_mu0[4]`&`r res_mu0[5]`&`r res_mu0[6]`&`r res_mu0[7]` &  `r res_mu0[8]`
+\end{tabular}
+\newline \newline
+
+Según la prueba de t^2  realizada se obtuvo un vpalor=3.1384401522061e-08<0.05, por tanto se rechaza la hipotesis nula y se concluye que el vector de medias del grupo1 es diferente al vector de medias propuesto
+
+**Realizar las siguientes pruebas de hipotesis  acerca del vector de medias de la poblacion **
+
+**prueba de normalidad para la poblacion **
+Se verifico en el punto 1 que los datos 1 y 2  no se distribuyen de forma normal
+
+Se desea probar:
+
+$$\mu=\mu_0$$ $$vs$$ $$\mu\neq\mu_0$$
+con $\mu_0$= $(1,8,5,1,7,0,0,8,8)^{T}$
+
+Para probar la hipotesis se utiliza una prueba con una distribución $\chi^2$ ya que N=50 (Grande)
+
+
+```{r,echo=FALSE}
+x<-array(datos[c(1:9)])
+mu_0<-array(c(1,8,5,1,7,0,0,8,8),dim=c(9,1))
+
+```
+
+```{r, echo=FALSE}
+HT2_mu0_ngrande=function(x,mu_0,alfa){
+  mu=apply(x,2,mean);s=var(x)          
+  n=nrow(x);p=ncol(x)         
+  df=p
+  chi_2<-n*t(mu-mu_0)%*%solve(s)%*%(mu-mu_0)   
+  chi_tabla=qchisq(1-alfa,df)     
+  valor_p=1-pchisq(chi_2,df)
+  resultados=list(Media=mu,Chi_2=chi_2,df=df,Chi_Tabla=chi_tabla,
+                  Valor_p=valor_p) 
+  resultados
+}
+
+res_mu0ngrande<-HT2_mu0_ngrande(x,mu_0,0.05)
+```
+
+\begin{center}
+\begin{tabular}{cccc}
+$\chi_0^2$ & $df$ & $\chi_{Tabla}$ &  Valor-$p$ \\\hline
+`r res_mu0ngrande[2]`&`r res_mu0ngrande[3]` &`r res_mu0ngrande[4]`&`r res_mu0ngrande[5]`
+\end{tabular}
+\end{center}
+
+
+
+Según la prueba de chi cuadrado realizada se obtuvo un vpalor=0<0.05, por tanto se rechaza la hipotesis nula y se concluye que el vector de medias de la poblacion es diferente al vector de medias propuesto
+
+
+**Punto c**
+
+**Prueba de cotraste de medias**
+
+**normalidad de shapiro wilk**
+
+```{r,results="asis",echo = FALSE,message=FALSE}
+library(mvnormtest)
+res_shapiro1<-mshapiro.test(t(datos[,1:9]))
+res_shapiro1
+```
+Como pvalue=9.387e-05<0.05, se rechaza la hipotesis nula y se concluye que los datos no son conjuntamente normales.
+
+
+se tiene que:
+
+$$C\mu = \begin{bmatrix}
+1 & 1 & 1 & 1 & -3 & -5 & -7 & -4 & -5\\ 
+5 & 2 & 4 & 7 & -1 & -1 & -1 & -1 & 5
+\end{bmatrix}=\begin{bmatrix}
+\mu_{1}\\ 
+\mu_{2}\\ 
+\mu_{3}\\ 
+\mu_{4}\\ 
+\mu_{5}\\ 
+\mu_{6}\\ 
+\mu_{7}\\ 
+\mu_{8}\\
+\mu_{9} 
+\end{bmatrix}=\begin{bmatrix}
+0\\ 0
+\end{bmatrix}$$
+
+```{r,echo=FALSE}
+HT2_CU_ngrande=function(x,C,mu_0,alfa){
+  mu=as.vector(apply(x,2,mean));s=var(x)          
+  n=nrow(x);p=ncol(x)         
+  k<-nrow(C)        
+  df1=k             
+  chi2<-n*t(C%*%mu-mu_0)%*%solve(C%*%s%*%t(C))%*%(C%*%mu-mu_0)
+  chi_tabla=qchisq(1-alfa,df1)  
+  valor_p=1-pchisq(chi2,df1)
+  resultados=list(Media=mu,Chi2=chi2,df1=df1,
+                  Chi_Tabla=chi_tabla,Valor_p=valor_p) 
+  resultados
+}
+
+
+C1<-matrix(data=c(1,1,1,1,-3,-5,-7,-4,-5, 5,2,4,7,-1,-1,-1,-1,5),nrow=2, ncol=9, byrow=T)
+mu3<-rbind(0,0) 
+
+res_CUng<-HT2_CU_ngrande(x,C1,mu3,0.05)
+```
+
+\begin{center}
+\begin{tabular}{cccc}
+$\chi_0^2$ & $df$ & $\chi_{Tabla}$ &  Valor-$p$ \\\hline
+`r res_CUng[2]`&`r res_CUng[3]` &`r res_CUng[4]`&`r res_CUng[5]`
+\end{tabular}
+\end{center}
+
+Como pvalor=0<0.05 se rechaza la hipotesis nula que el contraste para el vector de medias es diferente al valor propuesto.

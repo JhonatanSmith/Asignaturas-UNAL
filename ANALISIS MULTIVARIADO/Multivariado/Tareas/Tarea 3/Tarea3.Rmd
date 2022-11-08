@@ -1,0 +1,319 @@
+---
+title: | 
+  <center> Actividad # 3 </center>
+  <center> IAM </center>
+author: |
+  <center> Jhonatan Smith Garcia</center>
+  <center> c.c 1039705595</center>
+date: "Mayo, 2022"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# 4.28
+
+Primero, se procede a insertar la base de datos.
+
+```{r}
+datos <- read.table("Datos 4-28.txt", sep= " ", header = T)
+```
+
+Para este ejercicio se solicita realizar un analisis de normalidad con el grafico qqmnorm.
+Entonces:
+
+```{r}
+df.norm <- data.frame(datos[1:5])
+```
+
+
+```{r echo=FALSE, message=FALSE, comment=FALSE, results="asis"}
+library(mvtnorm)
+library(RVAideMemoire)
+mqqnorm(df.norm,main="Gráfico QQ-Plot para Normalidad Multivariada")
+```
+
+
+```{r echo=FALSE, message=FALSE, comment=FALSE, results="asis"}
+library(RVAideMemoire)
+library(mvnormtest)
+mshapiro.test(t(df.norm))
+```
+
+Dado el juego de hipotesis:
+
+$$
+
+H_0: datos \space normales \space vs \space H_1: datos \space No \space normales
+$$
+
+Entonces se concluye que los datos no distribuyen normal puesto que el valor p del estadistico de Shapiro Wilk es menor que un nivel de significancia dado. Por tanto, los datos no son normales.
+
+# 4.29
+
+Se pide realziar un analisis de normalidad bivariada para X5 y X6. Entonces:
+
+```{r}
+df.bi <- datos[,5:6]
+head(df.bi)
+```
+
+**a: Distancia de Mahalanobis**
+
+```{r}
+library(data.table)
+library(kableExtra)
+library(pastecs)
+
+x1 <- df.bi$NO2
+x2 <- df.bi$O3
+x <-  cbind(x1,x2)
+
+# Vector de medias
+
+media <- apply(x, 2,mean)
+
+#Matriz de var-cov
+var<-var(x) 
+# Uso de la función: mahalanobis
+
+distancias2<-mahalanobis(x,media,var)
+a<-round(distancias2,3)    #distancias al cuadrado
+
+b <-matrix(a, nrow = 6, ncol = 7)
+b
+
+```
+
+Esta es la distancia de mahalanobis.
+
+b) El numero de observaciones que poseen una distancia de una chi-cuadrado con probabilidad $\chi_{2}(0.5)=1.39$ es de 26 (basta con mirar la tabla y comparar).
+
+Por tanto la proporcion pedida es de 26/42
+
+c)
+
+```{r}
+library(heplots)
+cqplot(x)
+
+```
+
+
+# 4.32
+
+```{r}
+datos <- read.table("Tabla1-6.txt", header = F)
+head(datos)
+```
+
+
+Se pide analizar normalidad marginal para cada variable. 
+
+Ahora, note que por teoria, si un conjunto de variables es normal, entonces cualquier particion de dicho sub conjunto de variables es normal. 
+
+Por tanto, se mira si hay normalidad multivariada. Las hipotesis son:
+
+$$
+
+H_0: datos \space normales \space vs \space H_1: datos \space No \space normales
+$$
+
+```{r}
+mshapiro.test(t(df.norm))
+```
+
+Dado el valor p de la prueba multivariada normal de shapiro Wilk, se rechaza la hipotesis nula y se concluye que los datos no son normales.
+
+¿Existe normalidad para cada variable independiente?
+
+**Pruebas de shaphiro Wilk univariadas**
+
+Para cada variable se está probando que:
+
+$$
+\begin{aligned}
+&H_{0}: X \sim \mathcal{N}\left(\mu, \sigma^{2}\right) \\
+&H_{1}: X \nsim \mathcal{N}\left(\mu, \sigma^{2}\right)
+\end{aligned}
+$$
+
+```{r}
+attach(datos)
+
+shapiro.test(V1)
+```
+Por el valor p menor que un alfa dado (digamos 0.05) se rechaza la hipotesis nula a favor de la alterna y se concluye datos no normales para V1
+
+```{r}
+shapiro.test(V2)
+```
+Por el valor p menor que un alfa dado (digamos 0.05) se rechaza la hipotesis nula a favor de la alterna y se concluye datos no normales para V2
+
+```{r}
+shapiro.test(V3)
+```
+Por el valor p menor que un alfa dado (digamos 0.05) se rechaza la hipotesis nula a favor de la alterna y se concluye datos no normales para V3
+
+```{r}
+shapiro.test(V4)
+```
+Por el valor p menor que un alfa dado (digamos 0.05) se rechaza la hipotesis nula a favor de la alterna y se concluye datos no normales para V4
+
+```{r}
+shapiro.test(V5)
+```
+Por el valor p menor que un alfa dado (digamos 0.05) se rechaza la hipotesis nula a favor de la alterna y se concluye datos no normales para V5
+
+```{r}
+shapiro.test(V6)
+
+```
+Por el valor p menor que un alfa dado (digamos 0.05) se rechaza la hipotesis nula a favor de la alterna y se concluye datos no normales para V6
+
+En un principio, los datos del problema no son normales. 
+
+
+```{r}
+par(mfrow = c(3,2))
+
+hist(V1)
+hist(V2)
+hist(V3)
+hist(V4)
+hist(V5)
+hist(V6)
+
+```
+
+Se hace un histograma para analizar si tiene sentido realizar algun tipo de transformacion para intentar normalizar los datos.
+
+Se intenta ver patrondes con la densidad de cada variable. Nuevamente:
+
+```{r}
+par(mfrow=c(3,2))
+plot(density(V1))
+plot(density(V2))
+plot(density(V3))
+plot(density(V4))
+plot(density(V5))
+plot(density(V6))
+
+```
+Realmente es muy dificl ver una tendencia en la distribucion de los datos.
+
+```{r}
+par(mfrow=c(3,2))
+plot(V1)
+plot(V2)
+plot(V3)
+plot(V4)
+plot(V5)
+plot(V6)
+```
+
+Dado estos datos, un analisis descriptivo permite ver que ninguna transformacion surgirá algun efecto sobre la normalidad.
+
+# 4.34
+
+El formato de la base de datos está en Minitab y no es compatible con las versiones actualizadas de R.
+
+MiniTab NO es compatible con el correio de la universidad y no hay forma de transformar los archivos de la base de datos a un archivo importable a R
+
+El unico paquete para importar informacion a R es "mtbr" y dicho paquete tambien es creado por Minitab, quienes impiden su descarga a no ser de tener licencia.
+
+Ademas, el paquete que podria funcionar, denominado "foreign" ha sido dado de baja del cran (crashea R) entonces, este ejercicio no es posible resolverlo puesto que no se conoce forma de acceder a la base de datos.
+
+
+
+library(rio)
+library(foreign)
+
+datos <- import("t1-8.MTW")
+datos < read.mtbr("t1-8.MTW")
+datos <. read.mt("t1-8.MTW)
+
+Luego, se harian las ruebas respectivas de normalidad multivarida y bivariada. 
+
+#4.36
+
+```{r}
+library(rio)
+datos <- import("T1-9.txt")
+head(datos)
+```
+
+Se procede a realizar analisis multivariadnte de normalidad. Las hipotesis son:
+
+
+$$
+
+H_0: datos \space normales \space vs \space H_1: datos \space No \space normales
+$$
+```{r}
+data <- data.frame(datos[,2:8])
+
+library(ppcc)
+ppccTest(data, "qnorm")
+```
+Al analizar los datos, se concluye que no hay normalidad multivariada.
+
+Se procdede a analizar normalidad marginalmente en el caso univariado. Pero primero, se realizan analisis descriptivos respecto a los datos
+
+```{r}
+par(mfrow = c(4,2))
+attach(data)
+
+hist(V2)
+hist(V3)
+hist(V4)
+hist(V5)
+hist(V6)
+hist(V7)
+hist(V8)
+
+```
+
+Se podria esperar normalidad en algunas variables.
+
+```{r}
+shapiro.test(V2)
+
+```
+
+Dado el juego de hipotesis anteriormente mencionado para la prueba de shapiro wilk en normalidad univariada, se concuye que V2 es normal.
+
+Las demas variables no lo son.
+
+```{r}
+shapiro.test(V3)
+
+```
+
+```{r}
+shapiro.test(V4)
+
+```
+
+```{r}
+shapiro.test(V5)
+
+```
+```{r}
+shapiro.test(V6)
+
+```
+```{r}
+shapiro.test(V7)
+
+```
+```{r}
+shapiro.test(V8)
+
+```

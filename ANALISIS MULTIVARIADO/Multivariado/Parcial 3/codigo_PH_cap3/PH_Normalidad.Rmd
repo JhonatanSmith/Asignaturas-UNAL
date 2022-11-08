@@ -1,0 +1,127 @@
+---
+title: "Get Started"
+output: flexdashboard::flex_dashboard
+---
+
+```{r setup, include = F, message = F}
+if(!require(pacman)){install.packages("pacman"); library(pacman)}
+pacman::p_load("tidyverse", "ggplot2", "pBrackets", "knitr", "HH", "car","kableExtra", "rgl","latex2exp","magrittr","ICSNP","rrcov",
+              "Hotelling", "sampling","biotools","flexdashboard","MASS","mvtnorm","MVN")
+source("funcionesR/funciones.R", local = knitr::knit_global())
+#source("funcionesR/Functions.R", local = knitr::knit_global())
+```
+
+**PH de Nor_Mult**
+==============================================
+
+Column 1 pag 1
+--------------------------------------------------
+
+### **Generación de Datos Normales Bivariados**
+
+```{r}
+alfa<-c(0.05)
+mu=c(0,0)
+sigma<-matrix(c(4,-3,-3,4),ncol=2)
+#datos<-round(mvrnorm(n=100, mu,sigma),3)
+datos6<-read.table("G:\\Mi unidad\\1_A_A_CURSOS_UNAL\\1_MULTIVARIADO\\2022_I\\tableros_IAM\\datos\\datos6.txt",header=TRUE)
+datos6$Grupos %<>% as.factor()
+grupo1<-datos6 %>% filter(Grupos=="1")
+grupo2<-datos6 %>% filter(Grupos=="2")
+grupo3<-datos6 %>% filter(Grupos=="3")
+xbar<-apply(grupo1[,1:2], 2, mean)
+xvar<-var(grupo1[,1:2])
+mineral<-read.table("G:\\Mi unidad\\1_A_A_CURSOS_UNAL\\1_MULTIVARIADO\\2022_I\\tableros_IAM\\datos\\mineral_huesos.txt",header=TRUE)
+T15<-read.table("G:\\Mi unidad\\1_A_A_CURSOS_UNAL\\1_MULTIVARIADO\\2022_I\\tableros_IAM\\datos\\T1_5.dat",header=TRUE)
+grupo<-T15[,c(2,5,6)]
+```
+Datos Generados de una Normal Bivariada con parámetros:
+$$
+\underline{\mu}=\begin{bmatrix} `r mu[1]` \\ `r mu[2]`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{\Sigma}=\begin{bmatrix} `r sigma[1,1]` & `r sigma[1,2]` \\ `r sigma[2,1]` & `r sigma[2,2]` \end{bmatrix} $$
+
+Las estimaciones muestrales de los parámetros son:
+$$
+\underline{\overline{x}}=\begin{bmatrix} \overline{x}_1 \\ \overline{x}_2  \end{bmatrix}= \begin{bmatrix} `r  round(xbar[1],3)` \\ `r round(xbar[2],3)`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{S}_x=\begin{bmatrix} s_{11} & s_{12} \\ s_{21} & s_{22} \end{bmatrix} =  \begin{bmatrix} `r round(xvar[1,1],3)` & `r round(xvar[1,2],3)` \\ `r round(xvar[2,1],3)` & `r round(xvar[2,2],3)` \end{bmatrix} 
+$$
+Se desea realizar la siguiente prueba de hipótesis:
+$$
+\begin{cases}
+H_0 \ : \  \text{Los datos se distribuyen NM} \\ \\
+H_0 \ : \  \text{Los datos no se distribuyen NM} 
+\end{cases} 
+$$
+
+Column 2 pag 1
+--------------------------------------------------
+
+### **Prueba de Normalidad Usando el paquete ``mvn``**
+
+```{r}
+res<-mvn(grupo,mvnTest=c("mardia"),univariateTest=c("SW"))
+res$multivariateNormality
+res$univariateNormality
+res$Descriptive
+```
+
+
+**PH de Nor_Mult**
+============================================
+
+### dsifhsda 
+
+```{r}
+res<-mvn(grupo,mvnTest=c("royston"),univariateTest=c("SW"))
+metodos<-c("mardia","royston")
+res$multivariateNormality
+res$univariateNormality
+res$Descriptive
+```
+
+Column 2 pag 2
+--------------------------------------------------
+
+### dsifhsda 
+
+```{r}
+res<-mvn(grupo,mvnTest=c("royston"),univariateTest=c("SW",bc=TRUE,bcType="optimal"))
+metodos<-c("mardia","royston")
+res
+```
+
+**PH de Nor_Mult**
+============================================
+
+Column 2 pag 2
+--------------------------------------------------
+
+### **Transformadas de Potencia**
+
+````{r}
+summary(p <- powerTransform(abs(grupo), family="bcPower") )
+testTransform(p, lambda=c(0, 0, 0))
+testTransform(p, lambda=c(1, 1, 1))
+#testTransform(p, lambda=c(p$roundlam[1], p$roundlam[2], p$roundlam[3]))
+testTransform(p, lambda=c(p$lambda[1], p$lambda[2], p$lambda[3]))
+````
+
+Column 2 pag 2
+--------------------------------------------------
+
+### **NPP para Datos Crudos**
+
+```{r}
+## para datos transformados
+landaf<-p$lambda[3]
+landafr<-p$roundlam[3]
+x<-grupo
+xt<-data.frame((x[,3]^landaf-1)/landaf)
+#xt<-data.frame((x[,3]^landafr-1)/landafr)
+QQnorm(x[,3])
+```
+
+### **NPP para datos Transformados**
+
+```{r}
+## para datos transformados
+QQnorm_transf(xt[,1])
+```

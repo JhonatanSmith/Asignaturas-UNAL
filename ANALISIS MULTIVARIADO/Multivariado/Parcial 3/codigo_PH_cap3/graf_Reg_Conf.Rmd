@@ -1,0 +1,239 @@
+---
+title: "Get Started"
+output: flexdashboard::flex_dashboard
+---
+
+```{r setup, include = F, message = F}
+if(!require(pacman)){install.packages("pacman"); library(pacman)}
+pacman::p_load("tidyverse", "ggplot2", "pBrackets", "knitr", "HH", "car", "rgl","latex2exp","magrittr", "sampling","biotools","flexdashboard","MASS","mvtnorm","MVN")
+source("funciones.R", local = knitr::knit_global())
+source("Functions.R", local = knitr::knit_global())
+```
+
+**Reg_Conf para $\underline{\mu}$**
+=========================================
+
+Column 1 pag 1
+--------------------------------------------------
+
+### **Generación de Datos Normales Bivariados**
+
+```{r}
+alfa<-c(0.05)
+mu=c(0,0)
+sigma<-matrix(c(4,-3,-3,4),ncol=2)
+datos<-round(mvrnorm(n=100, mu,sigma),3)
+datos6<-read.table("datos6.txt",header=TRUE)
+datos6$Grupos %<>% as.factor()
+datos6<-datos6 %>% filter(Grupos=="3")
+datos<-datos6[,1:2]
+xbar<-apply(datos, 2, mean)
+var<-var(datos)
+```
+Datos Generados de una Normal Bivariada con parámetros:
+$$
+\underline{\mu}=\begin{bmatrix} `r mu[1]` \\ `r mu[2]`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{\Sigma}=\begin{bmatrix} `r sigma[1,1]` & `r sigma[1,2]` \\ `r sigma[2,1]` & `r sigma[2,2]` \end{bmatrix} $$
+
+Las estimaciones muestrales de los parámetros son:
+$$
+\underline{\overline{x}}=\begin{bmatrix} \overline{x}_1 \\ \overline{x}_2  \end{bmatrix}= \begin{bmatrix} `r  round(xbar[1],3)` \\ `r round(xbar[2],3)`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{S}=\begin{bmatrix} s_{11} & s_{12} \\ s_{21} & s_{22} \end{bmatrix} =  \begin{bmatrix} `r round(var[1,1],3)` & `r round(var[1,2],3)` \\ `r round(var[2,1],3)` & `r round(var[2,2],3)` \end{bmatrix} 
+$$
+La correlación es: $Cor(X_1,X_2)=\rho$ = `r var[1,2]/sqrt(var[1,1]*var[2,2])`.
+
+**Definición:** \ \ Una región de confianza del $(1-\alpha)100\%$ para el vector de medias poblacionales $\underline{\boldsymbol{\mu}}$ de una población normal $2$-dimensional, es el conjunto de todos los valores $\underline{\mu}$ que satisfacen:
+$$
+n(\underline{\boldsymbol{\mu}}-\underline{\overline{\boldsymbol{x}}})^t\boldsymbol{S}^ {-1}(\underline{\boldsymbol{\mu}}-\underline{\overline{\boldsymbol{x}}}) \leq c^2= \frac{(n-1)p}{(n-p)}F_{\alpha; p,n-p}
+$$
+\textcolor{blue}{Para $p=2$ la región es una elipse  centrada en $\underline{\overline{\boldsymbol{x}}}$}
+$$
+n\begin{bmatrix}
+\mu_1-\overline{x}_1 \\ \mu_2 -\overline{x}_2
+\end{bmatrix}^t \begin{bmatrix}
+s_{11} & s_{12} \\ s_{21} & s_{22}
+\end{bmatrix}^{-1}  \begin{bmatrix}
+\mu_1 - \overline{x}_1 \\ \mu_2 - \overline{x}_2
+\end{bmatrix}  \leq  c^2=\frac{(n-1)p}{(n-p)}F_{1-\alpha\ ;\ p,n-p}
+$$
+$$
+`r nrow(datos)`\begin{bmatrix}
+\mu_1-`r  round(xbar[1],3)`  \\ \mu_2 -`r round(xbar[2],3)`
+\end{bmatrix}^t \begin{bmatrix} `r round(var[1,1],3)` & `r round(var[1,2],3)` \\ `r round(var[2,1],3)` & `r round(var[2,2],3)` \end{bmatrix}^{-1}  \begin{bmatrix}
+\mu_1 - `r round(xbar[1],3)` \\ \mu_2 - `r round(xbar[2],3)`
+\end{bmatrix}  \leq  c^2=`r  round((nrow(datos)-1)*2*qf(1-alfa,2,nrow(datos)-2)/(nrow(datos)-ncol(datos)),3)`
+$$
+$$
+\hspace{-0.5cm} A\mu_1^2+B\mu_2^2+C\mu_1+D\mu_2+E\mu_1\mu_2 +F \leq 0
+$$
+
+Column 2 pag 1 
+--------------------------------------------------
+
+### **Región de Confianza para $\underline{\mu}$ del `r (1-alfa)*100`$\%$**
+
+```{r}
+elipse_conf(datos,alfa,10000)   
+```
+
+**Reg_Conf para $\underline{\mu}$ con IC-$T^2$**
+=========================================
+
+Column 1 pag 2
+--------------------------------------------------
+
+### **Generación de Datos Normales Bivariados**
+
+Datos Generados de una Normal Bivariada con parámetros:
+$$
+\underline{\mu}=\begin{bmatrix} `r mu[1]` \\ `r mu[2]`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{\Sigma}=\begin{bmatrix} `r sigma[1,1]` & `r sigma[1,2]` \\ `r sigma[2,1]` & `r sigma[2,2]` \end{bmatrix} $$
+
+Las estimaciones muestrales de los parámetros son:
+$$
+\underline{\overline{x}}=\begin{bmatrix} \overline{x}_1 \\ \overline{x}_2  \end{bmatrix}= \begin{bmatrix} `r  round(xbar[1],3)` \\ `r round(xbar[2],3)`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{S}=\begin{bmatrix} s_{11} & s_{12} \\ s_{21} & s_{22} \end{bmatrix} =  \begin{bmatrix} `r round(var[1,1],3)` & `r round(var[1,2],3)` \\ `r round(var[2,1],3)` & `r round(var[2,2],3)` \end{bmatrix} 
+$$
+La correlación es: $Cor(X_1,X_2)=\rho$ = `r var[1,2]/sqrt(var[1,1]*var[2,2])`.
+
+Los IC-$T^2$ se calculan como sigue:  
+$$
+\left(  \overline{x}_1 - \sqrt{\frac{(n-1)p}{(n-p)}F_{\alpha; p, n-p}}   \sqrt{\frac{s_{11}}{n}} \ \ , \ \   \overline{x}_1 + \sqrt{\frac{(n-1)p}{(n-p)}F_{\alpha; p, n-p}}   \sqrt{\frac{s_{11}}{n}}  \right)
+$$
+$$
+`r round(xbar[1],3)` \pm \sqrt{\frac{(`r nrow(datos)`-1)2}{(`r nrow(datos)`-2)}F_{`r 1-alfa`\ ;\  2\ ,\ `r nrow(datos)-2`}}\sqrt{\frac{`r round(var[1,1],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[1],3)` \pm \sqrt{(`r round((nrow(datos)-1)*2/(nrow(datos)-2),3)`)(`r round(qf(1-alfa,2,nrow(datos)-2),3)`)} \sqrt{\frac{`r round(var[1,1],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[1],3)` \pm `r round(sqrt( (nrow(datos)-1)*2*qf(1-alfa,2,nrow(datos)-2)*var[1,1]/((nrow(datos)-2)*nrow(datos))),3)` \ \ \Longleftrightarrow \ \ \left( `r round( ( xbar[1]- sqrt( (nrow(datos)-1)*2*qf(1-alfa,2,nrow(datos)-2)*var[1,1]/((nrow(datos)-2)*nrow(datos))) ),3)` \ , \  `r  round( ( xbar[1] + sqrt( (nrow(datos)-1)*2*qf(1-alfa,2,nrow(datos)-2)*var[1,1]/((nrow(datos)-2)*nrow(datos))) ),3)` \right)
+$$
+$$
+\left(  \overline{x}_2 - \sqrt{\frac{(n-1)p}{(n-p)}F_{\alpha; p, n-p}}   \sqrt{\frac{s_{22}}{n}} \ \ , \ \   \overline{x}_2 + \sqrt{\frac{(n-1)p}{(n-p)}F_{\alpha; p, n-p}}   \sqrt{\frac{s_{22}}{n}}  \right)
+$$
+$$
+`r round(xbar[2],3)` \pm \sqrt{\frac{(`r nrow(datos)`-1)2}{(`r nrow(datos)`-2)}F_{`r 1-alfa`\ ;\  2\ ,\ `r nrow(datos)-2`}}\sqrt{\frac{`r round(var[2,2],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[2],3)` \pm \sqrt{(`r round((nrow(datos)-1)*2/(nrow(datos)-2),3)`)(`r round(qf(1-alfa,2,nrow(datos)-2),3)`)} \sqrt{\frac{`r round(var[2,2],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[2],3)` \pm `r round(sqrt( (nrow(datos)-1)*2*qf(1-alfa,2,nrow(datos)-2)*var[2,2]/((nrow(datos)-2)*nrow(datos))),3)` \ \ \Longleftrightarrow \ \ \left( `r round( ( xbar[2]- sqrt( (nrow(datos)-1)*2*qf(1-alfa,2,nrow(datos)-2)*var[2,2]/((nrow(datos)-2)*nrow(datos))) ),3)` \ , \  `r  round( ( xbar[2] + sqrt( (nrow(datos)-1)*2*qf(1-alfa,2,nrow(datos)-2)*var[2,2]/((nrow(datos)-2)*nrow(datos))) ),3)` \right)
+$$
+
+
+Column 2 pag 2 
+--------------------------------------------------
+
+### **Región de Confianza para $\underline{\mu}$ del `r (1-alfa)*100`$\%$**
+
+```{r}
+elipse_conf_IC_T2(datos,alfa,10000)   
+```
+
+
+**Reg_Conf para $\underline{\mu}$ con IC-$T^2$ y IC-Bonferroni**
+=========================================
+
+Column 1 pag 3
+--------------------------------------------------
+
+### **Generación de Datos Normales Bivariados**
+
+Datos Generados de una Normal Bivariada con parámetros:
+$$
+\underline{\mu}=\begin{bmatrix} `r mu[1]` \\ `r mu[2]`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{\Sigma}=\begin{bmatrix} `r sigma[1,1]` & `r sigma[1,2]` \\ `r sigma[2,1]` & `r sigma[2,2]` \end{bmatrix} $$
+
+Las estimaciones muestrales de los parámetros son:
+$$
+\underline{\overline{x}}=\begin{bmatrix} \overline{x}_1 \\ \overline{x}_2  \end{bmatrix}= \begin{bmatrix} `r  round(xbar[1],3)` \\ `r round(xbar[2],3)`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{S}=\begin{bmatrix} s_{11} & s_{12} \\ s_{21} & s_{22} \end{bmatrix} =  \begin{bmatrix} `r round(var[1,1],3)` & `r round(var[1,2],3)` \\ `r round(var[2,1],3)` & `r round(var[2,2],3)` \end{bmatrix} 
+$$
+La correlación es: $Cor(X_1,X_2)=\rho$ = `r var[1,2]/sqrt(var[1,1]*var[2,2])`.
+
+Los IC de Boferroni (ICB) se calculan como sigue:  
+$$
+\overline{x}_1 - t_{\frac{\alpha}{2p};n-1}  \sqrt{\frac{s_{11}}{n}} \leq \mu_1 \leq \overline{x}_1 + t_{\frac{\alpha}{2p};n-1}  \sqrt{\frac{s_{11}}{n}}
+$$
+$$
+`r round(xbar[1],3)` \pm t_{`r alfa/4`,`r nrow(datos)-1`}\sqrt{\frac{`r round(var[1,1],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[1],3)` \pm (`r round(qt(1-alfa/4, nrow(datos)-1),3)`)\sqrt{\frac{`r round(var[1,1],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[1],3)` \pm `r round( sqrt( var[1,1]*(qt(1-alfa/4, nrow(datos)-1))^2/nrow(datos) ),3)`  \ \ \Longleftrightarrow \ \ \left( `r round( xbar[1] - sqrt( var[1,1]*(qt(1-alfa/4, nrow(datos)-1))^2/nrow(datos) ),3)` \ , \ `r round( xbar[1] + sqrt( var[1,1]*(qt(1-alfa/4, nrow(datos)-1))^2/nrow(datos) ),3)` \right)
+$$
+$$
+\overline{x}_2 - t_{\frac{\alpha}{2p};n-1}  \sqrt{\frac{s_{22}}{n}} \leq \mu_2 \leq \overline{x}_2 + t_{\frac{\alpha}{2p};n-1}  \sqrt{\frac{s_{22}}{n}}
+$$
+$$
+`r round(xbar[2],3)` \pm t_{`r alfa/4`,`r nrow(datos)-1`}\sqrt{\frac{`r round(var[2,2],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[2],3)` \pm (`r round(qt(1-alfa/4, nrow(datos)-1),3)`)\sqrt{\frac{`r round(var[2,2],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[2],3)` \pm `r round( sqrt( var[2,2]*(qt(1-alfa/4, nrow(datos)-1))^2/nrow(datos) ),3)`  \ \ \Longleftrightarrow \ \ \left( `r round( xbar[2] - sqrt( var[2,2]*(qt(1-alfa/4, nrow(datos)-1))^2/nrow(datos) ),3)` \ , \ `r round( xbar[2] + sqrt( var[2,2]*(qt(1-alfa/4, nrow(datos)-1))^2/nrow(datos) ),3)` \right)
+$$
+
+Column 2 pag 3 
+--------------------------------------------------
+
+### **Región de Confianza para $\underline{\mu}$ del `r (1-alfa)*100`$\%$**
+
+```{r}
+elipse_conf_IC_BONF(datos,alfa,10000)   
+```
+
+**Reg_Conf para $\underline{\mu}$ con IC-$t$-Student, IC-$T^2$ y IC-Bonferroni**
+=========================================
+
+Column 1 pag 4
+--------------------------------------------------
+
+### **Generación de Datos Normales Bivariados**
+
+Datos Generados de una Normal Bivariada con parámetros:
+$$
+\underline{\mu}=\begin{bmatrix} `r mu[1]` \\ `r mu[2]`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{\Sigma}=\begin{bmatrix} `r sigma[1,1]` & `r sigma[1,2]` \\ `r sigma[2,1]` & `r sigma[2,2]` \end{bmatrix} $$
+
+Las estimaciones muestrales de los parámetros son:
+$$
+\underline{\overline{x}}=\begin{bmatrix} \overline{x}_1 \\ \overline{x}_2  \end{bmatrix}= \begin{bmatrix} `r  round(xbar[1],3)` \\ `r round(xbar[2],3)`  \end{bmatrix} \ \ \ \ \ y \ \ \ \ \boldsymbol{S}=\begin{bmatrix} s_{11} & s_{12} \\ s_{21} & s_{22} \end{bmatrix} =  \begin{bmatrix} `r round(var[1,1],3)` & `r round(var[1,2],3)` \\ `r round(var[2,1],3)` & `r round(var[2,2],3)` \end{bmatrix} 
+$$
+La correlación es: $Cor(X_1,X_2)=\rho$ = `r var[1,2]/sqrt(var[1,1]*var[2,2])`.
+
+Los IC $t$-Studnet se calculan como sigue:  
+$$
+\overline{x}_1 - t_{\frac{\alpha}{2};n-1}  \sqrt{\frac{s_{11}}{n}} \leq \mu_1 \leq \overline{x}_1 + t_{\frac{\alpha}{2};n-1}  \sqrt{\frac{s_{11}}{n}}
+$$
+$$
+`r round(xbar[1],3)` \pm t_{`r alfa/2`,`r nrow(datos)-1`}\sqrt{\frac{`r round(var[1,1],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[1],3)` \pm (`r round(qt(1-alfa/2, nrow(datos)-1),3)`)\sqrt{\frac{`r round(var[1,1],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[1],3)` \pm `r round( sqrt( var[1,1]*(qt(1-alfa/2, nrow(datos)-1))^2/nrow(datos) ),3)`  \ \ \Longleftrightarrow \ \ \left( `r round( xbar[1] - sqrt( var[1,1]*(qt(1-alfa/2, nrow(datos)-1))^2/nrow(datos) ),3)` \ , \ `r round( xbar[1] + sqrt( var[1,1]*(qt(1-alfa/2, nrow(datos)-1))^2/nrow(datos) ),3)` \right)
+$$
+$$
+\overline{x}_2 - t_{\frac{\alpha}{2};n-1}  \sqrt{\frac{s_{22}}{n}} \leq \mu_2 \leq \overline{x}_2 + t_{\frac{\alpha}{2};n-1}  \sqrt{\frac{s_{22}}{n}}
+$$
+$$
+`r round(xbar[2],3)` \pm t_{`r alfa/2`,`r nrow(datos)-1`}\sqrt{\frac{`r round(var[2,2],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[2],3)` \pm (`r round(qt(1-alfa/2, nrow(datos)-1),3)`)\sqrt{\frac{`r round(var[2,2],3)`}{`r nrow(datos)`}} 
+$$
+$$
+`r round(xbar[2],3)` \pm `r round( sqrt( var[2,2]*(qt(1-alfa/2, nrow(datos)-1))^2/nrow(datos) ),3)`  \ \ \Longleftrightarrow \ \ \left( `r round( xbar[2] - sqrt( var[2,2]*(qt(1-alfa/2, nrow(datos)-1))^2/nrow(datos) ),3)` \ , \ `r round( xbar[2] + sqrt( var[2,2]*(qt(1-alfa/2, nrow(datos)-1))^2/nrow(datos) ),3)` \right)
+$$
+
+Column 2 pag 4 
+--------------------------------------------------
+
+### **Región de Confianza para $\underline{\mu}$ del `r (1-alfa)*100`$\%$**
+
+```{r}
+elipse_conf_IC_tstud(datos,alfa,10000)   
+```
+
+
+

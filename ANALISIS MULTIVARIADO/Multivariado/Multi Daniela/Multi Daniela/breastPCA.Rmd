@@ -1,0 +1,118 @@
+---
+title: "Breas Cancer"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(FactoMineR)
+library(caret)
+library(factoextra)
+```
+
+
+```{r}
+breast = read.csv("data.csv")
+
+id = breast %>% 
+  select(c(id,diagnosis))
+
+values = breast %>% 
+  select(-c(id,diagnosis,X))
+```
+
+
+```{r}
+#prueba = cbind(valuesES,diagnosis = as.factor(id$diagnosis))
+
+library(doParallel)
+
+cls = makePSOCKcluster(6)
+
+registerDoParallel(cls)
+
+subsets = c(10:21)
+
+repeticiones = 30
+
+set.seed(123)
+
+seeds = vector(mode = "list",length = repeticiones+1)
+for (i in 1:repeticiones){
+  
+  seeds[[i]] = sample.int(1000,length(subsets))
+  
+}
+
+seeds[[repeticiones + 1]] = sample.int(1000,1)
+
+ctrl_rfe = rfeControl(functions = rfFuncs,method = "boot",
+                      number= repeticiones,
+                      returnResamp = "all",
+                      allowParallel = T,
+                      verbose = F,
+                      seeds = seeds)
+
+set.seed(2332)
+
+rf_rfe = rfe(diagnosis ~ ., data = prueba,metric = "Accuracy",rfeControl = ctrl_rfe,ntree = 500,sizes = 13:20)
+
+stopCluster(cls)
+
+
+```
+
+```{r}
+valuesF = values[,rf_rfe$optVariables]
+```
+
+```{r}
+res.pca = PCA(valuesF,graph = F,scale.unit=T)
+
+
+```
+
+
+```{r}
+fviz_screeplot(res.pca,ncp = 6)
+```
+
+```{r}
+res.pca$var$coord[,1:2]
+```
+
+```{r}
+res.pca$var$cos2[,1:2]
+```
+
+```{r}
+res.pca$var$contrib[,1:2]
+```
+
+```{r}
+fviz_pca_var(res.pca, col.var = "contrib")+
+  scale_color_gradient(low = "green",high = "red")+theme_bw()
+```
+
+## Gráfico de individuos
+
+```{r}
+head(res.pca$ind$contrib[order(-res.pca$ind$contrib[,1]),1:2],10)
+```
+```{r}
+head(res.pca$ind$contrib[order(-res.pca$ind$contrib[,2]),1:2],10)
+```
+```{r}
+fviz_pca_ind(res.pca,col.ind = "cos2",label = "none")+
+  scale_color_gradient(low="green",high = "red")+
+  theme_bw()
+```
+
+```{r}
+fviz_pca_ind(res.pca,label = "none",habillage = as.factor(id$diagnosis))
+```
+
