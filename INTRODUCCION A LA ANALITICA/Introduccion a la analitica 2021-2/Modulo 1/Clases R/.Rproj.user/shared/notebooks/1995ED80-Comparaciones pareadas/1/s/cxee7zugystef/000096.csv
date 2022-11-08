@@ -1,0 +1,2 @@
+"0","stripchart(rstandard(mrlm)~muestra,main=""residuos estudentizados vs. muestra\nModelo de efectos con MRLM"","
+"0","ylim=c(-2.5,2.5),xlab=""muestra"",vertical=T,pch=1,cex=1.5)"

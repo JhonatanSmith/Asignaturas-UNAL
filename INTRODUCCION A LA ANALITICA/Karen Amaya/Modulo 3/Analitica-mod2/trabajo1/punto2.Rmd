@@ -1,0 +1,69 @@
+---
+title: "Analitica- Trabajo 1. Mod.2"
+output: pdf_document
+---
+
+
+## 2. Resuelva el ejercicio 3 de la sección 4.7 del texto. 
+
+Este problema se relaciona con el modelo QDA, en el que las observaciones dentro de cada clase se extraen de una distribución normal con un vector medio específico de la clase y una matriz de covarianza específica de la clase. Consideramos el caso simple donde p = 1; es decir, solo hay una característica.
+Suponga que tenemos K clases, y que si una observación pertenece a la k-ésima clase, entonces X proviene de una distribución normal unidimensional, X $\sim$ N ( $\mu_k$,  $\sigma_k^2$). Recuerde que la función de densidad para la distribución normal unidimensional se da en (4.11). Demuestre que en este caso, el clasificador de Bayes no es lineal. Argumenta que de hecho es cuadrático.
+Sugerencia: Para este problema, debe seguir los argumentos establecidos en la Sección 4.4.2, pero sin asumir que  $\sigma_1^2$ =. . . = $\sigma_K^2$.
+
+$$
+p_k(x) = \frac {\pi_k
+                \frac {1} {\sqrt{2 \pi} \sigma_k}
+                \exp(- \frac {1} {2 \sigma_k^2} (x - \mu_k)^2)
+               }
+               {\sum_{l = 1}^K{
+                \pi_l
+                \frac {1} {\sqrt{2 \pi} \sigma_l}
+                \exp(- \frac {1} {2 \sigma_l^2} (x - \mu_l)^2)
+               }}
+$$
+$$
+\log(p_k(x)) = \frac {\log(\pi_k) +
+                \log(\frac {1} {\sqrt{2 \pi} \sigma_k}) + 
+                - \frac {1} {2 \sigma_k^2} (x - \mu_k)^2
+               }
+               {\log(\sum_{l = 1}^K {
+                \pi_l
+                \frac {1} {\sqrt{2 \pi} \sigma_l}
+                \exp(- \frac {1} {2 \sigma_l^2} (x - \mu_l)^2)
+               })}
+$$
+
+$$
+\log(p_k(x)) = \log(\pi_k) +
+                \log(\frac {1} {\sqrt{2 \pi} \sigma_k}) 
+                - \frac {1} {2 \sigma_k^2} (x - \mu_k)^2
+                -
+               \log(\sum_{l = 1}^K {
+                \pi_l
+                \frac {1} {\sqrt{2 \pi} \sigma_l}
+                \exp(- \frac {1} {2 \sigma_l^2} (x - \mu_l)^2)
+               })
+$$
+
+Como el último termino $\log(\sum_{l = 1}^K {
+                \pi_l
+                \frac {1} {\sqrt{2 \pi} \sigma_l}
+                \exp(- \frac {1} {2 \sigma_l^2} (x - \mu_l)^2)
+               })$,
+es independiente de k, este será un termino constante $\forall$ k pues es una sumatoria sobre K(grande), por lo cual, queda hallar k en el cual se maximiza:
+
+$$
+\log(\pi_k) +
+  \log(\frac {1} {\sqrt{2 \pi} \sigma_k})  
+  - \frac {1} {2 \sigma_k^2} (x - \mu_k)^2
+$$
+
+$$
+= log(\pi_k) + log(\frac{1}{\sqrt{2\pi}\sigma_k}) -  \frac{x^2}{2\sigma_k^2} + x \cdot \frac{\mu_k}{\sigma_k^2}  - \frac{\mu_k^2}{2\sigma_k} 
+$$
+Con lo anterior:
+$$
+\delta_k(x)
+= log(\pi_k) + log(\frac{1}{\sqrt{2\pi}\sigma_k}) -  \frac{x^2}{2\sigma_k^2} + x \cdot \frac{\mu_k}{\sigma_k^2}  - \frac{\mu_k^2}{2\sigma_k} 
+$$
+Como se observa, $\delta_k(x)$ no es una ecuación lineal pues depende de un termino cuadrático en x.

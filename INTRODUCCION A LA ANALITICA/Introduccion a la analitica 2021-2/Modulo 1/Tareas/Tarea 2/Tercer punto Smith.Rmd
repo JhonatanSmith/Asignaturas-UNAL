@@ -1,0 +1,277 @@
+---
+title: "Untitled"
+author: "Jhonatan Smith Garcia"
+date: "9/11/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Solucion: 
+
+a) Se seleccionará del conjunto de datos el 75% de los mismos como datos de entrenamiento y el restante, como datos de prueba. Para ello:
+
+```{r}
+datos = read.csv(file.choose(), sep = ",")
+```
+
+```{r}
+attach(datos)
+head(datos)
+```
+
+Al observar la base de datos, se ven 17 variables y un total de 11162 observaciones. 
+
+De las 17 variables, existen 10 variables de tipo factor (toma valores categoricos) y 7 de tipo numerico.
+
+Se procede a realizar las respectivas divisiones de los datos:
+
+```{r}
+set.seed(2021) # Esto se hace para seleccionar la misma muestra
+
+sample_size = floor(0.75*nrow(datos)) # Tamaño muestra datos train
+
+train_ind = sample(seq_len(nrow(datos)), size = sample_size) # muestra
+
+train = datos[train_ind,] #saque datos de todas las columnas dada por las observaciones de la muestra
+
+test = datos[-train_ind,] # el restante de quitar train
+
+```
+
+
+Con esto, se tiene las divisiones de la base de datos como se solicitó.
+
+b) Implemente Naive Bayes usando Loan como supervisor y las demas como predictoras.
+
+
+Para la imprementacion de Naive Bayes se necesita los valores de la variable de interes separados, entonces:
+
+```{r}
+y_train = datos[train_ind,8]
+y_test = datos[-train_ind,8]
+```
+
+Cabe recordar que la variable "loan" toma dos posibles valores. 
+
+```{r}
+library(naivebayes)
+modNB = naive_bayes(loan~.,data = train)
+summary(modNB)
+```
+
+De estos resultados, el 87.33% fueron clasificados como "no" y el 12.7% como "si"
+
+c) Para implementar el metodo de knn se utiliza la libreria Class, teniendo en cuenta que al haber mas de una predicotra categorica, es necesario la implementacionde variables indicadoras.
+
+```{r}
+#Creando variables dummy
+df=data.frame(datos)
+djob <- dummy(df$job )
+dmar <- dummy(df$marital)
+dedu <- dummy(df$education)
+dcon <- dummy(df$contact)
+dmon <- dummy(df$month)
+dpou <- dummy(df$poutcome)
+ddef <- dummy(df$default)
+dhou <- dummy(df$housing)
+ddep <- dummy(df$deposit)
+
+```
+
+Recuerde que el metodo Knn requiere siempre los datos normalizados, para ello:
+
+```{r}
+#Normalizando las variables numericas
+nage <- scale(df$age)
+nbal <- scale(df$balance)
+nday <- scale(df$day)
+ndur <- scale(df$duration)
+ncam <- scale(df$campaign)
+npda <- scale(df$pdays)
+npre <- scale(df$previous)
+```
+
+```{r}
+#Nueva base de datos para knn
+Newdata <- data.frame(cbind(nage,djob,dmar,dedu,ddef,nbal,dhou,dcon,
+nday,dmon,ndur,ncam,npda,npre,dpou,ddep))
+head(Newdata)
+```
+
+Sobre esta nueva base de datos es que se realizarán los calculos pues, de entrada, para la implementacion de Knn se requiere datos en la misma escala e indicadoras para cada predictora categorica.
+
+Para la nueva base de datos, se debe de generar nuevamente el proceso de seleccion de la muestra realizado en el paso anterioir, entonces:
+
+```{r}
+set.seed(2021) # Esto se hace para seleccionar la misma muestra
+
+sample_size1 = floor(0.75*nrow(Newdata)) # Tamaño muestra datos train
+
+train_ind1 = sample(seq_len(nrow(Newdata)), size = sample_size1) # muestra
+
+train1 = Newdata[train_ind1,] #saque datos de todas las columnas dada por las observaciones de la muestra
+
+test1 = Newdata[-train_ind1,] # el restante de quitar train
+
+y_train1 = Newdata[train_ind1,8]
+y_test1 = Newdata[-train_ind1,8]
+
+```
+
+
+ Para K = 1,3,5,7,9:
+ 
+ 
+```{r}
+library(class)
+
+k1 = knn(train = train1, test = train1, cl = y_train1, k=1, prob = T)
+
+k3 = knn(train = train1, test = train1, cl = y_train1, k=3, prob = T)
+
+k5 = knn(train = train1, test = train1, cl = y_train1, k=5, prob = T)
+
+k7 = knn(train = train1, test = train1, cl = y_train1, k=7, prob = T)
+
+k9 = knn(train = train1, test = train1, cl = y_train1, k=9, prob = T)
+```
+ 
+ En K=1 
+ 
+```{r}
+summary(k1)
+```
+ 
+Se clasifican en total 7664 como "No" y 707 como "si" y este analisis es analogo para todos los resultados que se muestran a continuacion. 
+
+En K = 3
+
+```{r}
+summary(k3)
+```
+En K = 5
+
+```{r}
+summary(k5)
+```
+
+EN K = 7
+
+```{r}
+summary(k7)
+```
+En K = 9
+
+```{r}
+summary(k9)
+```
+
+Que tal para un K = 50...
+
+```{r}
+k50 = knn(train = train1, test = train1, cl = y_train1, k=50, prob = T)
+```
+
+```{r}
+summary(k50)
+```
+K = 100
+```{r}
+k100 = knn(train = train1, test = train1, cl = y_train1, k=100, prob = T)
+```
+
+```{r}
+summary(k100)
+```
+En apariencia, en la medida en la que se aumenta el valor de K, la cantidad de "0" aumenta, es decir, aparece mas  "no" clasificados pero, ¿Cual es el margen de error?
+
+Dada una muestra tan grande, la seleccion del K y la prueba de sus posibles valores es de vital importancia, por esto, se decide automatizar el proceso:
+
+```{r}
+for (i in 1:12) {
+# Se modela con los datos de entrenamiento con un k=i
+mod2train<- knn(train = train1, test = train1, cl = y_train1, k=i, prob=TRUE)
+
+# Se modela con los datos de prueba con un k=i
+
+mod2test<- knn(train = train1, test = test1, cl = y_train1, k=i, prob=TRUE)
+tk<-table(mod2train,y_train1)
+t1n<-table(mod2test,y_test1)
+
+# Training error
+
+Training_error_KNN<-(tk[1,2]+tk[2,1])/(sum(tk))
+print(table(Training_error_KNN,i))
+}
+```
+
+La tabla anterior muestra el error calculado para los valores de $K_i$ donde i toma valores del 1 al 12. 
+
+A un valor mas alto de K, el error aumenta pero un valor minimo de K podriasobre ajustar el modelo.
+
+El valor recomendado de K en este casoserá 3, dada la base de datos que es relativamente grande y cin un error optimo.
+
+tk<-table(mod2train,ytrain2)
+
+
+c) Implementacion de regresion logistica:
+
+```{r}
+modLG = glm(as.factor(loan)~ age+job+marital+education+default+balance+housing+contact+day+month+duration+campaign+pdays+previous+poutcome+deposit, data = train, family = binomial())
+
+```
+
+```{r}
+summary(modLG)
+```
+
+De los resultados anteriores la tabla muestra una estimacion para la intercepcion y el resto de los parametros. 
+
+Acorde al valor p, se encuentra significancia (a un nivel de 0.05) en todas las "variables" que posean un * al lado. 
+
+El AIC reportado es de 5801.1 y cada variable posee un error estandar pequeño.
+
+NOTA: Recuerde que para cada factor de una variable, el modelo ajusta una indicadora y de ahi, el por qué hay mas "variables" de las que hay inicialmente en el modelo, esto es dado a los niveles de cada variable. 
+
+e) Con los datos de entrenamiento se implementerá LDA usando LOAN como supervisor y las demas como predictoras. 
+
+En R de la siguiente manera:
+
+```{r}
+modLDA <- lda(as.factor(loan)~., data=train)
+summary(modLDA)
+```
+
+f) Calcule MSE de los metodos y matriz de confusion
+
+```{r}
+modelo_knn= k3 
+```
+
+
+```{r}
+train_NB<-predict(modNB,Newdata,type="class")
+predicted<-predict(modLG,newdata=train,type = "response")
+optCutOff <- optimalCutoff(train$loan, predicted)[1]
+glm.pred <- ifelse(predicted > 0.48, 1, 0)
+table(glm.pred,y_train)
+lda.class<-predict(modLDA,train,type=c("class"))$class
+train_lda<-ifelse(y_train==lda.class,0,1)
+6
+# Modelo Naive Bayes
+tabla_NB_E<-table(train_NB,ytrain)
+# Knn
+tabla_knn_E<-table(modelo_knn,y_train)
+# Modelo logistico
+tabla_lo_E<-table(glm.pred,y_train)
+# Modelo LDA
+tabla_LDA_E<-table(train_lda,y_train)
+
+```
+
+
+

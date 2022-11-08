@@ -1,0 +1,25 @@
+library(ISLR)
+library(MASS)
+library(Amelia)
+library(pscl)
+library(caret)
+library(pROC)
+library(ROCR)
+library(wesanderson)
+library(e1071)
+library(mlbench)
+data(HouseVotes84)
+model <- naiveBayes(Class ~ ., data = HouseVotes84)
+predict(model, HouseVotes84[1:200,-1])
+b<-predict(model, HouseVotes84[1:200,-1], type = "raw")
+aa<-predict(model, HouseVotes84[1:200,-1], type = "class")
+clase<-HouseVotes84$Class[1:200]
+table(clase,aa)
+#AUC
+pr <- prediction(b[,2],as.factor(clase))
+auc <- performance(pr, measure = "auc")
+auc <- auc@y.values[[1]]
+list(AUC=auc)
+plot(roc(clase, b[,2],direction="<"),
+     col="purple2", lwd=3, main="ROC curve",xaxt="n")
+axis(1, at=c(1.5,1,0.5,0,-0.5), labels=c(" ","0.0","0.5","1.0"," "),pos=c(-0.043,-0.043),col="black")

@@ -1,0 +1,184 @@
+---
+title: "Actividad clase 7"
+author: "Jhonatan Smith Garcia"
+date: "12/1/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1) Cargue la base de datos en R y guardela como un R.data. ¿Hubo diferencia en la reduccion del archivo?
+
+```{r}
+datos <- read.table(file.choose(), header = T, stringsAsFactors = T)
+```
+
+La base de datos en un archivo de texto pesa 188 megabytes. Sin embargo, al cargar la base en un archivo de R se tiene:
+
+```{r}
+save(datos, file = "Datos actividad 7.Rdata")
+```
+
+Con este comando se guarda la base de datos como un archivo de R. Este aparecerá en la zona de trabajo.
+DE esta fomra, se logra aue el archivo original se disminuya de 188 megas a casi 90. Practicamente el doble. 
+
+
+```{r}
+original = file.size(file.choose())
+rdata = file.size(file.choose())
+```
+
+
+```{r}
+require(magrittr)
+original = original*1e-6
+rdata %>% 1*e-6
+```
+
+
+```{r}
+diferencia = (original - rdata)*
+diferencia
+```
+ESTO ES OPCIONAL, SE INSTALA EL PAQUETE MICEADDS Y ES PARA LLAMAR ARCHIVOS DE ESTA MANERA
+```{r}
+miceadds::load.Rdata(objname = "smith", filename = "Datos actividad 7.Rdata")
+```
+
+
+```{r}
+require(kableExtra)
+```
+```{r}
+
+data.frame(original*1e-6, rdata*1e-6, diferencia)
+
+
+```
+
+
+# Seleccion de variables:
+
+```{r}
+require(leaps) # Con este paquete se tiene seleccion de vbles
+
+```
+
+```{r}
+regfit <- regsubsets(Y~., data = datos, nvmax = 10, method = "backward", really.big = "TRUE")
+```
+
+
+```{r}
+regsummary <- summary(regfit) # Aqui se guarda el resultado de todas las vbles
+```
+
+En el anterioir paso, se realiza una seleccion de las variables mas importantes por metodo backward. Luego, se le pide un summary del modelo. Esto, con ayuda del paquete *leaps*
+
+```{r}
+plot(regsummary$adjr2, xlab = "Numero de vbles", ylab = "R cuadrado ajustado", type = "l")
+```
+
+Segun esto, el # Optimo de vbles son 3. 
+
+
+```{r}
+t(coef(regfit, 3)) %>% kbl() %>%  kable_minimal(full_width = F)
+
+```
+
+
+Este es el modelo calculado con las variables mas relevantes.
+
+# Grafique las vbles mas relevantes y analice su comportamiento. ¿Es Y lineal?
+
+Las vbles explicativas son x31, x48, x182.
+
+
+```{r}
+pairs(Y ~ X31 + X48 + X182, data = datos, col = "skyblue")
+
+```
+No se aprecia comportamientos lineales. 
+
+# Ajuste un modelo polinomico y otro de fniones paso. COmpare resultados y seleccione mejor modelo. 
+
+Se particiona en datos de entrenamiento y prueab
+
+
+```{r}
+n = nrow(datos); set.seed(1998)
+trainIndex = sample(1:n, size = round(0.75*n), replace = F)
+train = datos[trainIndex, c("Y", "X31", "X182", "X48")]
+test = datos[-trainIndex, c("Y", "X31", "X182", "X48")]
+```
+
+
+# Modelo polinomico 
+
+Se usa la funcio Poly() y se ajusta el modelo con las varbles seleccionadas. 
+
+```{r}
+modelo.pol <- lm( Y ~ poly(X31,2)+ X48 + poly(X182,2), data = train)
+summary(modelo.pol)
+```
+
+Todas las vbls son significativas y R ajustado es de 0.98.
+
+MSE de datos de prueba:
+
+```{r}
+pred <- predict(modelo.pol, test[-1]) # Se quita al que se quiere predecir
+
+mean((pred-test$Y)^2)
+```
+El MSE para los datos de entrenamiento fue de 129.1939
+
+# Modelo de funciones paso:
+
+Se defince con la funcio  cut() 4 puntos de corte equidistantes
+
+```{r}
+train$X31.cut <- cut(train$X31, breaks = 4)
+train$X48.cut <- cut(train$X48, breaks = 4)
+train$X182.cut <- cut(train$X182, breaks = 4)
+```
+
+Aqui se acaban de indexar 3 nuevas variables llamadas x31.cut y asi.  Donde se separa por categorias
+
+```{r}
+test$X31.cut <- cut(test$X31, breaks = 4)
+test$X48.cut <- cut(test$X48, breaks = 4)
+test$X182.cut <- cut(test$X182, breaks = 4)
+```
+
+Lo mismo para la base de datos de test. 
+
+```{r}
+# Modelo paso
+
+mod.paso = lm(Y~X31.cut+X48.cut+X182.cut, data = train)
+summary(mod.paso)
+
+```
+
+Se tiene todas las vbles significativas y un rcuadrado ajustado de 0.875 por tanto, para los datos de prueba se tiene que:
+
+```{r}
+pred1 <- predict(mod.paso, test[,-1])
+mean((pred1-test$Y)^2)
+```
+
+Este es el MSE del modelo a pasos. Vale verga. Quedese con el otro.
+
+
+
+
+
+
+
+
+
+

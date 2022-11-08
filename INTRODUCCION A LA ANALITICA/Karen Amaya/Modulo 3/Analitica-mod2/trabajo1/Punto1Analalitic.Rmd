@@ -1,0 +1,493 @@
+---
+title: "Analítica Modulo 2- Trabajo 1"
+author: "Acosta Luisa María, Agudelo Laura Camila,Agudelo Sebastián,\ Amaya Karen Andrea, Echeverry Estefanía"
+date: "Octubre/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\textbf{Librerías}
+
+```{r echo=T, results='hide'}
+#Librerias
+library(kableExtra, warn.conflicts=F, quietly=T)#tablas
+library(Hmisc,warn.conflicts=F, quietly=T) #Rezagos
+library(class,warn.conflicts=F, quietly=T)#knn
+library(caret,warn.conflicts=F, quietly=T) #cv
+require(ISLR,warn.conflicts=F, quietly=T)
+require(glmnet,warn.conflicts=F, quietly=T) 
+#Función para normalizar variables
+normalize <- function(x) {
+  norm <- ((x - min(x))/(max(x) - min(x)))
+  return (norm)
+}
+```
+
+ \textbf{1.} Descargue de Yahoo Finance la base de datos de los precios de cierre diarios de la acción que se le asignó a su grupo  \textbf{(Grupo 9, HP inc.)} en el periodo que va del 1 de enero de 2015 hasta el 31 de diciembre de 2019
+
+
+```{r}
+datos<- read.csv("HPQ.csv")
+datos$Date <- as.Date(datos$Date, format = "%Y-%m-%d")
+head(datos, 3) %>% kbl() %>% kable_styling()
+```
+
+En primer lugar hacemos un análisis exploratorio de los datos. A continuación podemos ver que la base de datos tiene 1250 observaciones con 7 variables, de las cuales 6 son de tipo factor y una de tipo fecha.
+
+```{r}
+str(datos)
+```
+
+
+ \textbf{a.} Contextualice a qué se dedica y dónde opera principalmente la empresa que se le asignó a su grupo. Luego, construya una base de datos con la misma estructura de los datos Smarket que se encuentran en el paquete ISLR (ver diapositiva 29 de la Clase 1). Realice un análisis descriptivo con los resultados y los gráficos que usted considere pertinentes, explicando lo que observa en cada uno.
+ 
+ 
+\textbf{Contextualización}
+
+
+HP inc. es una empresa estadounidense líder mundial en dispositivos de computación personal, impresoras, impresión 3D y otros servicios, surgida de la separación, en 2015, de HP (Hewlett-Packard) fundada por Bill Hewlett y Dave Packard en 1939.  Actualmente Dion Weisler es el Presidente y la empresa opera con sede principal en Palo Alto, California.
+
+
+\textbf{Datos HP inc. tipo Smarket}
+
+ 
+En las siguientes lineas de código se extraen algunas variables para acercarse a la estructura de la base de datos Smarket. Primero, la variable "Today" puede ser hallada como:
+
+$$Today_{i}=\ln \left(\frac{close_{i}}{close_{i-1}}\right)$$
+De esta manera si dicho valor decrece es reemplazado con "down", de lo contrario "up". Luego de la variable "fecha", hacemos uso de la función substr() para extraer sus primeros 4 caracteres, correspondientes al año de interés.
+
+```{r}
+Today <- c() 
+for(i in 1:nrow(datos)){
+  Today[i]<-log(datos$Close[i]/datos$Close[i-1])
+}
+Direction <- ifelse(Today < 0, "down", "up")
+Direction <- as.factor(Direction)
+Year <- substr(datos$Date, 1,4)
+Year <- as.numeric(Year)
+df <- data.frame(Year, "Volume"= datos$Volume, Today, Direction)
+```
+
+
+Ahora se calculan los cinco rezagos, con ayuda de la librería Hmisc:
+
+```{r}
+df$lag1 <- Lag(df$Today, 1)
+df$lag2 <- Lag(df$Today, 2)
+df$lag3 <- Lag(df$Today, 3)
+df$lag4 <- Lag(df$Today, 4)
+df$lag5 <- Lag(df$Today, 5)
+```
+
+
+De esta manera llegamos a la base de datos HP inc. con la estructura de Smarket:
+
+```{r}
+df <- df[-c(1:6),]
+head(df)%>% kbl() %>% kable_styling()
+```
+
+
+Como podemos observar el 2015 fue el año con mayor volumen en ventas, con volumenes atípicos muy altos, en los años consecutivos disminuyó el volumen de ventas, aunque se mantuvó al parecer estable, aproximadamente con el mismo promedio en el volumen de ventas.
+
+
+```{r}
+qplot(x = factor(Year),y = Volume, data = df, geom = "boxplot", colour = factor(Year))
+```
+A continuación se observa un resumen de cada variable, cabe destacar que el n
+```{r}
+summary(df)
+```
+
+
+ \textbf{b.} Utilizando validación cruzada, encuentre el K (el número de vecinos), del modelo KNN, que mejores resultados arroje en términos del error de prueba estimado para predecir si el precio de la acción sube (o se mantiene igual) o baja en función de los 5 "lags" pasados y el volumen.
+ 
+Primero dividimos la base de datos en entrenamiento y prueba. Por ser datos temporales se prefiere tomar como datos de prueba aquellos del año 2019 y el restante como datos de entrenamiento. 
+ 
+```{r}
+train <- (df$Year<2019)
+test <- df[!train,] # Datos de test
+train <- df[train,] # Datos de train
+```
+
+Luego normalizamos la variable Volumen de la siguiente manera:
+
+$$
+z=\frac{x-\min (x)}{\max (x)-\min (x)}
+$$
+```{r}
+train$Volume <- normalize(train$Volume)
+test$Volume <- normalize(test$Volume)
+y_train <- train["Direction"]
+y_test <- test["Direction"]
+```
+
+Con ayuda de la librería caret, se usa el método cv (Validación Cruzada) para indicar que se va a partir la base de entrenamiento en 5 partes iguales de forma aleatoria (5 fold en inglés). Luego, con su función trainControl se especifican una serie de parámetros en el modelo. El objeto que sale de trainControl se proporcionará como argumento para la función train que se usa para entrenar, de la siguiente manera:
+
+```{r}
+set.seed(1233)
+SP_ctrl <- trainControl(method="cv", number = 5) #5 fold
+SP_knnEntrenado <- train(Direction ~ ., data = train, 
+                method = "knn", tuneLength = 20, #numeros de k
+                trControl = SP_ctrl,
+                preProcess = c("center","scale"))
+SP_knnEntrenado
+```
+
+
+Así entonces, la presición del modelo resulta ser óptima asignando el valor de k = 25, como se puede observar en la siguiente gráfica:
+
+```{r}
+plot(SP_knnEntrenado)
+```
+
+ \textbf{c.} Con los datos de entrenamiento, ajuste un modelo logístico, un KNN con K encontrado en el item (b), un LDA y un QDA para predecir si el precio de la acción sube (o se mantiene igual) o baja en función de los 5 "lags" pasados y el volumen. Para cada modelo obtenga la matriz de confusión y el estimador del error de prueba. Cuál modelo arroja mejores resultados y por qué?
+ 
+ 
+\textbf{Modelo logístico}
+
+
+Haciendo uso de la partición de datos del numeral "b" ajustamos el siguiente modelo lógistico, con "Direction" como variable independiente, así entonces, volumen y los cinco rezagos como variables predictoras:
+
+```{r}
+train <- (df$Year<2019)
+test <- df[!train,] # Datos de test
+train <- df[train,] # Datos de train
+```
+
+
+```{r}
+mod_glm <- glm(Direction ~ lag1+lag2+lag3+lag4+lag5+Volume, 
+               data = df[df$Year<2019,], family = binomial)
+```
+
+```{r}
+#matriz de confusión
+glm.pred <- predict(mod_glm, test[,-4], type="response")
+glm.pred <- ifelse(glm.pred < 0.53, "down", "up")
+t<-table(glm.pred, test$Direction);t
+```
+
+```{r}
+#tasa de acierto
+sum(diag(t))/sum (t)
+```
+```{r}
+#tasa de error
+mean(glm.pred!=test$Direction)
+```
+
+Así entonces, la proporción de veces que el modelo logístico predijo correctamente (accuracy) es de del 54.6%. Hay que tener en cuenta que se pueden mejorar estos resultados realizando otro tipo de análisis y limpieza de los datos.
+
+
+\textbf{Modelo K-Vecinos más cercanos}
+
+
+Haciendo uso de la partición de datos del numeral "b" ajustamos el siguiente modelo KNN, con "Direction" como variable independiente, así entonces, volumen y los cinco rezagos como variables predictoras:
+
+```{r}
+train$Volume <- normalize(train$Volume)
+test$Volume <- normalize(test$Volume)
+y_train <- train["Direction"]
+y_test <- test["Direction"]
+```
+
+
+```{r}
+set.seed(1233)
+fit.knn_train <- class::knn(train=train[,-4], test= train[,-4], 
+                            cl = y_train$Direction, k=25, prob=TRUE)
+```
+
+```{r}
+fit.knn_Test <- class::knn(train=train[,-4], test = test[,-4], 
+                         cl= y_train$Direction, k=25, prob=TRUE)
+```
+
+```{r}
+#matriz de confusión
+Predicted_test<-factor(fit.knn_Test)
+t1<-table(Predicted_test,y_test$Direction)
+t1
+```
+
+```{r}
+#tasa de acierto
+sum(diag(t1))/sum(t1)
+```
+
+```{r}
+#tasa de error
+mean(Predicted_test!=test$Direction)
+```
+
+Así entonces, la proporción de veces que el modelo KNN predijo correctamente (accuracy) es de 79.7%. Hay que tener en cuenta que se pueden mejorar estos resultados realizando otro tipo de análisis y limpieza de los datos.
+
+
+\textbf{Modelo Análisis de discriminante linea LDA}
+
+
+Es una alternativa a la regresión logística cuando la variable cualitativa tiene más de dos niveles. Si bien existen extensiones de la regresión logística para múltiples clases, el LDA presenta una serie de ventajas
+
+Haciendo uso de la partición de datos del numeral "b" ajustamos el siguiente modelo LDA, con "Direction" como variable independiente, así entonces, volumen y los cinco rezagos como variables predictoras:
+
+```{r}
+train <- (df$Year<2019)
+test <- df[!train,] # Datos de test
+train <- df[train,] # Datos de train
+```
+
+```{r}
+mod_lda <- MASS::lda(Direction~lag1+lag2+lag3+lag4+lag5+Volume,data = train)
+mod_lda
+```
+
+La salida LDA indica que el 47% de las observaciones de entrenamiento corresponden a días en los que el mercado bajó. Los coeficientes de salida de los discriminantes lineales proporcionan la combinación lineal del volumen y los rezagos que se utilizan para formar la regla de decisión LDA.
+
+```{r}
+#matriz de confusión
+Pred.lda<-predict(mod_lda , test) 
+Clase.lda = Pred.lda$class 
+t<-table(Clase.lda,test$Direction);t
+```
+
+```{r}
+#tasa de acierto
+sum(diag(t))/sum(t)
+```
+
+```{r}
+#tasa de error
+mean(Clase.lda!=test$Direction)
+```
+
+Así entonces, la proporción de veces que el modelo LDA predijo correctamente (accuracy) es de 55.4%. Hay que tener en cuenta que se pueden mejorar estos resultados realizando otro tipo de análisis y limpieza de los datos.
+
+
+\textbf{Modelo QDA (Análisis discriminante cuadrático)}
+
+
+Haciendo uso de la partición de datos del numeral "b" ajustamos el siguiente modelo QDA, con "Direction" como variable independiente, así entonces, volumen y los cinco rezagos como variables predictoras:
+ 
+```{r}
+mod_qda <- MASS::qda(Direction~lag1+lag2+lag3+lag4+lag5+Volume, data = train)
+mod_qda
+```
+
+
+```{r}
+#matriz de confusion
+Pred.qda<-predict(mod_qda , test) 
+Clase.qda =Pred.qda$class
+t1<-table(Clase.qda, test$Direction);t1
+```
+
+```{r}
+#Tasa de acierto
+sum(diag(t1))/sum(t1) 
+```
+ 
+ 
+Así entonces, la proporción de veces que el modelo QDA predijo correctamente (accuracy) es del 55.8%. Hay que tener en cuenta que se pueden mejorar estos resultados realizando otro tipo de análisis y limpieza de los datos.
+
+
+ \textbf{Cuál modelo arroja mejores resultados y por qué?}
+ 
+ - Los modelos logístico, QDA y LDA obtuvieron una tasa de aciertos similar 54.6%, 55.4% y 55.8% respectivamente. La exactitud (accuracy) más alto fue de 79.7% obtenido por el modelo KNN, teniendo en cuenta que este último es más flexible y tuvo la ventaja con respecto a los otros modelos de utilizar validación cruzada para minimizar su error.
+ 
+
+
+
+
+ \textbf{2. Resuelva el ejercicio 3 de la sección 4.7 del texto}
+
+
+
+
+Este problema se relaciona con el modelo QDA, en el que las observaciones dentro de cada clase se extraen de una distribución normal con un vector medio específico de la clase y una matriz de covarianza específica de la clase. Consideramos el caso simple donde p = 1; es decir, solo hay una característica.
+
+
+Suponga que tenemos K clases, y que si una observación pertenece a la k-ésima clase, entonces X proviene de una distribución normal unidimensional, X $\sim$ N ( $\mu_k$,  $\sigma_k^2$). Recuerde que la función de densidad para la distribución normal unidimensional se da en (4.11). Demuestre que en este caso, el clasificador de Bayes no es lineal. Argumenta que de hecho es cuadrático.
+
+
+Sugerencia: Para este problema, debe seguir los argumentos establecidos en la Sección 4.4.2, pero sin asumir que  $\sigma_1^2$ =. . . = $\sigma_K^2$.
+
+$$
+p_k(x) = \frac {\pi_k
+                \frac {1} {\sqrt{2 \pi} \sigma_k}
+                \exp(- \frac {1} {2 \sigma_k^2} (x - \mu_k)^2)
+               }
+               {\sum_{l = 1}^K{
+                \pi_l
+                \frac {1} {\sqrt{2 \pi} \sigma_l}
+                \exp(- \frac {1} {2 \sigma_l^2} (x - \mu_l)^2)
+               }}
+$$
+$$
+\log(p_k(x)) = \frac {\log(\pi_k) +
+                \log(\frac {1} {\sqrt{2 \pi} \sigma_k}) + 
+                - \frac {1} {2 \sigma_k^2} (x - \mu_k)^2
+               }
+               {\log(\sum_{l = 1}^K {
+                \pi_l
+                \frac {1} {\sqrt{2 \pi} \sigma_l}
+                \exp(- \frac {1} {2 \sigma_l^2} (x - \mu_l)^2)
+               })}
+$$
+
+$$
+\log(p_k(x)) = \log(\pi_k) +
+                \log(\frac {1} {\sqrt{2 \pi} \sigma_k}) 
+                - \frac {1} {2 \sigma_k^2} (x - \mu_k)^2
+                -
+               \log(\sum_{l = 1}^K {
+                \pi_l
+                \frac {1} {\sqrt{2 \pi} \sigma_l}
+                \exp(- \frac {1} {2 \sigma_l^2} (x - \mu_l)^2)
+               })
+$$
+
+
+Como el último termino $\log(\sum_{l = 1}^K {
+                \pi_l
+                \frac {1} {\sqrt{2 \pi} \sigma_l}
+                \exp(- \frac {1} {2 \sigma_l^2} (x - \mu_l)^2)
+               })$,
+es independiente de k, este será un termino constante $\forall$ k pues es una sumatoria sobre K(grande), por lo cual, queda hallar k en el cual se maximiza:
+
+
+$$
+\log(\pi_k) +
+  \log(\frac {1} {\sqrt{2 \pi} \sigma_k})  
+  - \frac {1} {2 \sigma_k^2} (x - \mu_k)^2
+$$
+
+$$
+= log(\pi_k) + log(\frac{1}{\sqrt{2\pi}\sigma_k}) -  \frac{x^2}{2\sigma_k^2} + x \cdot \frac{\mu_k}{\sigma_k^2}  - \frac{\mu_k^2}{2\sigma_k} 
+$$
+
+Con lo anterior:
+$$
+\delta_k(x)
+= log(\pi_k) + log(\frac{1}{\sqrt{2\pi}\sigma_k}) -  \frac{x^2}{2\sigma_k^2} + x \cdot \frac{\mu_k}{\sigma_k^2}  - \frac{\mu_k^2}{2\sigma_k} 
+$$
+
+
+Como se observa, $\delta_k(x)$ no es una ecuación lineal pues depende de un termino cuadrático en x.
+
+ 
+\textbf{5) Utilice las técnicas ridge y lasso para regularizar las bases de datos BASE_DATOS_1 y BASE_DATOS_2. Según estas técnicas, ¿cuáles variables aparentemente muestran no ser relevantes para explicar la variable aleatoria Y ?}
+
+
+\textbf{Base 2 }
+
+\textbf{Regresión ridge} 
+
+```{r}
+base2 <- read.table("../BASE_DATOS_2.txt", header = T)
+```
+
+```{r}
+base2<-na.omit(base2) 
+x<-model.matrix(Y~.,base2)[,-1] 
+y<-base2$Y
+#rejilla para los lambda.
+gridz<-10^seq(-2,10, length=100) 
+ridge.mod<-glmnet(x,y,alpha=0, lambda=gridz)
+dim(coef(ridge.mod))
+```
+
+```{r}
+plot(ridge.mod, xvar="lambda", label=TRUE)
+```
+El modelo se vuelve menos flexible de izquierda a derecha en aproximadamente los parámetros del modelo son casi cero a partir de log(6). 
+
+```{r}
+cedula<-1233
+set.seed(cedula)
+train<-sample(1: nrow(x), nrow(x)/2)
+test<- -train
+y.test<-y[test] 
+cv.out<-cv.glmnet(x[train,],y[train],alpha=0)
+```
+
+```{r}
+plot(cv.out)
+```
+
+```{r}
+ bestlam<-cv.out$lambda.min ;bestlam
+```
+
+Del resultado anterior se puede concluir que lambda es aproxmadamente 0.9577
+
+```{r}
+ridge.pred<-predict(ridge.mod, s=bestlam,newx=x[test,] )
+mean((ridge.pred-y.test)^2)
+```
+
+Se obtiene un MSE de prueba de aproximadamente 1.778. A continuación se muestran algunos de los coeficientes estimados con todos los datos. Sus variables corresponden a las más reelevantes para explicar a Y. Las demás, en este caso no se considerarán reelevantes.
+
+```{r}
+out<-glmnet (x,y,alpha=0) 
+pre <- predict(out,type="coefficients",s=bestlam)[1:147,]
+sort(abs(pre), decreasing = T)[1:21]
+```
+
+
+
+\textbf{Base 2 - regresión lasso} 
+ 
+ 
+```{r}
+x<-model.matrix(Y~.,base2)[,-1] 
+y<-base2$Y
+gridz<-10^seq(-2,10, length=100) 
+lasso.mod<-glmnet(x,y,alpha=1, lambda=gridz)
+dim(coef(lasso.mod))
+```
+
+En el siguiente grafico podemos observar cuales son la variables que más están siendo impactadas por la regularización.
+
+```{r}
+plot(lasso.mod, xvar="lambda", label=TRUE)
+```
+
+```{r}
+cedula<-1233
+set.seed(cedula)
+train<-sample(1: nrow(x), nrow(x)/2)
+test<- -train
+y.test<-y[test] 
+cv.out<-cv.glmnet(x[train,],y[train],alpha=1)
+```
+
+```{r}
+plot(cv.out)
+```
+A continuación se obtiene el lambda con el menor error cuadrático medio MSE, es cual es 0.027
+
+```{r}
+ bestlam<-cv.out$lambda.min ;bestlam
+```
+
+Se obtiene el MSE con el conjunto de prueba:
+
+```{r}
+lasso.pred<-predict(lasso.mod, s=bestlam,newx=x[test,]) 
+mean((lasso.pred-y.test)^2)
+```
+
+Se procede a ajustar con todos los datos y obtener algunos de los coeficientes.
+
+```{r}
+out<-glmnet (x,y,alpha=1) 
+lasso.coef<-predict(out,type="coefficients",s=bestlam)[1:147,] 
+lasso.coef[lasso.coef!=0]
+```
+
+Se concluye entonces que las variables más reelevantes para explicar a Y son x18          x43, x48, x55, x82, x101 y el intercepto. Las demás no se consideran reelevantes.
+

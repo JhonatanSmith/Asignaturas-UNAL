@@ -1,0 +1,68 @@
+---
+title: "Clase 8"
+author: "Jhonatan Smith Garcia"
+date: "10/1/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Funciones paso:
+
+```{r}
+require(ISLR)
+names(Wage)
+Wage = Wage
+```
+```{r}
+Wage$age2 = cut(Wage$age, breaks = c(0,35,50,65,110)) 
+# Wage$age2 agrega una nueva variable a el dataframe de Wage
+```
+
+Se procede a ajustar el modelo a pasos:
+
+```{r}
+table(Wage$age2)
+
+mod_paso <- lm(wage~age2, data = Wage)
+
+summary(mod_paso)
+
+```
+
+Esta tabla muestra la cantidad de datos que hay para cada categoria. Ademas, tambien muestra las categorias creadas. 
+
+
+# Graficos:
+
+```{r}
+
+plot(Wage$age, Wage$wage, pch = 19, col = "grey")
+
+```
+
+Estos metodos se utilizan cuanod ni idea como se comportan las nubes de puntos.
+
+```{r}
+
+new_df_1 <- data.frame(age2= levels(Wage$age2))
+
+predict(mod_paso, new_df_1)
+
+
+```
+
+
+Estas son las predicciones para cada una de las categorias segun el modelo ajustado de paso.
+
+
+
+
+
+
+
+
+
+

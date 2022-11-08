@@ -1,0 +1,2 @@
+"0","#CALCULANDO MEDIAS DE TRATAMIENTO PARA LUEGO USAR EN GR?FICA"
+"0","mediasy2=sapply(split(nlechug,nitrato),mean)"

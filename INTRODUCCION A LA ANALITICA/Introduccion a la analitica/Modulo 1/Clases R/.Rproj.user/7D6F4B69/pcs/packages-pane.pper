@@ -1,0 +1,7 @@
+{
+    "installOptions": {
+        "installFromRepository": true,
+        "libraryPath": "C:/Users/jhsga/OneDrive/Documentos/R/R-4.0.0/library",
+        "installDependencies": true
+    }
+}

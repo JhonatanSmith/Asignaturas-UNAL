@@ -1,0 +1,262 @@
+---
+title: "Pracatica clase 8"
+author: "Jhonatan Smith Garcia"
+date: "14/1/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(splines)
+```
+
+La funcion bs permite hacer un spline basico. Los grdaos de libertad de los splines se refiere a la cantudad de nodos que va a tener un spline. 
+
+De esta manera, por ejemplo:
+
+df = 3 implica 0 nodos
+df = 4 implica 1 nodos
+df = 5 implica 2 nodos
+df = 6 implica 3 nodos
+df = 7 implica 4 nodos
+
+* R por defecto ubica los nodos en los percentibles 25%, 50 y 75
+
+Si se quiere utilziar los propios nodosm entonces se usa la opcion knots
+
+# Ejemplo
+
+```{r}
+require(ISLR)
+Wage = Wage
+attach(Wage)
+plot(Wage$age, Wage$wage, pch = 19, col = "grey", xlab = "Age", ylab = "Wage")
+```
+
+
+Se procede a ajustar un spline cubico con 3 nodos. 
+
+En general la regla para generar los nodos es:
+
+¿cuantos nodos quiero? Suponga que quiero 3
+
+Entonces df = # Nodos queridos + 3= Df= 6
+
+Si quiero 5 nodos, entonces df = 8
+
+Si quiero 3 nodos, entonces df = 6
+
+```{r}
+mod1 = lm(Wage$wage~ bs(age, df = 6, degree = 3), data = Wage)
+
+# Degree es por defecto el grado del polinomio (spline). 3 es spline cubico por defecto
+
+# Un lm para el modelo, vble a explicar es wage a traves de un spline de3 nodos
+
+summary(mod1)
+```
+La columna de estimate son en general, las estimaciones del spline cubico. De los B0 hasta Bh
+
+# Spline cubico natural
+
+El tema con los nodos en r...
+
+SI quiero 3 nodos, df es 4
+si quiero 5, df es 6
+
+
+en general, se suma +1 al numero de nodos pedidos
+
+```{r}
+mod2 <- lm(Wage$wage~ns(Wage$age, df = 4), data = Wage) # ns para splines cubicos naturales, kiero 3 nodos entonces df es 4
+summary(mod2)
+```
+Nuevamente, ahi se da la estimacion y, no es interpretable.
+
+
+Con esto en mente, vamos a hacer predicciones con el modelo de splines cubicos y el del splines cubicos naturales.
+
+```{r}
+age.sel  <- seq(from = min(Wage$age), to = max(Wage$age))
+s.cubic <- predict(mod1, newdata = list(age=age.sel))
+n.cubic <- predict(mod2, newdata = list(age=age.sel))
+
+# estoy prediciendo son spline y natural pero primero, se organiza la vble para evitar el tipo sierra.
+```
+
+
+```{r}
+plot(Wage$age, Wage$wage, pch = 19, col="grey", xlab = "Age", ylab ="Wage")
+lines(age.sel, s.cubic, col="red", lwd=2)
+lines(age.sel, n.cubic, col="blue", lwd=2)# Por alguna razon no sale la azul
+
+abline(v=c(33.75,42.00,51.00), lwd=2, lty =2) # El abline son lineas perperndiculaes
+```
+
+
+
+
+```{r}
+plot(Wage$age, Wage$wage, pch = 19, col="grey", xlab = "Age", ylab ="Wage")
+lines(age.sel, n.cubic, col="blue", lwd=2)
+
+```
+
+Si se quisiera saber cuales son los nods que el programa usó...
+
+```{r}
+attr(bs(Wage$age, df = 6, degree = 3), "knots")
+```
+Y estos fueron los nodos que se utilizaron. Asi se mira cuales son los nodos que se está utilizando. 
+
+
+# Seleccion del spline cubico con validacion cruzada
+
+
+Para el spline cubico
+
+```{r}
+require(boot)
+MSE.bs <- vector()
+set.seed(123)
+
+for(i in 1:10){
+glm.fit.bs <- glm(Wage$wage~bs(Wage$age, df = (3+i)), data = Wage)
+cv.error <- cv.glm(Wage, glm.fit.bs, K =10)
+MSE.bs[i]<- cv.error$delta[1]
+  
+  
+}
+
+plot(MSE.bs, type = "b", main = "Spline Cubico")
+
+```
+
+
+
+Para el spline cubico natural
+
+
+```{r}
+
+MSE.ns <- vector()
+set.seed(123)
+
+for(i in 1:10){
+glm.fit.ns <- glm(Wage$wage~bs(Wage$age, df = (1+i)), data = Wage)
+cv.error <- cv.glm(Wage, glm.fit.ns, K =10)
+MSE.ns[i]<- cv.error$delta[1]
+  
+  
+}
+
+plot(MSE.bs, type = "b", main = "Spline Cubico")
+
+```
+
+Segun en ambos casos, el mejor numero de nodos es con 3 nodos. 
+
+# Smoothing Splines
+
+Lamba pequeño:
+
+```{r}
+plot(age, wage, pch = 19, col = "grey")
+modelo1 <- smooth.spline(age,wage, lambda = 0)
+lines(modelo1, col = "red", lwd = 2)
+```
+El parametro lambda en este caso me lleva a una curva sierrada. Debido a que intenta seguir el comportamiento general de todos los datos.
+
+Variar el parametro lamba permite que el modelo utilice modelos diferentes.
+
+Lambda grande
+
+```{r}
+plot(age, wage, pch = 19, col = "grey")
+modelo1 <- smooth.spline(age,wage, lambda = 100000)
+lines(modelo1, col = "blue", lwd = 2)
+```
+
+Al final, con un lambda muy grande penaliza demasiado y no sige ninguna tendencia, solo marca una recta.
+
+NO SE BUSCA LAMBA PEQUEÑO NI LAMBDA GRANDE. SE BUSCA UN LAMBDA OPTIMO
+
+# buscando un lambda optimo
+
+```{r}
+mod3 <- smooth.spline(age,wage, df = 16) # COnsidere 13 nodos
+
+mod4 <- smooth.spline(age, wage, cv = TRUE) # Utiliza LOOCV y halle numero de nodos optimo
+
+names(mod4)
+```
+Al utilizar validacion cruzada, saca estos resultados. El lambda optimo y lod df (grados de libertad) necesarios y optimos para trabajar. En este caso, observemos
+
+```{r}
+mod4$lambda
+mod4$df
+```
+
+Basicamente, utilice 6-3=3 nodos.
+
+
+Con esta nueva informacion....
+
+
+
+
+```{r}
+plot(age, wage, pch = 19, col = "grey")
+lines(mod3, col = "red", lwd = 2) # df grande
+lines(mod4, col = "blue", lwd = 2) # LOOCV
+```
+
+ Se mira con CV cual es mejor y sale. 
+
+
+# Regresion Local (Regresion LOESS)
+
+Regresion local. Es un criterio utilizado regresion acorde a los pesos asignados a algunos puntos cercanos al eje. Bla bla bla.
+
+Utilice LOESS para predecir wage con age. 
+
+1) Primera solucion plausible
+
+```{r}
+prueba = scatter.smooth(wage~age,span = 2/3, degree = 2, col = "red")
+```
+
+2) Otro caso. Utiloza la funcion lowess para solucionar el problema.
+
+```{r}
+
+a = lowess(wage~age)
+plot(age, wage, pch = 19, col = "grey")
+lines(a, col = "blue", lwd = 2) # LOOCV
+
+```
+
+
+3) 
+
+
+```{r}
+mod.loess=loess(wage~age, data = Wage)
+plot(age, wage, pch = 19, col = "grey")
+lines(sort(age), sort(mod.loess$fitted), col = "red", lwd = 2)
+```
+
+4)
+
+```{r}
+
+b = lowess(wage~age, f = 2/3)
+plot(age, wage, pch = 19, col = "grey")
+lines(b, col = "blue", lwd = 2) # LOOCV
+
+```
+
+

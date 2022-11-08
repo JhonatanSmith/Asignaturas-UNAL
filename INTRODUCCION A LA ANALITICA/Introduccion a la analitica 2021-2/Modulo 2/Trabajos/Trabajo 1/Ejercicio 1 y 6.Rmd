@@ -1,0 +1,415 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+**1) Descargue de Yahoo Finance la base de datos de los precios de cierre
+diarios de la acción que se le asignó a su grupo en el periodo que va del
+1 de enero de 2016 hasta el 31 de diciembre de 2020.**
+
+A continuación se muestra el encabezado de la base de datos
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+library(kableExtra)
+library(Hmisc)
+library(caret)
+library(class)
+library(glmnet)
+library(ISLR)
+library(MASS)
+data=read.table(file.choose(),header=T,sep=",")
+dim(data)
+kable(head(data))%>%
+  kable_styling(position = "center")%>%
+  kable_styling(latex_options = "HOLD_position")
+```
+De la base datos ORCL se observa que esta compuesta por 1258 observaciones y 7 variables
+
+\begin{center}
+\textbf{Contexto}
+\end{center}
+
+Oracle Corporation ofrece productos y servicios que abordan los entornos de tecnología de la información empresarial en todo el mundo. Su oferta de software como servicio en la nube Oracle incluye varias aplicaciones de software en la nube, incluida la planificación de recursos empresariales (ERP) en la nube Oracle Fusion, la gestión del rendimiento empresarial en la nube Oracle Fusion, la gestión de fabricación y la cadena de suministro en la nube Oracle Fusion, la gestión del capital humano en la nube Oracle Fusion, Oracle Fusion publicidad en la nube y experiencia del cliente, y suite de aplicaciones NetSuite. La compañía también ofrece soluciones industriales basadas en la nube para diversas industrias; Licencias de aplicaciones de Oracle; y servicios de soporte de licencias de Oracle. Además, proporciona tecnologías de infraestructura de negocios de licencia y en la nube, como Oracle Database, una base de datos empresarial; Java, un lenguaje de desarrollo de software; y middleware, incluidas herramientas de desarrollo y otros, donde:
+
+* Date: Fecha del registro
+
+* Open: precio de la accion en el mercado financiero
+
+* High: precio más alto 
+
+* Low: precio más bajo
+
+* Close: precio de cierre
+
+* Adj. Close: precio de cierre despues de los ajustes para todas las divisiones y distribuciones de dividendos aplicables
+
+* Volume: Volumen de la acción 
+
+
+**construya una base de datos con la misma estructura de los datos Smarket**
+
+En clase se estudio que los retornos del dia t, es decir la  variable "Today" es hallada mediante la siguiente formula:
+
+$$r_t=ln(\frac{close_i}{close_{t-1}})x100$$
+```{r}
+close=data$Close
+date=data$Date
+Today=c()
+for(i in 1:nrow(data)){
+  Today[i]=log(close[i]/(close[i-1]))*100
+}
+Direction= as.factor(ifelse(Today<0,"down","up"))
+Year=as.numeric(substr(date,1,4))
+df= data.frame(Year,"Volume"=data$Volume,Today,Direction)
+
+#rezagos
+df$lag1= Lag(df$Today, 1)
+df$lag2= Lag(df$Today, 2)
+df$lag3= Lag(df$Today, 3)
+df$lag4= Lag(df$Today, 4)
+df$lag5= Lag(df$Today, 5)
+
+df=na.omit(df)
+kable(head(df))%>%
+  kable_styling(position = "center")%>%
+  kable_styling(latex_options = "HOLD_position")
+
+
+
+
+```
+
+\begin{center}
+\textbf{Analisis Descriptivo}
+\end{center}
+
+
+```{r}
+par(mfrow=c(1,2))
+boxplot(df$Volume~df$Year,ylab="Volumen", xlab="Year", col="pink")
+barplot(table(df$Direction,df$Year),beside=T,col=c("blue","red"))
+legend("topright",c("Bajo Accion (0)","Subio Accion (1)"),fill = c("blue",
+"red"),inset = c(0,-0.3), xpd = TRUE)
+```
+En el boxplot del volumen por año se observa que la mediana del Volumen de la acción estubo en valores similares excepto en el año 2018, donde fue mas alta, se aprecia la influencia de datos atipicos en todos los años, siendo el mayor en 2017 con un valor aproximado de 80000000 USD.
+
+En el diagrama de barras se observa un patron similar en cada año, a principio de cada año el precio de la acción baja pero luego aumenta significativamente. 
+
+**Utilizando validación cruzada, encuentre el K (el número de vecinos), del modelo KNN, que mejores resultados arroje en términos del error de prueba estimado para predecir si el precio de la acción sube (o se mantiene igual) o baja en función de los 5 “lags” pasados y el volumen**
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+library(class)
+library(tidyverse)
+
+train=df %>% filter(Year<2019)
+test=df %>% filter(Year>=2019)
+
+
+
+set.seed(1234)
+sp_ctrl=trainControl(method="cv", number=5)
+sp_train=train(Direction  ~ ., data=train, method="knn", tuneLength=20, trControl=sp_ctrl, preProcess=c("center","scale"))
+sp_train
+
+```
+Como se puede observar usando cross validation se tiene un k optimo igual a 43.
+
+**Con los datos de entrenamiento, ajuste un modelo logístico, un KNN con K encontrado en el item (b), un LDA y un QDA Para cada modelo obtenga la matriz de confusión y el estimador del error de prueba.**
+
+\begin{center}
+\textbf{Modelo knn}
+\end{center}
+
+```{r}
+
+
+train2<-select(train,-Year)
+test2<-select(test,-Year)
+XTrain = train2 %>% dplyr::select(-Direction)
+XTest = test2 %>% dplyr::select(-Direction)
+modeloknn=knn(train = XTrain, test = XTest, cl=train2$Direction , k = 43)
+data1<-data.frame(modeloknn,test2$Direction)#KNN
+
+```
+
+
+\begin{center}
+\textbf{Modelo logistico}
+\end{center}
+
+```{r}
+modglm=glm(train2$Direction~lag1 + lag2 + lag3 + lag4 + lag5 + Volume, data=train, family=binomial)
+pred=predict(modglm,newdata=XTest,type = "response")
+predicted=ifelse(pred > 0.5, 1,0)
+data2<-data.frame(test2$Direction,pred= predicted)
+
+
+
+
+
+
+
+```
+\begin{center}
+\textbf{Modelo LDA}
+\end{center}
+
+```{r}
+modlda=lda(train2$Direction ~ lag1 + lag2 + lag3 + lag4 + lag5 + Volume, data=train)
+predicted1 <- predict(modlda,newdata=XTest,type = "response") #LDA
+data3=data.frame(predicted1$class,test2$Direction)
+
+```
+\begin{center}
+\textbf{Modelo QDA}
+\end{center}
+
+```{r}
+modqda=qda(train2$Direction ~ lag1 + lag2 + lag3 + lag4 + lag5 + Volume, data=train)
+predicted2 <- predict(modqda,newdata=XTest,type = "response") #QDA
+data4=data.frame(predicted2$class,test2$Direction)
+```
+
+\begin{center}
+\textbf{Matrices de confusión para los modelos}
+\end{center}
+
+```{r}
+library(kableExtra)
+
+c1=table(data1) 
+c2=table(data2)
+c3=table(data3) 
+c4=table(data4) 
+kable(c1) #MATRIZ DE CONFUSION KNN
+kable(c2)#MATRIZ DE CONFUSION LOGISTIC
+kable(c3)#MATRIZ DE CONFUSION LDA
+kable(c4)#MATRIZ DE CONFUSION QDA
+```
+\newpage
+\begin{center}
+\textbf{Estimador del error de prueba}
+\end{center}
+
+A partir de las matrices de confusión se obtiene el MSE para los datos de prueba
+
+```{r}
+sum(diag(c1)/sum(c1))#KNN
+sum(diag(c2)/sum(c2))#LOGISTIC
+sum(diag(c3)/sum(c3)) #LDA
+sum(diag(c4)/sum(c4)) #QDA
+```
+Se busca el modelo que minimice el error cuadratico medio, es decir el que tenga menor valor, en este caso se obtuvo en el modelo con K vecinos más cercanos.
+
+**Saque conclusiones de los resultados obtenidos en el item (c)**
+
+Del punto anterior se observa que el MSE de todos los modelos fue similar, incluso el modelo logistico y el modelo de analisis discriminante lineal obtuvo el mismo valor, aunque fue levemente menor en el modelo knn lo que significa que para esta situación especifica el mejor clasificador para determinar si sube o si baja la acción de la empresa resulta al utilizar el modelo con k vecinos más cercanos, siendo k=43 vecinos. 
+
+
+
+**PUNTO 3**
+
+SEBITASSSSSSSSSSSSSSSSSS
+
+
+
+**PUNTO 4**
+ SMITHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+
+**PUNTO 5**
+
+SEBITAS Y SMITH BEBESITOSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+
+
+**6) Utilice las técnicas ridge y lasso para regularizar las bases de datos BASE_DATOS_1 y BA-SE_DATOS_2. Según estas técnicas, ¿cuáles variables aparentemente muestran no ser relevantes para explicar la variable aleatoria Y ?**
+
+\begin{center}
+\textbf{Base de datos 1}
+\end{center}
+
+```{r}
+base1=read.table(file.choose(),header=T,sep=" ")
+```
+
+```{r, message=FALSE, warning=FALSE}
+require(ISLR)
+library(glmnet)
+library(Rcpp)
+##TRABAJANDO CON RIDGE REGRESSION
+x<-model.matrix(Y~.,base1)[,-1]
+y<-base1$Y
+gridz<-10^seq(-2,10, length=100)
+ridge.mod<-glmnet(x,y,alpha=0, lambda=gridz)
+dim(coef(ridge.mod))
+plot(ridge.mod, xvar="lambda", label=TRUE)
+```
+Se observa que el modelo que se ajusto tiene 1328 variables y 100 distintos valores de lamda, es decir, que para cada valor de lamda se estiman 1328 parametros. En el plot del modelo se observa que las covariables 0, 119 y 6 son las más significativas, siendo la covariable 6 la que mas explica a Y
+
+A continuación se seleccionara el mejor valor de lamda pero usando validación cruzada
+
+```{r}
+cedula<-1234
+set.seed(cedula)
+train<-sample(1: nrow(x), nrow(x)/2)
+test<- -train
+y.test<-y[test]
+cv.out<-cv.glmnet(x[train,],y[train],alpha=0)
+plot(cv.out)
+```
+A continuación se muestra el MSE para cada valor de lamda, se busca el valor de lamda en donde se obtenga el menor error cuadratico medio, graficamente se observa que esta entre $e^{\lambda}$ con $\lambda$ entre [-0.5, 0].
+
+```{r}
+bestlam<-cv.out$lambda.min
+bestlam
+```
+Con el conjunto de datos de entreamiento el lambda que minimiza la suma de cuadrados medios fue de 0.676261, con este valor se aplica Ridge reggresion de la siguiente manera
+```{r}
+ridge.pred<-predict(ridge.mod, s=bestlam,newx=x[test,])
+mean((ridge.pred-y.test)^2)
+```
+el MSE de prueba es 1.249994
+
+```{r}
+out<-glmnet (x,y,alpha=0)
+predict(out,type="coefficients",s=bestlam)[1:20,]
+```
+las candidatas a descartar del modelo son las que en valor absoluto sean cercanos a cero, en este caso serían X11, X2, X19, aunque casi todas toman valores cercanos a 0.
+
+```{r}
+#TRABAJANDO CON LASSO REGRESSION
+require(ISLR)
+require(glmnet)
+x<-model.matrix(Y~.,base1)[,-1]
+y<-base1$Y
+gridz<-10^seq(-2,10, length=100)
+lasso.mod<-glmnet(x,y,alpha=1, lambda=gridz)
+plot(lasso.mod, xvar="lambda", label=TRUE)
+
+
+```
+
+Graficamente las variables que más aportan a la variables respuesta Y son el intercepto, la covariable 119 y la covariable 6.
+```{r}
+cedula<-1
+set.seed(cedula)
+train<-sample(1: nrow(x), nrow(x)/2)
+test<- -train
+y.test<-y[test]
+cv.out<-cv.glmnet(x[train,],y[train],alpha=1)
+plot(cv.out)
+```
+
+```{r}
+bestlam<-cv.out$lambda.min
+bestlam
+```
+De la grafica se observa que el lambda que minimiza el MSE es 0.0307
+```{r}
+lasso.pred<-predict(lasso.mod, s=bestlam,newx=x[test,])
+mean((lasso.pred-y.test)^2)
+```
+
+Usando los datos de prueba el MSE fue de 1.012285
+```{r}
+out<-glmnet (x,y,alpha=1)
+lasso.coef<-predict(out,type="coefficients",s=bestlam)[1:20,]
+lasso.coef
+```
+Finalmente se observa que todas la covariables se descartan, excepto el intercepto y la covariable X6.
+
+\begin{center}
+\textbf{Base de datos 2}
+\end{center}
+
+```{r}
+base2=read.table(file.choose(),header=T,sep=" ")
+```
+
+```{r, message=FALSE, warning=FALSE}
+require(ISLR)
+library(glmnet)
+library(Rcpp)
+##TRABAJANDO CON RIDGE REGRESSION
+x<-model.matrix(Y~.,base2)[,-1]
+y<-base2$Y
+gridz<-10^seq(-2,10, length=100)
+ridge.mod<-glmnet(x,y,alpha=0, lambda=gridz)
+dim(coef(ridge.mod))
+plot(ridge.mod, xvar="lambda", label=TRUE)
+```
+Se observa que el modelo que se ajusto tiene 147 variables y 100 distintos valores de lamda, es decir, que para cada valor de lamda se estiman 147 parametros. En el plot del modelo se observa que las covariables 18, 103, 50, 45 y 57 son las más significarivas, siendo la covariable 18 la que mas explica a Y
+
+A continuación se seleccionara el mejor valor de lamda pero usando validación cruzada
+
+```{r}
+cedula<-1234
+set.seed(cedula)
+train<-sample(1: nrow(x), nrow(x)/2)
+test<- -train
+y.test<-y[test]
+cv.out<-cv.glmnet(x[train,],y[train],alpha=0)
+plot(cv.out)
+```
+A continuación se muestra el MSE para cada valor de lamda, se busca el valor de lamda en donde se obtenga el menor error cuadratico medio, graficamente se observa que esta entre $e^{\lambda}$ con $\lambda$ entre [-0.3, 0]. 
+```{r}
+bestlam<-cv.out$lambda.min
+bestlam
+```
+Con el conjunto de datos de entreamiento el lambda que minimiza la suma de cuadrados medios fue de 0.960818, con este valor se aplica Ridge reggresion de la siguiente manera
+```{r}
+ridge.pred<-predict(ridge.mod, s=bestlam,newx=x[test,])
+mean((ridge.pred-y.test)^2)
+```
+el MSE de prueba es 1.803808
+
+```{r}
+out<-glmnet (x,y,alpha=0)
+predict(out,type="coefficients",s=bestlam)[1:20,]
+```
+las candidatas a descartar del modelo son las que en valor absoluto sean cercanos a cero, en este caso serían X1, X6, X11,x19, aunque casi todas toman valores cercanos a 0.
+
+```{r}
+#TRABAJANDO CON LASSO REGRESSION
+require(ISLR)
+require(glmnet)
+x<-model.matrix(Y~.,base2)[,-1]
+y<-base2$Y
+gridz<-10^seq(-2,10, length=100)
+lasso.mod<-glmnet(x,y,alpha=1, lambda=gridz)
+plot(lasso.mod, xvar="lambda", label=TRUE)
+
+
+```
+
+Graficamente las variables que más aportan a la variables respuesta Y son x18, x103,x50,x45,x57
+```{r}
+cedula<-1
+set.seed(cedula)
+train<-sample(1: nrow(x), nrow(x)/2)
+test<- -train
+y.test<-y[test]
+cv.out<-cv.glmnet(x[train,],y[train],alpha=1)
+plot(cv.out)
+```
+
+```{r}
+bestlam<-cv.out$lambda.min
+bestlam
+```
+De la grafica se observa que el lambda que minimiza el MSE es 0.0207485
+```{r}
+lasso.pred<-predict(lasso.mod, s=bestlam,newx=x[test,])
+mean((lasso.pred-y.test)^2)
+```
+
+Usando los datos de prueba el MSE fue de 0.9920548
+```{r}
+out<-glmnet (x,y,alpha=1)
+lasso.coef<-predict(out,type="coefficients",s=bestlam)[1:20,]
+lasso.coef
+```
+Finalmente se observa que todas la covariables se descartan, excepto el intercepto y la covariable X18.

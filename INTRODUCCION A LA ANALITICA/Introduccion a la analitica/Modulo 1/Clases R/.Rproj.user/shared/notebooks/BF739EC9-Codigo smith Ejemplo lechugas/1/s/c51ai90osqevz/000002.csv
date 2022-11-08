@@ -1,0 +1,3 @@
+"0","#OBTENIENDO GR?FICOS DE RESIDUOS INTERNAMENTE ESTUDENTIZADOS,"
+"0","layout(rbind(c(1,1,2,2),c(0,3,3,0)))"
+"0","stripchart(rstandard(modelo2)~nitrato,vertical=TRUE,ylim=c(-2.5,2.5),pch=1,cex=1,xlab=""Lb N/acre"")"

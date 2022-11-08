@@ -1,0 +1,4 @@
+"0",""
+"0","#Clasificador para base defauted"
+"0","defaulted_classifier = naiveBayes(Defaulted~Home_Owner+marital_Status+Job_Experience, data = train, laplace = 0.128)"
+"0",""

@@ -1,0 +1,2 @@
+"0",""
+"0","plot(train$gender,train$afh,cex=1.5,bty=""n"",font=3,font.main=4) "

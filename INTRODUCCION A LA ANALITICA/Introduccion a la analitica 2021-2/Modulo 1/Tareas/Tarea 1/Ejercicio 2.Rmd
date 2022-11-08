@@ -1,0 +1,147 @@
+---
+title: "Punto 2"
+author: "Jhonatan Smith Garcia"
+date: "21/10/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+daticos = read.csv(file.choose(),sep =",")
+```
+
+
+```{r}
+data = data.frame(daticos)
+attach(data)
+```
+
+
+```{r}
+plot(data$afh~data$gender)
+
+
+```
+
+A simple vista se podria creer que hay una sutil diferencia (que se aprecia mejor en el grafico de bigotes) en genero 1 respecto a 0, pues el primero aparenta tomar valores mas altos que el otro respecto a la variable de interes.
+
+Finalmente, al ajustar la recta de regresion, se puede observar como en efecto, hay una pendiente positiva, indicando que, genero "1" en efecto tendrá medidas de afh ligeramente mayores. 
+
+* Modelo parametrico:
+
+El modelo ajustado es una recta de regresion 
+
+
+```{r}
+library(dplyr)
+
+set.seed(2021)
+datab = sort(sample(nrow(data),nrow(data)*0.75))
+
+# datos de entrenamiento 
+train = data[datab,]
+
+# datos de prueba
+
+test = data[-datab,]
+
+ytrain = data[datab,3]
+ytest = data[-datab,3]
+```
+
+
+```{r}
+newdata1 = train%>%dplyr::select(-3)
+newdata2 = test%>%dplyr::select(-3)
+```
+
+ *Modelo ajustado con datos de entrenamiento
+ 
+```{r}
+modelo1 = lm(train$afh~train$gender)
+summary(modelo1)
+```
+
+ * Modelo No parametrico:
+ 
+```{r}
+library(ggplot2)
+library(MASS)
+
+datosage=read.csv(file="datosage_6.csv", header=T,sep=',',dec='.')
+head(datosage)
+```
+
+
+```{r}
+##LM##
+mod_reg <- suppressWarnings(lm(afh ~ gender, data = datosage))
+summary(mod_reg)
+y_fitted1=fitted(mod_reg)
+```
+
+
+```{r}
+mse_reg=mean(datosage$afh-y_fitted1)^2
+mse_reg
+```
+
+
+```{r}
+##LOESS##
+mod_loess <- suppressWarnings(loess(afh ~ gender, span=1.9,data = datosage))
+summary(mod_loess)
+y_fitted=fitted(mod_loess)
+```
+
+
+```{r}
+mse_loess=mean(datosage$afh-y_fitted)^2
+mse_loess
+```
+
+
+```{r}
+
+plot(train$gender,train$afh,cex=1.5,bty="n",font=3,font.main=4) 
+lines(loess.smooth(train$afh,train$gender,family="gaussian",span=0.8),lty=1,lwd=2,col="red")
+legend("topleft",legend="Curva de ajuste LOESS",col=2,lwd=2,bty="n")
+
+```
+ 
+ 
+ 
+
+
+```{r}
+boxplot(data$afh~data$gender)
+```
+
+Dado los dos generos asignados en la base de datos, se tiene que:
+
+De un analisis grafico de cajas el genero "0" tiene una mediana alrededor de 70 en la medida de la variable afh. Comparado con genero "1" que tiene una mediana de casi 75, se evidencia una clara diferencia entre ambas medidas. Implicando que casi la mitad de ambas poblaciones de las bases de datos se encuentran bajo estas medidas. 
+
+La proporcin de variabilidad es relativamente equivalente en ambos generos. 
+
+Ahora, el valor promedio ed afh (sin diferenciar por genero): 71.69439
+
+```{r}
+
+```
+
+
+```{r}
+mean(data$afh)
+```
+
+
+
+
+
+
+
+
+

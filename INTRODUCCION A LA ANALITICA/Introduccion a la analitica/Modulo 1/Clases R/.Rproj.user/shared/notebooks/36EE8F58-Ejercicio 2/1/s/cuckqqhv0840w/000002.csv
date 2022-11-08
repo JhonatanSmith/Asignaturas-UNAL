@@ -1,0 +1,6 @@
+"0","mse_reg=mean(datosage$afh-y_fitted1)^2"
+"0","mse_reg"
+"1","[1]"
+"1"," 2.022114e-32"
+"1","
+"

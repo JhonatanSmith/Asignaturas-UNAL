@@ -1,0 +1,138 @@
+---
+title: "Punto2"
+date: "30/10/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r echo=T, results='hide'}
+#Librerias
+library(kableExtra, warn.conflicts=F, quietly=T)#tablas
+library(leaps) #seleccion variables
+```
+
+
+\textbf{2.} Realice la Actividad que aparece en la parte final de la Clase 7.
+
+- Considere la base datos DATOS_C7.txt. Cargue la base de datos en R, guardela como .RData y luego carguela nuevamente. ¿Cuál fue la reducción en tamaño del archivo?
+
+A continuación se carga la base de datos en R:
+```{r}
+datos <- read.table("../DATOS_C7.txt", header = T, stringsAsFactors = T)
+```
+
+Luego, se procede a guardar la base como .RData y se carga nuevamente:
+
+```{r}
+save(datos ,file="datos_c7.Rdata")
+miceadds::load.Rdata(objname = "datos", filename = "datos_c7.Rdata")
+```
+
+¿Cuál fue la reducción en tamaño del archivo?
+
+```{r}
+original <- file.size("../DATOS_C7.txt")*1e-6
+rdata <- file.size("datos_c7.Rdata")*1e-6
+diferencia <- original - rdata
+data.frame(original,rdata,diferencia)%>%
+  kbl() %>% kable_minimal(full_width = F)
+```
+Así entonces el tamaño del archivo original es de aproximadamente 197 MB, luego al covertirla en archivo .RData el tamaño se reduce a 94.04 MB. Por lo tanto, podemos ver que hubo una notoria reducción de 103.5 MB, lo cual es ventajoso a la hora de cargar los datos.
+
+- Realice un análisis para seleccionar las variables más relevantes para explicar Y.
+
+Haciendo uso de regresión hacia atrás, obtenemos los siguientes resulatdos:
+
+```{r results='hide'}
+regfit <- regsubsets(Y~., data = datos, nvmax = 10, method = "backward", 
+                     really.big = TRUE); reg.summary <- summary(regfit)
+```
+
+```{r}
+par(mfrow =c(1,2))
+plot(reg.summary$adjr2, xlab = "Número de variables",
+     ylab = "R cuadrado ajustado", type = "l")
+plot(reg.summary$cp ,xlab ="Número de variables", ylab="Cp", type="l")
+```
+
+De acuerdo con los anteriores gráficos, el número de variables óptimo resulta ser tres, ya que dicho valor maximiza la medida $R^2_{ajustado}$  y minimiza el Cp. Es decir, ambas medidas coinciden. Así entonces, las siguientes variables son las seleccionadas:
+
+```{r}
+t(coef(regfit, 3) ) %>% kbl() %>% kable_minimal(full_width = F)
+```
+
+- Gráfique las variables más relevantes versus Y y ajuste un modelo. ¿El comportamiento Y es lineal con todas las variables explicativas?
+
+De acuerdo con el numeral anterior, las variables más reelevantes para explicar Y son: $X_{31}$, $X_{48}$ y $X_{82}$. En el siguiente gráfico se puede visualizar que el comportamiento de la varible respuesta parece ser cuadrático en las variales $X_{31}$ y $X_{182}$, mientras con $X_{48}$ parece tener un comportamiento lineal.
+
+```{r}
+pairs(Y ~ X31 + X48 + X182, data=datos, col = "skyblue")
+```
+
+- Ajuste un modelo polinómico y un modelo con funciones paso. Compare ambos modelos. ¿Cuál seleccionaría como el mejor modelo?
+
+A continuación, se realiza la partición de entrenamiento y prueba del conjunto de datos en un 75% y 25% respectivamente, con las variables explicativas más reelevantes: 
+
+```{r}
+n = nrow(datos) ; set.seed(1233)
+trainIndex = sample(1:n, size = round(0.75*n), replace=FALSE)
+train = datos[trainIndex, c("Y","X31","X48","X182")]
+test = datos[-trainIndex, c("Y","X31","X48","X182")]
+```
+
+
+- \textbf{modelo polinómico}
+
+Con ayuda de la función poly() se agregan al modelo las variables $X_{31}$ y $X_{82}$ con grado 2, mientras $X_{48}$ se mantiene con grado 1 por su comportamiento lineal.
+
+```{r}
+mod.pol <- lm(Y~poly(X31,2)+X48+poly(X182,2), data = train)
+summary(mod.pol)
+```
+
+De esta manera, podemos observar que todas las variables son significativas, además el $R^2_{ajustado}$ = 0.9856, es decir que el modelo logra explicar el 98.56% de la variabilidad de Y en los datos de entrenamiento. Por otro lado, el $MSE_{test}$ sería:
+
+```{r}
+pred <- predict(mod.pol, test[,-1])
+mean((pred-test$Y)^2)
+```
+
+- \textbf{modelo funciones paso}
+
+Primero, con ayuda de la función cut() se definen 4 puntos de corte equidistantes para los datos de entrenamiento y prueba:
+
+```{r }
+train$X31.cut <- cut(train$X31, breaks = 4)
+train$X48.cut <- cut(train$X48, breaks = 4) 
+train$X182.cut <- cut(train$X182, breaks = 4)
+```
+
+```{r}
+test$X31.cut <- cut(test$X31, breaks = 4)
+test$X48.cut <- cut(test$X48, breaks = 4) 
+test$X182.cut <- cut(test$X182, breaks = 4)
+```
+
+De esta manera, ajustamos el siguiente modelo de funciones paso:
+
+```{r}
+mod.paso <- lm(Y~X31.cut+X48.cut+X182.cut, data = train)
+summary(mod.paso)
+```
+
+Ahora, como podemos observar, todas las variables resultan ser significativas, además el $R^2_{ajustado}$ = 0.8759, es decir que el modelo logra explicar el 87.5% de la variabilidad de Y en los datos de entrenamiento. Por otro lado, el $MSE_{test}$ sería:
+
+```{r}
+pred1 <- predict(mod.paso, test[,-1])
+mean((pred1-test$Y)^2)
+```
+
+- \textbf{¿Cuál seleccionaría como el mejor modelo?}
+
+En conclusión, el modelo polinómico resulta ser el mejor modelo bajo el criterio del error cuadrático medio de los datos de prueba ($MSE_{test}$). Hay que tener en cuenta que se pueden mejorar estos resultados realizando otro tipo de análisis y limpieza de los datos.
+
+

@@ -1,0 +1,3 @@
+"0","library(e1071) # Libreria que tiene naive bayes"
+"0",""
+"0","names = read.csv(file.choose(),stringsAsFactors = TRUE, sep = "";"") # Seleccione la base datos ""names"""

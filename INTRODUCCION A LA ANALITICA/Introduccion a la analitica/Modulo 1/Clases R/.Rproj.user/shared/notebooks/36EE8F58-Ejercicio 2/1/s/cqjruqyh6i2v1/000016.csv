@@ -1,0 +1,1 @@
+"0","lines(loess.smooth(train$afh,train$gender,family=""gaussian"",span=0.8),lty=1,lwd=2,col=""red"")"

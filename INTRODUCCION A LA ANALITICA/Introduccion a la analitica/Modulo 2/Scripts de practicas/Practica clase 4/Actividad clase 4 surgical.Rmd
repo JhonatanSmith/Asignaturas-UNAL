@@ -1,0 +1,167 @@
+---
+title: "Ejercicio clase 4 SURGICAL"
+author: "Jhonatan Smith Garcia"
+date: "18/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+require(olsrr)
+```
+Analicemos que es la base de datos surgical.
+
+```{r}
+?surgical
+```
+
+Es una base de datos de pacientes con reisgo de operacion.
+
+Hay 54 filas para 9 variables.
+
+```{r}
+names(surgical)
+```
+Estas son las variables de la base de datos. 
+
+Queremos identificar el tiempo de supervivencia acorde a las otras variables. 
+
+Lavariable tiempo de supervivencia es "y" puesto que asi la denomina la base de datos.
+
+El modelo será de la forma 
+
+$ Y = \beta_0+\beta_1*X_1etc...$
+
+Se busca entonces exlpicar el timempo de supervivencia a traves de las otras 8 variables explicativas.
+
+Para esto se utilizará validacion cruzada (cross validation) al dividir la base de datos en un 70% para datos de entrenamiento y un 40% para datos de prueba:
+
+# Division base de datos
+
+```{r}
+set.seed(1998)
+proporcion = 0.7  # porcentaje entrenamiento seleccionado
+t1 = sample(length(surgical$y), size = (length(surgical$y)*proporcion))
+train = surgical[t1,]
+test = surgical[-t1,]
+```
+
+Ahora, una vez separado datos de entrenamiento y datos de prueba, se procede a realizar un analisis de todos los posibles modelos a ajustar.
+
+```{r}
+require(leaps)
+
+```
+
+Se procede a ajustar un modelo por el metodo de subconjuntos.
+
+```{r}
+modelofull = regsubsets(y~., data = train, nvmax = 8, method = "exhaustive")
+modelofull.summary = summary(modelofull)
+```
+
+Con estos datos, vamos a realizar una comparativa. Recuerde que la funcion regsubset tiene varios metodos de seleccion de variables. 
+Dichos metodos de seleccion son:
+
+```{r}
+names(modelofull.summary)
+```
+
+Ahora, cada uno de estos metodos va a seleccionar el mejor modelo con 0, 1,2, hasta 8 variables.
+
+```{r}
+
+# Division ventana de graficos
+par(mfrow = c(1,4))
+
+# Primer grafico
+maximo_r_adj = which.max(modelofull.summary$adjr2)
+plot(modelofull.summary$adjr2, type = "l", xlab = "# variables", ylab = "R2 adj")
+points(maximo_r_adj, modelofull.summary$adjr2[maximo_r_adj],col = "red", cex = 2, pch =10)
+
+# Segundo grafico 
+plot(modelofull.summary$cp, xlab = "#Vbles", ylab = "Cp Mallows", type = "l")
+minimo_cp = which.min(modelofull.summary$cp)
+points(minimo_cp, modelofull.summary$cp[minimo_cp], col ="red", cex = 2, pch =20)
+
+# Tercer metodo graficado
+plot(modelofull.summary$bic, type = "l",xlab = "esa joda", ylab = "BIC")
+
+# Cuarto metodo 
+plot(modelofull.summary$rss, type = "l", ylab = "rss")
+```
+
+
+Ahora, vamos a comparar cuales son las variables recomendadas por cada metodo.
+
+# Las variables en si:
+
+
+```{r}
+par(mfrow= c(1,2))
+plot(modelofull, scale = "adjr2")
+plot(modelofull, scale = "Cp")
+```
+
+
+```{r}
+par(mfrow= c(1,2))
+plot(modelofull, scale = "bic")
+plot(modelofull, scale = "r2")
+
+```
+
+En general, casi todos los metodos seleccionan 5 variables a excepcion de el criterio del r cuadrado ajustado, que selecciona 6.
+
+Las variables son las dadas graficamente.
+
+# Seleccion del mejor modelo:
+
+
+
+Se procede a analizar el MSE de los modelos utilizando validacion cruzada.
+
+```{r}
+# Creando una función para evaluar los modelos:
+predict.regsubsets =function (object,newdata,y){
+form<-as.formula(object$call[[2]])
+mat<-model.matrix(form ,newdata)
+val.errors =rep(NA, (ncol(mat)-1))
+
+for(i in 1:length(val.errors)){
+  
+coefi<-coef(object ,id=i)
+xvars<-names (coefi)
+pred<-mat[,xvars]%*%coefi
+val.errors [i]= mean((y-pred)^2) # Este es el MSE de prueba
+}
+
+val.errors
+}
+
+```
+
+```{r}
+set.seed(1)
+MSE = predict.regsubsets(modelofull, newdata = train, y = train$y)
+MSE
+```
+```{r}
+# Observando el MSE
+plot(MSE, type = "b", col = "red")
+```
+
+estos son los modelos desde 1 a 8 variables. El menor de estos modelos es el que tiene 4 variables, puesto que si bien no es le menor, la diferencia vs los otros es muy poca. Dicho modelo es:
+
+```{r}
+coef(modelofull,4)
+```
+
+
+
+
+
+

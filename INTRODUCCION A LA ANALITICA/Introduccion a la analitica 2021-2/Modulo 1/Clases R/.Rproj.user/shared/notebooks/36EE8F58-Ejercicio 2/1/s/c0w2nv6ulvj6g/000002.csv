@@ -1,0 +1,6 @@
+"0","mse_loess=mean(datosage$afh-y_fitted)^2"
+"0","mse_loess"
+"1","[1]"
+"1"," 7.292866e-30"
+"1","
+"

@@ -1,0 +1,1 @@
+"0","plot(fitted(modelo2),rstandard(modelo2),ylim=c(-2.5,2.5))"

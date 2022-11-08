@@ -1,0 +1,311 @@
+---
+title: "Un factor de ejectos fijos"
+author: "Jhonatan Smith Garcia"
+date: "27/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(gmodels)
+library(multcomp)
+library(daewr)
+library(car)
+library(outliers)
+```
+
+
+1) Discriminacion de los elementos del experimento.
+
+¿Quien es el factor? = *"SE QUIEREN ESTUDIAR LOS EFECTOS DE..."* el factor es el fertilizante nitrogenado.
+
+¿ Seleccion aleatoria de los niveles? = AL observar los niveles del factor se ve con son 50,100,150,200. Indicando
+que no se seleccionaron de manera aleatoria. *POR ESTO, SE DICE QUE EL FACTOR ES DE EFECTOS FIJOS*
+
+Las UE son las parcelas pues es en ellas donde se toman las mediciones. 
+
+Las UE (parcelas) deben de ser homogeneas e independientes. Parcelas similares y los resultados de una es independiente
+de la otra. 
+
+EN RESUMEN:
+
+ * Estructura de tratamiento es un factor dado por la cantidad de nitrato (lbs/acre) en el fertilizante
+ 
+ * Estructura de diseño es DCA 
+ 
+ * Vble rta es # de lechugas cosechadas por parcelas
+ 
+ * Unidades experimentales son las lechigas
+ 
+# Entrada de datos 
+
+```{r}
+ni=rep(4,5) #No. replicas por nivel. 5 tratamientos cada uno con 4 replicas
+```
+
+```{r}
+#obseve que los renglones de datos corresponden a cada nivel desde 0 a 200, respectivamente
+diseño2=data.frame(nitrato=factor(rep(c(0,50,100,150,200),times=ni)),nlechug=scan())
+
+# El factor es nitrato y la variable es nlechug 
+
+```
+
+```{r}
+104 114 90 140
+134 130 144 174
+146 142 152 156
+147 160 160 163
+131 148 154 163
+```
+
+```{r}
+diseño2
+
+attach(diseño2)
+```
+
+La base de datos resultante categoriza los datos como "4 datos con nitrato 0, 4 datos con nitrato 50 etc" asi por cada 
+nivel del tratamiento
+
+
+Primero, se realizará un analisis descriptivo.
+
+```{r}
+#CALCULANDO MEDIAS DE TRATAMIENTO PARA LUEGO USAR EN GR?FICA
+mediasy2=sapply(split(nlechug,nitrato),mean)
+```
+
+
+```{r}
+#BOXPLOTS COMPARATIVOS
+boxplot(nlechug~nitrato,boxwex = 0.5)
+lines(1:5,mediasy2,col=2,lty=2,type="b",pch=19)
+```
+¿ Hay diferencia entre las medias de los tratamientos? Cada boxplot representa cada tratamiento y el punto 
+rojo es la media para su respectivo tratamiento.
+
+ *Primer analisis*  En un principio parece que la media es constante excepto para nitrato = 0, por tanto se creeria que si hay un efecto de dichas medias. Ahora, esas medias no cambian por tanto, se creeria que no son estadisticamente diferentes.
+ 
+ Por otra parte, se podria creer que tiene un comportamiento no monotono, pues a valores mas grandes de nitrato quiza se queme la planta. 
+ 
+ *Sobre la varianza* La varianza cambia de manera no monotona. Tiende a estabilziarse en un punto. De manera que en el punto donde se puede maximizar la  produccion de lechuga tambien se podria minimizar la varianza. 
+ 
+# CONCLUSION:
+
+Hay un nivel donde se obtiene maxima produccion con menor variabilidad. 
+
+# CONSTRUCCION DEL MODELO:
+
+$$ Y_{ij} = \mu+\alpha_i+\epsilon_i$$ 
+sujeto a $a=5;n_i = 4;\sum_{i=1}^5{\alpha_{i}}$ 
+
+Donde el error son normales iid y ademas:
+
+ * $Y_{i,j}$ es la variable # de lechugar en la j-esima parcela del i-esimo tratamiento
+ 
+ * $\mu$ media global de las lechugas cosechadas por parcela
+ 
+ * $\alpha_i$ efecto fijo i-esimo nivel del estrato sobre la cantidad media de lechugas cosechadas por parcela
+
+
+# Ahora, vamos a ajustar el modelo en R
+
+```{r}
+#AJUSTE MODELO DE ANALISIS DE VARIANZA 
+modelo2=aov(nlechug~nitrato)
+```
+
+```{r}
+#OBTENIENDO TABLA ANOVA
+anova(modelo2)
+```
+Al observaro el valor p de la tabla, se concluye y la prueba es verificar igualdad de medias. 
+
+Las medias en efecto no son todas iguales, se rechaza H0 a favor de H1.
+
+HACER ESTA TABLA A MANO
+
+*Con esto en mente, vamos a analizar las medias para cada tratamiento*
+
+```{r}
+#OBTENIENDO MEDIAS ESTIMADAS POR NIVEL DEL FACTOR forma 1
+model.tables(modelo2,type = "means",se=TRUE)
+```
+```{r}
+#Forma 2 de obtener las medias
+lsmeans(modelo2,"nitrato")
+```
+```{r}
+#CREANDO FUNCION USUARIO mismediastratamientos()
+mismediastratamientos=function(modeloanova,nivel=95){
+MSE=anova(modeloanova)["Mean Sq"][2,]
+df=anova(modeloanova)["Df"][2,]
+ni=unlist(model.tables(modeloanova,type = "means")["n"])
+alfa=1-nivel/100
+alfa.med=(1-(nivel/100))/2
+t=qt(alfa.med,df=df,lower.tail=F)
+medias.tratam=unlist(model.tables(modeloanova,type = "means")["tables"])[-1]
+interval=cbind(ni=ni,Medias=medias.tratam,LIC=medias.tratam-t*sqrt(MSE/ni),LSC=medias.tratam+t*sqrt(MSE/ni))
+cat("Tabla de medias de tratamientos y sus I.C de",nivel,"%","\n")
+cat("alfa","               ",alfa,"\n")
+cat("grados de libertad    ",df,"\n")
+cat("error cuadr?tico medio",MSE,"\n")
+cat("valor cr?tico t       ",t,"\n","\n")
+interval
+}
+```
+
+Esta funcion da una media de los tratamientos con su respectivo IC, por defecto al 95
+
+```{r}
+mismediastratamientos(modeloanova = modelo2, nivel = 95)
+```
+
+Con esto, seleccionando el nivel de nitrato en 150, se tiene que, en promedio, la cosecha de lechugas se incrementa en aproximadamente en aprox 15 unidades respecto a la media global. 
+
+y con una confianza del 95% el numero promedio de lecugas cosechadas se incrementa de aprxo 1 a 29 lechugas cuando se aplican 150 libs/litro de nitrato.
+
+```{r}
+library(lsmeans)
+lsmeans(modelo2,~nitrato) #esta funci?n hace lo mismo que mismediastratamientos()
+lsmeans(modelo2,"nitrato")
+
+```
+```{r}
+#ESTIMACI?N DE LOS EFECTOS PRINCIPALES:
+model.tables(modelo2,type = "effects",se=TRUE)
+```
+Esta tabla muestra los efectos de cada una de las categorias respecto a la media global. En este caso, en 150 se tiene una diferencia de aprox 15 lechugas.
+
+```{r}
+#C?LCULO INDIVIDUAL DE EFECTOS, SUS TESTES T Y I.C DEL 95%:
+efect.0=fit.contrast(modelo2,"nitrato",
+rbind(":efecto 0"=c(4/5,-1/5,-1/5,-1/5,-1/5)),conf=0.95)
+efect.50=fit.contrast(modelo2,"nitrato",
+rbind(":efecto 50"=c(-1/5,4/5,-1/5,-1/5,-1/5)),conf=0.95)
+efect.100=fit.contrast(modelo2,"nitrato",
+rbind(":efecto 100"=c(-1/5,-1/5,4/5,-1/5,-1/5)),conf=0.95)
+efect.150=fit.contrast(modelo2,"nitrato",
+rbind(":efecto 150"=c(-1/5,-1/5,-1/5,4/5,-1/5)),conf=0.95)
+efect.200=fit.contrast(modelo2,"nitrato",
+rbind(":efecto 200"=c(-1/5,-1/5,-1/5,-1/5,4/5)),conf=0.95)
+```
+
+Aqui, recuerde que la cantidad de niveles son 5.
+
+Los vectores de respuesta se van colocando de acuerdo al nivel, teniendo en ceunta lo sigte:
+
+$$\frac{a-1}{a}$$
+
+Para cuando estoy en el nivel i esimmo
+
+$$\frac{-1}{a}$$
+En los otros niveles, es por eso que el vector dado alli es de la fomra (para cd nivel)
+
+efect.0=fit.contrast(modelo2,"nitrato",
+rbind(":efecto 0"=c(4/5,-1/5,-1/5,-1/5,-1/5)),conf=0.95)
+
+
+```{r}
+rbind(efect.0,efect.50,efect.100,efect.150,efect.200)
+```
+Como resultado de esta tabla, vamos a hacer inferencias marginales de los factores.
+
+En este caso, al observar el valor p, nos damos cuenta que a una significancia del 0.05 los unicos donde la prueba se rechaza es en el nivel 0 y 150 de nitrato, consluyendo entonces que es allí donde los valores son significativos.
+
+La columna de "Estimate" representa la estimacion comparada contra la media global. Si la estimacion es positiva es porque la media del tratamiento > media global y es negativa en caso contrario.
+
+AKI TAMBIEN HAY INCREMENTO EN PRIMEDIO 15 UNDS
+
+SOBRE EL IC PARA 150: Dicho aumento es de 1 unds (redondeando el 0.6) a 29, respecto a la media global.
+
+```{r}
+
+#OTRA FORMA PARA C?LCULO INDIVIDUAL DE EFECTOS CON SUS INTERVALOS DE CONFIANZA DEL 95%:
+contr0=rbind("efecto nitrato 0"= c(4/5,-1/5,-1/5,-1/5,-1/5))
+contr50=rbind("efecto nitrato 50"= c(-1/5,4/5,-1/5,-1/5,-1/5))
+contr100=rbind("efecto nitrato 100"= c(-1/5,-1/5,4/5,-1/5,-1/5))
+contr150=rbind("efecto nitrato 150"= c(-1/5,-1/5,-1/5,4/5,-1/5))
+contr200=rbind("efecto nitrato 200"= c(-1/5,-1/5,-1/5,-1/5,4/5))
+
+rbind(confint(glht(modelo2,linfct=mcp(nitrato=contr0)))$confint,
+confint(glht(modelo2,linfct=mcp(nitrato=contr50)))$confint,
+confint(glht(modelo2,linfct=mcp(nitrato=contr100)))$confint,
+confint(glht(modelo2,linfct=mcp(nitrato=contr150)))$confint,
+confint(glht(modelo2,linfct=mcp(nitrato=contr200)))$confint)
+
+```
+
+
+Estos calculos *SIEMPRE SUPONEN ERRORES NORMALES Y VARIANZA CONSTANTE*
+
+# VERIFICACION DE SUPUESTOS:
+
+```{r}
+#OBTENIENDO GR?FICOS DE RESIDUOS INTERNAMENTE ESTUDENTIZADOS,
+layout(rbind(c(1,1,2,2),c(0,3,3,0)))
+stripchart(rstandard(modelo2)~nitrato,vertical=TRUE,ylim=c(-2.5,2.5),pch=1,cex=1,xlab="Lb N/acre")
+abline(h=c(-2,0,2),lty=2)
+plot(fitted(modelo2),rstandard(modelo2),ylim=c(-2.5,2.5))
+abline(h=c(-2,0,2),lty=2)
+qqnorm(rstandard(modelo2))
+qqline(rstandard(modelo2),lty=2)
+```
+
+Al analizar el primer grafico vemos un patron en la varianza indicando problemas de varianza constante. (Residuales estandarizados) pues hay una forma de embudo. 
+
+El segundo grafico (residuales) al analizar horizontalmente los valores, nos damos cuenta que no se distribuyen de manera aleatoria. 
+
+Ademas, en ambos casos vemos dos observaciones atipicas (outliers).
+
+Finalmente, al analizar normalidad, omitiendo las observaciones atipicas, los residuos si distribuyen normal.
+
+Hay que tener presente que hay un 5% de probabilidad de tener datos atipicos asi que dicha normalidad podria ser un patron comun siempre y cuando no sea algo exagerado. 
+
+```{r}
+#TEST DE NORMALIDAD CON RESIDUOS INTERNAMENTE ESTUDENTIZADOS
+shapiro.test(rstandard(modelo2)) 
+```
+
+#PRUEBA PARA DETECTAR Y PROBAR IGUALDAD DE VARIANZA (HOMOCEDASTICIDAD)
+
+Tenga siempre presente que los estadisticos son sensibles a el tamaño de la muestra y si dicho tamaño es pequeño, puede presentar problemas. Por otra parte, la solucion aca presente se analizadesde varios test diferentes
+
+
+```{r}
+#TESTES PARA HOMOGENEIDAD DE VARIANZA
+bartlett.test(nlechug~nitrato) 
+```
+En este, se plantea H0 son iguales vs H1 son diferentes. Segun el valor p, se rechaza para valores pequeños menores que un alfa dado. 
+
+En este caso el p-value > alfa por tanto no se rechaza la hipotesis nula y segun este test SI HAY VARIANZA CONSTANTE. lo cual es falso, mirar primera explicacion
+
+```{r}
+leveneTest(nlechug~nitrato) #H0 iguales vs H1 diferentes 
+```
+Este test nuevamente rechaza puesto que el valor p> alfa dado, entonces no se rechaza H0 y concluye que son iguales la varianza. FALSO, DE HECHO, EMPEORO CON UN VALOR P MAS GRANDE. ESTO SE ASUME SIEMPRE PARA MUESTRAS GRANDES
+
+```{r}
+cochran.test(nlechug~nitrato,data=diseño2)
+
+```
+
+```{r}
+#Haciendo levene con test ANOVA
+medianasy2=rep(sapply(split(nlechug,nitrato),median),each=4)
+zij=abs(nlechug-medianasy2)
+anova(aov(zij~nitrato))
+```
+
+
+#CONCLUSIONES
+
+A pesar de que no se cumplen los supuestos de varianza constante, la info muestral ayuda a comprender el comportamiento del problema. 
+
+En este caso, se recomienda mas muestras y modelar esa curva que interpreta el problema.
+
+

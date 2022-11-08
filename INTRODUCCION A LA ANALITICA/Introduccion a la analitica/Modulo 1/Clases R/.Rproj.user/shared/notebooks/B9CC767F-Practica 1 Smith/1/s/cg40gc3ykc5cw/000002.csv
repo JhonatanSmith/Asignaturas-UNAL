@@ -1,0 +1,2 @@
+"0","train = data.frame(defaulted[1:10,])"
+"0","test = data.frame(defaulted[11:11,1:4])"

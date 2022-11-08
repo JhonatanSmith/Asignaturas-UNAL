@@ -1,0 +1,205 @@
+---
+title: "Practica clase 9"
+author: "Jhonatan Smith Garcia"
+date: "16/1/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Modelos aditivos generalizados
+
+Se conocen a travez modelo aditivo generalizado (GAM)
+
+La relacion entre Y con las cvariables X puede ser de cualquier tipo. 
+
+Pueden ser parametricas, no parametricas, Semi-Parametricas. 
+
+
+Para el ejemplo de Wage, para explicar el salario anual esta vez se va a considerar las variables:
+
+Year, Age, education. Donde Year es una vble de tiempo, education es caegorica y edad es numerica. 
+
+El siguiente codigo toma en cuenta splines cubicos naturales para age y year con 4 y 3 nodos respectivamente. Education la toma como una variable categorica
+
+Se puede usar la funcion *lm* para dar con un modelo GAM
+
+```{r}
+require(splines)
+attach(Wage)
+mod1 <- lm(wage ~ ns(year, 4) + ns(age,5)+ education, data = Wage  )
+summary(mod1)
+```
+
+Ojo, los parametros no se interpretan.
+
+Vamos a extraer los nodos:
+
+```{r}
+attr(ns(year, 4), "knots")
+```
+Son los nodos tomados en estos percentiles.
+
+```{r}
+attr(ns(age,5), "knots")
+```
+Nodos tomados en estos percentiles.
+
+# Funcion gam del paquete homonimo
+
+
+```{r}
+require(gam)
+mod.gam1 <- gam(wage ~ s(year,4)+s(age,5)+education, data = Wage)
+```
+
+Permite hacer lo mismo pero con un smoothing spline s()
+
+Basicamente lo que hace esa *s* es concontrar un spline de suavizamiento
+
+?s
+
+El 4 y 5 de las forumulas de s() representa los grados de libertad. Misma idea
+
+Si en vez de s() se coloca lo() lo que calcula es un modelo con curvas LOESS (curva de regresion local)
+
+
+```{r}
+par(mfrow = c(1,3))
+plot(mod.gam1, se = TRUE, col = "blue", ylim = c(-40, 40))
+```
+El suelta directamente todos los graficos ajustados.
+
+# Analisis de esos graficos.
+
+Para el primer grafico se observa que a medida que pasa el año, aumenta el salario con excepcion del 2006 que hay una breve estabilizacion
+
+para el segundo, aumenta hasta los 45 años. A partir de allí como que se disminuye y empiez a acaer
+
+En el tercero, a mayor educacion, mejor salario
+
+```{r}
+summary(mod.gam1)
+```
+Al observar valores P, las variables son significativas para el modelo. Osea, sirven para explicar el problema.
+
+Al observar el Mean Sq (error cuadratico medio) se percibe que la educacion es la que tiene mayor valor. Esto implica que, es la variable que mayor parte de la variabilidad está explicando.
+
+Mean Sq es la parte de la variabilidad que explica cada una de las fuentes del modelo
+
+OJO: MEDIDA AIC
+
+```{r}
+mod.gam1$aic
+```
+No tiene interpretacion. Pero se utiliza para comparar con otro modelo. Gana el que tenga menor AIC
+
+
+# Suponga que se seleccionan varios modelos...
+
+Suponga los sgts modelos
+
+```{r}
+mod.gam2 <- gam(wage~s(age,5)+education, data = Wage)
+mod.gam3 <- gam(wage~year+s(age,5)+education, data = Wage)
+mod.gam4 <- gam(wage~s(year,4)+s(age,5)+education, data = Wage)
+
+
+anova(mod.gam2, mod.gam3, mod.gam4, test = "F")
+
+# La forma de comparar anova es que uno esté dentro del siguiente. Se parte de un modelo simple y se va agregando uno mas complejo. SI no, el codigo no corre
+
+
+```
+
+Con la anova, se puede comparar viendo si al incluir estos componentes nuevos, la situacion mejora de alguna manera. 
+
+Nos fijamos en el P-valor. Al agregar año, es significativa. Lo que implica que agregar la sgt variable fue algo significativo.
+
+Al complicar la cosa, el p-valor no ha funcionado. Esto es que complicar con un spline no tuvo un efecto significativo. 
+
+# Otro posible modelo...
+
+```{r}
+mod.gam5 <- gam(wage~s(year,4)+lo(age,span = 0.7)+education, data = Wage)
+```
+
+El span es un hiperparametro que uno debe de buscar. Es el porcentaje de datos que uno debe de buscar tanto a la izquierda como a la derecha de los datos.
+
+```{r}
+par(mfrow = c(1,3))
+plot(mod.gam5, se = TRUE, col = "red", ylim = c(-40,40))
+```
+
+
+# Ajustando modelo con iteraccion
+
+```{r}
+require(akima)
+mod.gam6 <- gam(wage~lo(year,age, span = 0.5)+education, data = Wage)
+plot(mod.gam6, phi = 25, theta =105)
+```
+
+
+Phi y theta son los angulos para mover el grafico en 3d y ver la sigura de diferentes angulos.
+
+# Con indicadoras y otro tipo de variables
+
+acá se utiliza una indicadora para los valores de las variables que son mayores a 250 en wage. Esto es una binomial con ceros y unos
+
+```{r}
+mod.gam7<-gam(I(wage>250)~year+s(age,df=5)+education,
+family=binomial,data=Wage)
+par(mfrow =c(1,3))
+plot(mod.gam7,se=T,col="blue")
+
+```
+Primeo se observa que en educacion hay algo raro con el IC que muestra. Esto se dá cuando en una categoria no hay suficientes datos para calcular. Esto es logico dada la naturaleza del problema. 
+
+Seria raro encontrar personas sin estudios con salario de mas de 250 mil dolares.
+ 
+ *Verificando*
+
+```{r}
+
+table(education, I(wage>250))
+
+```
+
+
+Hay desnalanceo entre las clases. Hay algunas clases con mas datos que otras. 
+
+Mire que la primera clase tiene un cero. En esa clase hay cero personas con salario >250.
+
+
+Ese cero es el que genera ese tipo de problemas. 
+
+Se podria:
+
+1) Unir categorias
+2) Tomar un valor mas bajo (no 250)
+3) DEscartar esa categoria ya que no hay como comparar ninguno de esos individuos. 
+
+Lo peor es no hacer nada. 
+
+```{r}
+mod.gam8<-gam(I(wage>250)~year+s(age,df=5)+education,
+family=binomial,
+data=Wage,subset=(education!="1. < HS Grad"))
+par(mfrow =c(1,3))
+plot(mod.gam8,se=T,col="blue",ylim=c(-8,8))
+```
+
+Los graficos estan en la misma escala. 
+
+Año es la variable que menos tiene impacto a la hora de explicar el salario general. Esto dado que se observa que la variacion es nula. 
+
+Edad, las personas con menor y mayor edad, son los que tienen menos probabilidad de ganar sueldo >250
+
+Y en educacion, entre mas educado, mas ganan. MERITOCRACIA
+
+
+

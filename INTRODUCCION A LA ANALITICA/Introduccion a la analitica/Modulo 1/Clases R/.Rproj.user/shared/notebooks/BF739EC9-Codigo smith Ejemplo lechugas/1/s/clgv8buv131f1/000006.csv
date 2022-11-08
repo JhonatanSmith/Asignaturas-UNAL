@@ -1,0 +1,5 @@
+"0","#Forma 2 de obtener las medias"
+"0","lsmeans(modelo2,""nitrato"")"
+"2","Error in lsmeans(modelo2, ""nitrato"") : 
+  no se pudo encontrar la función ""lsmeans""
+"

@@ -1,0 +1,349 @@
+---
+title: "Untitled"
+author: "Jhonatan Smith Garcia"
+date: "10/11/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+a) Cree un conjunto de datos de entrenamiento del 75% y el restante 25 % tratelo como datos de test o de prueba
+
+
+```{r}
+bank <- read.csv(file.choose(), sep = ",")
+```
+
+Se procede a realizar la division de la base de datos.
+
+```{r}
+library(dplyr)
+set.seed(1039705595) # Se selecciona una semilla para la extraccion de la muestra aleatoria
+datab <- sort(sample(nrow(bank), nrow(bank)*.75))
+# Datos de entrenamiento
+train<-bank[datab,]
+# Datos de prueba
+test<-bank[-datab,]
+ytrain<-bank[datab,8]
+ytest<-bank[-datab,8]
+newdata1<- train %>% dplyr::select(-8)
+newdata2<- test %>% dplyr::select(-8)
+
+```
+
+b) Se ajusta Naive Bayes con los datos de entrenamiento. En R...
+
+```{r echo=TRUE}
+library(naivebayes)
+modelo_NB <- naive_bayes(loan ~ ., data = train)
+
+```
+
+C) Para implementar Knn se debe utilizar variables indicadoras para las categoricas y normalizar las continuas. Tenga presente que de las 17 variables de la base de datos 9 (8 sin contar la supervisora) son categoricas.
+
+Primero, se implementan las variables indicadoras (Dummies) y luego se normalizan las continuas. 
+
+```{r echo=FALSE}
+attach(bank)
+library(class)
+library(ISLR)
+library(MASS)
+library(Amelia)
+library(pscl)
+library(caret)
+library(pROC)
+library(ROCR)
+library(wesanderson)
+library(e1071)
+library(mlbench)
+library(InformationValue)
+job_dummie<-fastDummies::dummy_cols(bank$job)
+job_dummie<-job_dummie[-1]
+marital_dummie<-fastDummies::dummy_cols(bank$marital)
+marital_dummie<-marital_dummie[-1]
+education_dummie<-fastDummies::dummy_cols(bank$education)
+education_dummie<-education_dummie[-1]
+colnames(education_dummie)<-c(".data_primary", ".data_secondary",
+".data_tertiary", "data_unknown_education")
+default_dummie<-ifelse(bank$default == "yes", 1, 0)
+contact_dummie<-fastDummies::dummy_cols(bank$contact)
+contact_dummie<-contact_dummie[-1]
+colnames(contact_dummie)<-c(".data_cellular",".data_telephone","data_unknown_dummie")
+month_dummie<-fastDummies::dummy_cols(bank$month)
+month_dummie<-month_dummie[-1]
+housing_dummie<-ifelse(bank$housing == "yes", 1, 0)
+poutcome_dummie<-fastDummies::dummy_cols(bank$poutcome)
+poutcome_dummie<-poutcome_dummie[-1]
+colnames(poutcome_dummie)<-c(".data_failure",".data_other",".data_success",
+".data_unknown_poutcome")
+deposit_dummie<-fastDummies::dummy_cols(bank$deposit)
+deposit_dummie<-deposit_dummie[-1]
+
+```
+
+Se construye un df con todas las variable para luego sacar de alli los datos de prueba y entrenamiento dada las indicadoras y las varuables normalizadas.
+
+```{r include=FALSE}
+
+newdata<-cbind(deposit_dummie,poutcome_dummie,month_dummie,housing_dummie,
+contact_dummie,education_dummie,marital_dummie,job_dummie,default_dummie,
+bank$age,bank$balance,bank$day,bank$duration,bank$campaign,bank$pdays, bank$previous,loan)
+newdatasort <- sort(sample(nrow(newdata), nrow(newdata)*.75))
+
+```
+
+Dado el siguiente codigo, se normalizan las variables continuas, pues se requieren bajo la misma escala para proceder.
+
+```{r}
+normalize <- function(x) {
+norm <- ((x - min(x))/(max(x) - min(x)))
+return (norm)
+}
+train2<-(newdata[newdatasort,])
+train2n<-normalize(train2[-50])
+test2<-(newdata[-newdatasort,])
+test2n<-normalize(test2[-50])
+# Datos de entrenamiento para Knn
+ytrain2<-newdata[newdatasort,50]
+# Datos de prueba para Knn
+ytest2<-newdata[-newdatasort,50]
+
+```
+
+Se simulan knn con k de 1 a 10
+
+```{r}
+for (i in 1:10) {
+# Se modela con los datos de entrenamiento con un k=i
+mod2train<- knn(train = train2n, test = train2n, cl = ytrain2, k=i, prob=TRUE)
+# Se modela con los datos de prueba con un k=i
+mod2test<- knn(train = train2n, test = test2n, cl = ytrain2, k=i,prob=TRUE)
+tk<-table(mod2train,ytrain2)
+t1n<-table(mod2test,ytest2)
+# Training error
+Training_error_KNN<-(tk[1,2]+tk[2,1])/(sum(tk))
+print(table(Training_error_KNN,i))
+}
+```
+
+
+Bajo estos criterios se escoge k = 3 puesto que tiene un error de entrenamiento bajo y un k mas pequeño puede estar sobre ajustando el modelo (como posiblemente sucede en k=1)
+
+Se ajusta el modelo con el K seleccionado.
+
+```{r}
+modelo_knn<-knn(train = train2n, test = train2n, cl = ytrain2, k=3, prob=TRUE)
+
+```
+
+
+
+D) La Regresion logistica será tal que:
+
+```{r}
+modelo_logistico <- glm(as.factor(train2$loan) ~ . ,data=train2n, family = "binomial")
+
+```
+
+E) Se implementa LDA con R:
+
+```{r}
+# ytrain: variable loan con 1,0
+newdata1<- train %>% dplyr::select(-8)
+modelo_LDA=lda(ytrain~., data = newdata1)
+```
+
+F) Se calcula la matriz de confusion, el error de training MSE y se grafica. 
+
+Todos los siguientes calculos a presentar seran dados con los datos de entrenamiento. 
+
+
+```{r echo=FALSE}
+train_NB<-predict(modelo_NB,newdata1,type="class")
+predicted<-predict(modelo_logistico,newdata=train2n,type = "response")
+optCutOff <- optimalCutoff(train2$loan, predicted)[1]
+glm.pred <- ifelse(predicted > 0.48, 1, 0)
+table(glm.pred,ytrain)
+lda.class<-predict(modelo_LDA,newdata1,type=c("class"))$class
+train_lda<-ifelse(ytrain==lda.class,0,1)
+```
+
+
+```{r}
+# Modelo Naive Bayes
+tabla_NB_E<-table(train_NB,ytrain)
+tabla_NB_E
+```
+
+
+```{r}
+# Knn
+tabla_knn_E<-table(modelo_knn,ytrain)
+tabla_knn_E
+```
+
+
+```{r}
+# Modelo logistico
+tabla_lo_E<-table(glm.pred,ytrain)
+tabla_lo_E
+```
+
+
+```{r echo=FALSE}
+# Modelo LDA
+tabla_LDA_E<-table(train_lda,ytrain)
+tabla_LDA_E
+```
+
+Las tablas anteriores son las respectivas matrices de confusion asociada a cada modelo. Note que los elementos de la diagonal principal son los aciertos de prediccion y cualquier elemento fuera de ella representa un error a la hora de predecir.
+
+LDA es el modelo que mejor acierta a la hora de predecir, luego, seguiria Naive Bayes, Logistico y Knn en ultimo.
+
+
+Se calcula el trainning MSE para cada modelo:
+
+```{r echo=FALSE}
+lista<-list(tabla_NB_E,tabla_knn_E,tabla_lo_E,tabla_LDA_E)
+training_MSE<-NULL
+for (i in lista) {
+training_MSE<-c(training_MSE,(i[1,2]+i[2,1])/sum(i))
+}
+training_MSE<-data.frame(matrix(training_MSE,nrow = 1))
+names(training_MSE)<-c("Naive Bayes","Knn","Logistico","LDA")
+round(training_MSE,5)
+```
+
+Y se observa que el modelo con menor MSE es LDA.
+
+
+Graficas ROC:
+
+```{r echo=FALSE}
+NB_E_ROC<-roc(response = ytrain, predictor = ifelse(train_NB=="yes",1,0))
+knn_E_ROC<-roc(response = ytrain, predictor = as.numeric(modelo_knn))
+logis_E_ROC<-roc(response = ytrain, predictor = glm.pred)
+LDA_E_ROC<-roc(response = ytrain, predictor = train_lda)
+par(mfrow=c(2,2))
+plot(NB_E_ROC,main="Curva ROC para Modelo Naives Bayes \n (datos entrenamiento)",
+col="blue")
+legend("topleft",paste("Area",as.character(round(NB_E_ROC$auc,4)),sep = "="),
+bty = "n")
+plot(knn_E_ROC,main="Curva ROC para Modelo Knn \n (datos entrenamiento)",
+col="blue")
+legend("topleft",paste("Area",as.character(round(knn_E_ROC$auc,4)),sep = "="),
+bty = "n")
+plot(logis_E_ROC,main="Curva ROC para Modelo log´ıstico \n (datos entrenamiento)",
+col="blue")
+legend("topleft",paste("Area",as.character(round(logis_E_ROC$auc,4)),sep = "="),
+bty = "n")
+plot(LDA_E_ROC,main="Curva ROC para Modelo LDA \n (datos entrenamiento)",
+col="blue")
+legend("topright",paste("Area",as.character(round(LDA_E_ROC$auc,4)),sep = "="),
+bty = "n")
+
+
+```
+
+El modelo que, mejor resultados ofrece a la hora de predecir segun la corva ROC es el modelo LDA. Basta ver la curva y su valor AUC de casi 100%.
+
+G) La matriz de consfusion para los 4 modelos de prueba es:
+
+```{r echo=FALSE}
+test_NB<-predict(modelo_NB,newdata=newdata2,type="class")
+test_knn<-knn(train = train2n, test = test2n, cl = ytrain2, k=2, prob=F)
+pred<- predict(modelo_logistico,newdata = test2n,type = "response")
+test_logs<-ifelse(pred >= 0.5, 1, 0)
+lda.class_t<-predict(modelo_LDA,newdata2,type=c("class"))$class
+test_LDA<-ifelse(ytest==lda.class_t,0,1)
+tabla_NB_T<-table(test_NB,ytest)
+tabla_knn_T<-table(test_knn,ytest)
+tabla_lo_T<-table(test_logs,ytest)
+tabla_LDA_T<-table(test_LDA,ytest)
+
+```
+Matriz de Naive Bayes
+
+```{r echo=TRUE}
+tabla_NB_T
+```
+
+Matriz de Knn
+
+```{r echo=FALSE}
+tabla_knn_T
+```
+
+Matris de Regresion Logistica
+
+```{r echo=FALSE}
+tabla_lo_T
+```
+En este resultado, el valor asignado a la segunda fila (1) es cero. Implicando 
+que la matriz es de la 2x1, 2 columnas y una fila
+
+Matriz LDA
+
+```{r echo=FALSE}
+tabla_LDA_T
+```
+
+Calculo del MSE para cada modelo:
+
+Para Naiev Bayes
+
+```{r}
+MSE_NB_T = (tabla_NB_T[1,2]+tabla_NB_T[2,1])/sum(tabla_NB_T[,])
+MSE_NB_T
+```
+Para Knn
+```{r}
+MSE_Knn_t = (tabla_knn_T[1,2]+tabla_knn_T[2,1])/sum(tabla_knn_T[,])
+MSE_Knn_t
+```
+Para Regresion Losgistica:
+
+```{r echo=TRUE}
+MSE_RL =  (tabla_lo_T[1,2])/sum(tabla_NB_T[,])
+MSE_RL 
+```
+
+Para LDA:
+
+```{r echo=TRUE}
+MSE_LDA = (tabla_LDA_T[1,2]+tabla_LDA_T[2,1])/sum(tabla_LDA_T[,])
+MSE_LDA
+```
+El MSE mas pequeño es de LDA. 
+
+Finalmente, graficas ROC:
+
+```{r echo=FALSE}
+NB_T_ROC<-roc(response = ytest, predictor = ifelse(test_NB=="yes",1,0))
+knn_T_ROC<-roc(response = ytest, predictor = as.numeric(test_knn))
+logis_T_ROC<-roc(response = ytest, predictor = test_logs)
+LDA_T_ROC<-roc(response = ytest, predictor = test_LDA)
+par(mfrow=c(2,2))
+plot(NB_T_ROC,main="Curva ROC para Modelo Naives Bayes \n (datos prueba)",
+col="blue")
+legend("topleft",paste("Area",as.character(round(NB_T_ROC$auc,4)),sep = "="),
+bty = "n")
+plot(knn_T_ROC,main="Curva ROC para Modelo Knn \n (datos prueba)",
+col="blue")
+legend("topleft",paste("Area",as.character(round(knn_T_ROC$auc,4)),sep = "="),
+bty = "n")
+plot(logis_T_ROC,main="Curva ROC para Modelo log´ıstico \n (datos prueba)",
+col="blue")
+legend("topleft",paste("Area",as.character(round(logis_T_ROC$auc,4)),sep = "="),
+bty = "n")
+plot(LDA_T_ROC,main="Curva ROC para Modelo LDA \n (datos prueba)",col="blue")
+legend("topright",paste("Area",as.character(round(LDA_T_ROC$auc,4)),sep = "="),
+bty = "n")
+
+```
+H) El modelo con mejor desempeño fue el del modelo de LDA dada las estimaciones 
+de sus parametros, teniendo en cuenta que fue el que mejor MSE ha tenido a lo largo
+de todas las pruebas.

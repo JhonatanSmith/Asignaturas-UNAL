@@ -1,0 +1,5 @@
+"0","library(class)"
+"0","normilize = function(x){"
+"0","  norm = (x-min(x))/(max(x)-min(x))"
+"0","  return(norm)"
+"0","}"

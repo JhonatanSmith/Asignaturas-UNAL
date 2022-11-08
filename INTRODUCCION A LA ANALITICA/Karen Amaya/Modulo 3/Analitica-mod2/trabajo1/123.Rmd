@@ -1,0 +1,96 @@
+---
+title: "punto3"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**3.** Pruebe que si en el modelo de regresión lineal múltiple se tiene que 
+$p > n$ (el número de covariables es mayor que el tamaño muestral) entonces
+los estimadores de los coeficientes,$\widehat{\beta }$ , no son únicos. ¿Cuáles son las
+alternativas para "resolver" este problema?
+
+Para la regresión lineal múltiple, los coeficientes de regresión se pueden estimar por mínimos cuadrados, Suponiendo lo contrario que se plantea en el punto y  que $n > p $, se tiene a $y_{i}$ la cual es la i-ésima respuesta observada y $x_{ij}$ la i-ésima observación; también se supone que el término del error $\varepsilon$ 
+tiene $E\left ( \varepsilon  \right ) = 0$ y $Var\left ( \varepsilon  \right ) = \sigma ^{2}$, y los errores no estan correlacionados.
+
+El modelo muestral de regresión se puede escribir como:
+
+
+$$
+y_{i}=\beta _{0}+\beta _{1}x_{i1}+\beta _{1}x_{i2}+\ ...\ +\beta _{k}x_{ik} +\varepsilon _{i}\\
+y_{i}=\beta _{0}+\sum_{j=1}^{k}\beta _{j}x_{ij} +\ \varepsilon _{i},  \ i=1,2,...n
+$$
+La función de mínimos cuadrados es
+
+$$
+S\left ( \beta _{0},\beta _{1}, ..., \beta _{k} \right ) = \sum_{i = 1}^{n}\varepsilon _{i}^{2}\\
+ = \sum_{i = 1}^{n}\left ( y_{i}-\beta _{0}-\sum_{j=1}^{k}\beta _{j}x_{ij} \right )^{2}
+$$
+Se debe minimizar la función $S$ respecto a $\beta _{0},\beta _{1}, ..., \beta _{k}$. Los estimadores de $\beta _{0},\beta _{1}, ..., \beta _{k}$ por mínimos cuadrados deben satisfacer
+
+$$
+\frac{\partial S}{\partial \beta _{0}}\mid _{\widehat{\beta _{0}},{\widehat\beta _{2},...,\widehat\beta _{k}}} = -2\sum_{i=1}^{n}\left ( y_{i}-\widehat{\beta _{0}}-\sum_{j=1}^{k}\widehat{\beta_{j}}x_{ij} \right ) = 0\\
+
+\frac{\partial S}{\partial \beta _{j}}\mid _{\widehat{\beta _{0}},{\widehat\beta _{2},...,\widehat\beta _{k}}} = -2\sum_{i=1}^{n}\left ( y_{i}-\widehat{\beta _{0}}-\sum_{j=1}^{k}\widehat{\beta_{j}}x_{ij} \right )x_{ij} = 0, \ j \ = \ 1,2,...,k
+$$
+Al simplificar la ecuación se obtienen las ecuaciones normales de mínimos cuadrados
+
+$$
+n\widehat{\beta _{0}} + \widehat{\beta _{1}}\sum_{i=1}^{n}x_{i1} +  \widehat{\beta _{2}}\sum_{i=1}^{n}x_{i2} + ... +  \widehat{\beta _{k}}\sum_{i=1}^{n}x_{ik} = \sum_{i=1}^{n}y_{i}\\
+
+\widehat{\beta _{0}}\sum_{i=1}^{n}x_{i1} + \widehat{\beta _{1}}\sum_{i=1}^{n}x_{i1}^{2} +  \widehat{\beta _{2}}\sum_{i=1}^{n}x_{i1}x_{i2} + ... +  \widehat{\beta _{k}}\sum_{i=1}^{n}x_{i1}x_{ik} = \sum_{i=1}^{n}x_{i1}y_{i}\\
+
+\vdots  \\
+
+
+\widehat{\beta _{0}}\sum_{i=1}^{n}x_{ik} + \widehat{\beta _{1}}\sum_{i=1}^{n}x_{ik}x_{i1} +  \widehat{\beta _{2}}\sum_{i=1}^{n}x_{ik}x_{i2} + ... +  \widehat{\beta _{k}}\sum_{i=1}^{n}x_{ik}^2 =\sum_{i=1}^{n}x_{ik}y_{i}\\
+$$
+
+Se sae que $p = k + 1$, se mostratra de forma matricial 
+
+$$
+y =X\beta + \varepsilon 
+$$
+
+Se determina el estimador de $\widehat{\beta}$ por minimos cuadrados:
+
+$$
+S(\beta )= \sum_{i=1}^{n}\varepsilon _{i}^2 = \varepsilon {}' \ \varepsilon  = (y - X\beta ){}'(y-X\beta )\\
+
+S(\beta )= y{}'y- \beta {X}'y - y{}'X\beta + \beta {}'X{}'X\beta \\
+
+S(\beta )= y{}'y- 2 \beta {X}'y + \beta {}'X{}'X\beta 
+$$
+Los estimadores de mínimos cuadrados deben satisfacer 
+$$
+
+X{}'X\widehat{\beta }=X{}'y\\
+\widehat{\beta }=\left (  X{}'X\right )^{-1}X{}'y
+$$
+Como se logra ver ese seria el estimador de los $\widehat{\beta}$ y se supone que la matriz inversa 
+$ \left ( X{}'X\right )^{-1}$ siempre existe si los regresores son linealmente independientes.
+
+Es decir, la estimación está bien definida cuando las variables predictoras, es decir, las columnas de x, son linealmente independientes. Pero cuando $p> n$, la matriz  $X$ no puede tener columnas linealmente independientes, $
+y $X^{T}X$ es no invertible, pues como hay mas covariables hay la posibilidad de multicolinealidad, también  al tener un tamaño de muestra pequeño la regresión lineal múltiple se ajusta a los pocos puntos , dando un problema de ajuste,para poder dar predicción , por esto si el modelo, se utiliza para dar predicciones o se cambia la base de datos, los $\widehat{\beta}$ cambiarian completamente, y no tendrian un rango de estimación, además que su $R^{2}$ podria ser muy cercano a 1 , pero seria una mala estimación.
+
+Hay varias maneras de arreglar las cuales serian:
+
+
+- Selección de subconjuntos de covariables: Las covariables
+más relevantes para explicar la variabilidad de Y son seleccionadas, es decir, las que expliquen la mayor variabilidad de Y, y no haya multicolinealidad.
+
+-Reducción de dimensionalidad: Consiste en proyectar las p
+covariables en un subespacio de dimensión reducida, $M$, con $M < p$. Esto produce $M$ combinaciones lineales de las variables originales y dichas combinaciones se usan luego como predictores
+o covariables.
+
+- la selección progresiva hacia adelante, la regresión de crestas, el lazo y la regresión de componentes principales, son particularmente útil para realizar regresiones en entornos de alta dimensión, es decir , mayor número de covariables que tamalo de muestra $p > n$. Esencialmente, estos enfoques evitan el sobreajuste mediante el uso de un enfoque de ajuste menos flexible que los mínimos cuadrados.
+
+Al utilizar estos modelos en entornos de alta dimensión, siempre tener en centa:
+
+-La regularización o la contracción juega un papel clave en un entorno de alta dimensión $(p> n)$.
+
+-La selección del parámetro de ajuste apropiado es clave para una buena precisión de predicción
+
+-El error de prueba aumentará a medida que aumente la dimensionalidad del problema.

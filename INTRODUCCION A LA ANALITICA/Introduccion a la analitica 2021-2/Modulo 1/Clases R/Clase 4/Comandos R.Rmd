@@ -1,0 +1,38 @@
+---
+title: "Clase 4_Ejemplos"
+author: "Jhonatan Smith Garcia"
+date: "13/10/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$$
+
+ E(Y-\widehat{Y})^{2}=E[f(x)+\varepsilon-\widehat{f}(x)]^{2}
+
+=E[(f(x)+\varepsilon-\widehat{f}(x))(f(x)+\varepsilon-\widehat{f}(x))
+
+=E[((f(x)-\widehat{f}(x))+\varepsilon )(f(x)+\varepsilon -\widehat{f}(x))]
+
+=E[(f(x)-\widehat{f}(x))(f(x)+\varepsilon -\widehat{f}(x))+\varepsilon (f(x)+\varepsilon -\widehat{f}(x))]
+$$
+$$
+
+=E[(f(x)-\widehat{f}(x))(f(x)-\widehat{f}(x)+\varepsilon) +\varepsilon (f(x)+\varepsilon -\widehat{f}(x))]
+
+=E[((f(x)-\widehat{f}(x))^{2}]+\varepsilon(f(x)-\widehat{f}(x))+\varepsilon((f(x)-\widehat{f}(x))+\varepsilon)]=
+
+$$
+
+$$
+E[((f(x)-\widehat{f}(x))^{2}+\varepsilon (f(x)-\widehat{f}(x))+\varepsilon (f(x)-\widehat{f}(x))+(\varepsilon ^{2})]=
+
+E[((f(x)-\widehat{f}(x))^{2}]+2E[f(x)-\widehat{f}(x)]+E[(\varepsilon ^{2})]=
+
+(f(x)-\widehat{f}(x))^{2}+0+var(\varepsilon )=(f(x)-\widehat{f}(x))^{2}+var(\varepsilon )
+
+\newpage
+$$
