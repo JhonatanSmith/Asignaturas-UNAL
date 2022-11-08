@@ -1,0 +1,573 @@
+---
+title: ""
+author: ""
+date: ""
+output: pdf_document
+---
+
+$\rule{6.5in}{1pt}$
+\begin{center}
+
+\textbf{UNIVERSIDAD NACIONAL DE COLOMBIA}
+
+\textit{TRABAJO FINAL DE MUESTREO}
+
+\textbf{INTEGRANTES:}
+
+\textit{DANIELA PICO}
+
+\textit{JHONATAN SMITH}
+
+\textit{KALINE RIOS}
+
+\textit{MARIA FERNANDA YEPES}
+
+\textbf{ESCUELA DE ESTADÍSTICA}
+
+\textbf{2021-01}
+\end{center}
+
+$\rule{6.5in}{1pt}$
+
+\begin{center}
+
+\textbf{¿Cómo ha afectado la virtualidad al rendimiento académico de los estudiantes en el COLEGIO CAMPESTRE MONTAIGNE?}
+\end{center}
+
+
+El presente informe data los resultados obtenidos al muestrear la institución educativa COLEGIO CAMPESTRE MONTAIGNE. Dicho colegio es una entidad privada ubicada al norte del municipio de bello Antioquia (Cl 52, Bello, Medellín, Antioquia). 
+Para la toma de muestras y estimación de los parámetros de interés, se identifica lo siguiente:
+
+*	Es de carácter privado y se ubica en las afueras de la ciudad.
+ *	El colegio oferta sus servicios a los grados 6,7,8,9,10 y 11.
+  *	Tiene un alto componente en idiomas extranjeras.
+   *	La cantidad de alumnos por salón es de 20, aproximadamente. 
+    *	Con algunas excepciones atípicas, generalmente siempre se posee el numero de estudiantes por salón ya mencionado.
+
+*	Se posee listado de estudiantes con su información académica.
+
+
+En el listado original se observa información básica de cada estudiante. Identificación, nombre del padre y madre, acudiente, promedio acumulado y demás datos que podrían no ser relevantes para este problema así que se filtran los datos para realizar estimaciones de interés.
+
+De esta base de datos NO se posee información de la nota final de cada una de las asignaturas; solo el promedio final del estudiante al finalizar el año escolar en un listado general se encuentra organizado por grados.
+
+Se dice que un estudiante aprueba el año escolar y es promovido al siguiente grado si su promedio académico acumulado al finalizar el año es superior a tres (3) en una escala evaluativa de 1 a 5. 
+
+NOTA: Se selecciono esta institución educativa por la facilidad de acceso a los datos pues fueron suministrados en un momento vital de la pandemia por las directrices vía correo electrónico.
+
+Para la recolecta de los datos e información necesaria para llevar a cabo el estudio, las directrices de diversas instituciones tanto publicas como privadas mostraron una posición negativa respecto a la toma de muestras y la realización de este tipo de trabajos; argumentando que por motivos de pandemia y privacidad de sus alumnos; se prefiere no compartir ni brindar información que pudiese llegar a “comprometer” la integridad de los alumnos. 
+Finalmente, la institución privada Campestre MONTAIGNE accede a la realización del estudio de muestreo con una condición: solo se tomarán los datos de los estudiantes pertenecientes a los grados a partir de octavo (es decir, grado 8,9,10,11). De años anteriores no se tiene información (sexto y séptimo). 
+Cabe destacar que el colegio no brinda información del por que, pero se sabe qué; el tamaño total de cada grupo es de 20 estudiantes, además, se sabe que la institución educativa tiene disponibilidad para dictar clases a partir de básica secundaria (de sexto a once). 
+Así pues, se asume que los datos del total de estudiantes en la institución son de 120 sin embargo; al no disponer de una parte de la muestra y por como se plantea el problema; podría haber un sesgo en la población.Se decide tomar como “numero total de estudiantes matriculados en un año académico en el COLEGIO CAMPESTRE MONTAIGNE” un valor de 80.
+
+\begin{center}
+\textbf{Diseño Del Muestreo}
+\end{center}
+
+Dentro del marco del muestreo se tenia pensado inicialmente realizar el MAE de dos fases. 
+
+En una primera fase del muestreo se identificaban claramente los estratos y de ellos se realizaba una MAS para cada estrado, de esta muestra aleatoria de estudiantes se aplicaria una encuesta donde en ella se obtuviera informacion mas enfocada que pudiese responder las preguntas problemas.
+
+A continuacion se bosqueja la posible entrevista a llevar a cabo:
+
+ Encuestador: Buenas tardes X, a continuacion le realizaré unas breves preguntas acerca del rendmiento academico que ha llevado en la institucion educativa donde actualmente cursa el grado Y (por ejemplo, noveno)
+
+ Encuestado: Perfecto. 
+ 
+ Encuestador: Muy bien. La primer pregunta es ¿cuantas asignaturas ha perdido en lo que lleva cursado del año escolar?
+ 
+ Encuestado: Hasta el momento ninguna
+ 
+ Encuestador: Ok, de estas, ¿sabe cuales son las notas para las 12 asignaturas?
+ 
+ Encuestado: Ah, en ingles 4, en frances 4.5, en matematicas, 3.9... etc (En este punto, el estudiante suministraria la nota por asignatura)
+ 
+ Encuestador: Ok. ¿ Cuantas horas a la semana estudia usted en promedio?
+ 
+ Encuestado: Ah no, asi fuera de clase, yo estudio unas 3 horitas
+ 
+ Encuestador: Muy bien. ¿ Cual es la asignatura en la que considera usted, su rendimiento es mas bajo?
+ 
+ Encuestado: Hmm... Yo diria que matematicas. 
+ 
+ Encuestador: Finalmente, ¿ha perdido alguna vez una asignatura en esta institucion?
+ 
+ Encuestado: No, nunca.
+ 
+ Encuestador: Ok, muchas gracias por su tiempo X, ha sido muy amable.
+ 
+ Encuestado: A usted, hasta luego. 
+ 
+Con esta informacion podrian responderse varias preguntas de interes que no se encuentran dentro del marco teorico o problema inicial propesto para el trabajo, pero que; debido a la naturalza del muestreo, se podrian hacer inferencias con dichos datos.
+
+Preguntas como, ¿ cual ha sido la asignatura con el promedio mas alto? y, ¿con el mas bajo?. ¿Cuanto estudia en promedio un estudiante por semana fuera de clase?, ¿ Influye esto en su desempeño final?, ¿ Cuantos estudiantes ha perdido o ganado asignaturas? ¿CUal es esta proporcion?, ¿ Cual es la asignatura con peor percepcion en cuanto a su rendimiento por parte del estudiante?, ¿ Es esto ultimo cierto?
+
+Respecto a esto ultimo, perder o no una asignatura afecta el promedio academico obtenido; como es esperable. Sin embargo,
+
+Dentro de todas las preguntas posibles y el marco teorico dado, se podria generar nuevas variables, nuevas preguntas problema para modificar la encuesta de tal manera que esta brindase la mayor cantidad de estudiantes posibles. 
+
+Lamentablemente esto no ha sido posible debido a que los colegios han dado negativas a que los integrantes del equipo de trabajo interactuen de manera directa con sus alumnos (no se otorga ningun tipo de numero de contacto y demas); sumado al hecho de que se ha otorgado una base de datos reducida que se limita aportar la nota promedio obtenida por el estudiante al finalizar el año escolar.
+
+Se desconoce el motivo del por que no solo esta institucion educativa hizo una negativa ante compartir y delimitar la interaccion con los estudiantes. Se asume que una posibilidad (quizas la mas factible) es el alto estrato del colegio y que su estudiantado podria ser parte de alguien cercano a una figura publica y demas. El colegio MONTAINGE recalca que antepone la privacidad de sus estudiantes ante cualquier otro escenario y menciona que sin importar que; no permitirá el acceso a estudiantes.
+
+Lo curioso es que; este no fue el unico colegio que se negó a permitir dicha interaccion. Entre los colegios posibles que se tuvieron en cuenta, como " IE Escuela Normal Superior del MM" hizo la misma aclaracion y dio una negativa a participar en el proceso, "IE La piedad" hizo una negativa ante la posibilidad de de interaccion con sus estudiantes sumado a que; ninguno de estos dos colegios poseia un registro digital de sus estudiantes y se hizo una negativa a acceder a dichos registros de manera fisica. 
+
+Instituciones como "Maria auxiliadora de Bello" o "Institucion Educativa Alfonso Lopez Pumarejo" tambien del municipio de Bello, dieron negativas a la toma de muestras e incluso mencionaron solo estabar dispuestos a suministrar un listado de maximo 20 estudiantes. Dichos datos no darian un analisis optimo para la toma de la muestra y por tanto, la cantidad de colegios rechazados para el estudio fueron 9 en total.
+
+El COLEGIO CAMPESTRE MONTAIGNE dio paso a el estudio con las reestricciones ya mencionadas y el muestreo ha sido realizado con el reducido abanico de posibilidades que este representa. Con esto presente, se entiende que el trabajo ha sido limitado por factores externos y la constante alternancia y PANDEMIA tambien imposibilitó en gran medida el analisis para una correcta toma de datos para los investigadores.
+
+Finalmente, se aclara que el colegio en el cual se realiza la investigacion; otorga dos (2) bases de datos para trabajar con ella. La del 2019 y 2020. En esta base de datos se tiene nombre de los padres, acudiente, ID, promedio academico obtenido, total de asignaturas perdidas y ganadas. 
+
+
+
+**Parámetros a estimar**
+
+* $\mu_i$=La media muestral del promedio obtenido al finalizar el año escolar (2019-2020) de los estudiantes del colegio Campestre Montaigne.
+ * $P_i$=Proporción de estudiantes que ha aprobado o reprobado asignaturas al finalizar el año escolar en el colegio Campestre Montaigne.
+  * $A_i$=El total de estudiantes que perdieron una asignatura al finalizar el año escolar (2019-2020) del colegio Campestre Montaigne.
+   
+**Población objetivo**
+
+Todos los estudiantes que estan matriculados en el colegio Campestre Montaigne durante los años 2019-2020.
+
+**Marco muestral**
+
+Listados de todos los estudiantes que estan matriculados en el  colegio Campestre Montaigne durante los años 2019-2020.
+
+**Elemento de muestreo**
+
+Cada uno de los estudiantes que estan matriculados en el  colegio Campestre Montaigne durante los años 2019-2020.
+
+Para responder la pregunta problema (¿Como ha afectado la virtualidad dada en la pandemia por el COVID-19 en la institucion educativa  COLEGIO CAMPESTRE MONTAIGNE?) se decide realizar un analisis de las notas obtenidas por los estudiantes en el año inmediatamente anterior y el año de la pandemia. 
+
+Se desea analizar si en efecto, la virtualidad afectó de forma positiva o negativa el rendimiento academico de los estudiantes; entendiendo que dicho rendimiento academico ha de ser medido en terminos del promedio academico del estudiante. Es decir, un promedio academico alto (en escala de 1 a 5) representa un buen rendimiento vs un promedio academico bajo, representa un peor rendimiento.
+
+Se entiende, dado esto; que si un alumno en el año 2019 tenia un promedio de 4.8 y en el 2020 dicho promedio descendio a 4, se diria que su rendimiento academico se vio afectado de manera significativa.
+
+Si un estudiante tiene un promedio academico en el año 2019 de 3.5 y en el año 2020 su siguiente promedio fue de 4.5 se identifica un aumento considerable en su promedio y se asume que la vitrualidad lo ha beneficiado.
+
+Si, finalmente, un estudainte tenia un promedio de 3.5 en el año 2019 y en el año siguiente su promedio registrado es de 3.6 o ya sea de 3.4 se dice que dicho promedio se mantiene vigente ya que es natural que el promedio academico oscile alrededor de un valor en circunstancias normales. 
+
+Si este es el ultimo escenario, se dice que el estudiante no se vio afectado de ninguna manera en sus estudios, para bien o para mal; de la virtualidad y la pandemia actual. 
+
+**Tipo de muestreo**
+
+La población tiene un total de 80 estudiantes,estos estan divididos en grados los cuales al ser heterogeneos entre sí, toman el nombre de estratos,se encuentran distribuidos en 4 estratos; el grado octavo, noveno, decimo y once.
+
+Para este caso y debido a la ausencia de muchos datos, se decide trabajar *NO* por grado uno a uno (es decir comparar los promedios del grado 11 del 2019 vs los del grado 11 del 2020) puesto a que, nuevamente, no se tienene algunos datos para realizar dicho analisis (grado 11 del 2019 no se tiene informacion). 
+
+Por tal motivo, se decide comparar el rendimiento de *Un mismo grupo de estudiantes*. Es decir; se toma a los estudiantes de grado decimo en 2019 y a los estudiantes de grado 11 del 2020 (Que son el mismo grupo de estudio pero al año siguiente). De esta manera, se hace el analisis sobre como afectó la virtualidad a los estudiantes del colegio seleccionado (En la totalidad de los datos obtenidos) pero discriminandolos de tal manera que se vea uno a uno dicho analisis. 
+
+**Muestreo Aleatorio Estratificado (MAE):**
+
+El objetivo del MAE es maximizar la información obtenida teniendo en cuenta que la variabilidad de la población no es homogénea. 
+Inicialmente se plantea realizar un muestreo para cada estrato, se opta por seleccionar de manera aleatoria ciertos estudiantes de la base de datos del colegio.
+
+Algunas ventajas de usar MAE son:
+
+* Produce un B (limite del error) mas pequeño con el mismo tamaño de muestra que MAS (Muestreo Aleatorio Simple); suponiendo que las mediciones de los estratos son homogéneas
+ * Se reduce en tiempo y costos las observaciones. En este caso, la toma de datos y entrevistas se hubiesen facilitado.
+  * La estimación de parámetros está dada por subgrupos, dando información mas especifica acerca de N.
+
+Así entonces, se consideran a los cuatro estratos ya mencionados (octavo, noveno, decimo y once) como subpoblaciones del análisis del muestreo.  Se realizarán estimación de los parámetros de interés en dichas subpoblaciones en primera instancia y luego, dichas estimaciones se utilizarán para estimar el parámetro poblacional de interés. 
+
+Se determina los tamaños de la población para los estratos mencionados respectivamente como:
+
+* $K_{ij}$= Número de estudiantes matriculados en el  
+ * j-esimo grado
+$N_i$=Poblacion en el Colegio, $N=\sum(K_{ij})$
+
+Para estimar la varianza del parámetro de interés se realiza una muestra piloto en la cual se selecciona una muestra aleatoria simple (M.A.S) correspondiente al 35% del total de la población de cada estrato. 
+(Para este caso en especifico al tener la lista de la población se elige por facilidad el 35%, aunque en casos con un N más grande este porcentaje tiende a ser menor)
+
+
+NOTA: En el archivo Excel adjunto se evidencian los datos suministrados y se puede comparar las estimaciones realizadas para verificar y constatar la veracidad de los próximos cálculos.
+
+\begin{center}
+\textbf{Elaboración del Muestreo}
+\end{center}
+
+**Resultados de la Muestra piloto año 2019**
+
+
+```{r eval=FALSE, fig.align='center', include=FALSE, out.height="250px", out.width="500px"}
+knitr::include_graphics("C:/Users/Usuario/Desktop/Captura.PNG")
+
+```
+ 
+\newpage
+**Resultados de la Muestra piloto año 2020**
+
+```{r eval=FALSE, fig.align='center', include=FALSE, out.height="250px", out.width="500px"}
+knitr::include_graphics("C:/Users/Usuario/Desktop/Captura2.PNG")
+
+```
+
+**Estimación del tamaño de la muestra para** $\mu$
+
+Para este caso se va utilizar un N=80 que es la cantidad de estudiantes matriculados en los años 2019 y 2020 con $n_i$=20, para i=1,2,3,4
+
+
+**Para el 2019**
+
+Sea: Estrato(1)Grado septimo,Estrato(2)Grado octavo,Estrato(3)Grado noveno,Estrato(4)Grado décimo
+
+De la muestra piloto se obtuvieron las siguientes varianzas:
+
+* $S^2_1$=0.10402381
+
+ * $S^2_2$=0.422380952
+ 
+  * $S^2_3$=0.099047619
+  
+   * $S^2_4$=0.136190476
+   
+   
+La formula tamaño de la muestra para la media con LEE B es:
+
+$$n=\frac{\sum \frac{N_h^2*\sigma_h^2}{w_h}}{N^2*D+\sum^H_{h=1} N_h*\sigma_h^2}$$
+
+Donde se tiene que $w_h=\frac{n_h}{n}$ y ademas
+
+
+Donde; $D=Var[\bar{y_{est}}]=\frac{B^2}{Z^2}$ y $B=Z*\sqrt{Var[\bar{y_{est}}]}=Z*E.E(\bar{y}_{est})$ 
+   
+   
+Realizando las estimaciones pertinentes mediante la asignación de Neyman, pues los costos se asumen iguales, se obtuvo un tamaño de muestra de n=14 (afijacion de Neyman esta dada por $(N_h*S_h)/\sum_{i=1}^H N_h*S_h$ )
+
+Luego la muestra que se tomo para cada grado fue:
+
+$n_1$=3,$n_1$=6,$n_1$=3,$n_1$=4
+
+\newpage
+**Para el 2020**
+
+Sea: Estrato(1)Grado septimo,Estrato(2)Grado octavo,Estrato(3)Grado noveno,Estrato(4)Grado décimo
+
+De la muestra piloto se obtuvieron las siguientes varianzas:
+
+* $S^2_1$=0.03032381
+
+ * $S^2_2$=0.291428571
+ 
+  * $S^2_3$=0.392380952
+  
+   * $S^2_4$=0.08952381
+
+Realizando las estimaciones pertinentes mediante la asignación de Neyman, pues los costos se asumen iguales, se obtuvo un tamaño de muestra de n=15. (Usando la misma formula)
+
+Luego la muestra que se tomo para cada grado fue:
+
+$n_1$=2,$n_1$=5,$n_1$=6,$n_1$=4
+
+**Estimación del tamaño de la muestra para** $p$
+
+**Para el 2019**
+
+Realizando las estimaciones pertinentes mediante la asignación de Neyman, pues los costos se asumen iguales, se obtuvo un tamaño de muestra de n=18.
+
+Luego la muestra que se tomo para cada grado fue:
+
+$n_1$=8,$n_1$=7,$n_1$=1,$n_1$=4
+
+
+**Para el 2020**
+
+Realizando las estimaciones pertinentes mediante la asignación de Neyman, pues los costos se asumen iguales, se obtuvo un tamaño de muestra de n=17.
+
+Luego la muestra que se tomo para cada grado fue:
+
+$n_1$=7,$n_1$=4,$n_1$=6,$n_1$=1
+
+\newpage
+\begin{center}
+\textbf{Muestreo Definitivo}
+\end{center}
+
+Se enumeraron en orden de lista del 1 al 20 los estudiantes matriculados en los estratos 1,2,3,4, Luego con la función sample de R se seleccionaron aleatoriamente los estudiantes según el número de la muestra correspondiente a cada estrato.
+
+**Individuos seleccionados 2019**$\mu$
+
+* Estrato 1: Grado septimo 7 6 2
+ * Estrato 2: Grado octavo 14 11 1 18 4 8
+  * Estrato 3: Grado noveno 8 11 14
+   * Estrato 4: Grado decimo 4 18 20 17
+
+**Individuos seleccionados 2020**$\mu$
+
+* Estrato 1: Grado octavo 6 17 
+ * Estrato 2: Grado noveno 5 14 3 4 10
+  * Estrato 3: Grado decimo 5 20 19 15 9 12
+   * Estrato 4: Grado once 3 19 14 7 
+
+**Individuos seleccionados 2019**$p$
+
+* Estrato 1: Grado septimo 
+ * Estrato 2: Grado octavo 
+  * Estrato 3: Grado noveno 1
+   * Estrato 4: Grado decimo 6 15 11 3
+
+**Individuos seleccionados 2020**$p$
+
+* Estrato 1: Grado octavo  
+ * Estrato 2: Grado noveno 
+  * Estrato 3: Grado decimo 17 8 5 6 10 16 
+   * Estrato 4: Grado once 17
+   
+
+\newpage
+\begin{center}
+\textbf{Estimación de los parámetros 2019}
+\end{center}
+
+Sea Y el promedio anual de un estudiante en el colegio Campestre Montaigne (variable cuantitativa), y asociados a esta variable, sea $\mu$ el promedio academico anual por grado en el colegio Campestre MOntaigne(media poblacional de Y)
+
+La siguiente tabla transpone y explica los datos del enunciado:
+
+|  $Estrato$  |  $N_i$  | $n_i$ | $\bar{y}_i$| $s_i^2$ 
+|-------------|---------|------|------------|--------
+|1            | 20      | 3    | 3.43333    |0.20333
+|2            | 20      | 6    | 3.933333   |0.466666
+|3            | 20      |  3   | 3.833333   |0.083333
+|4            | 20      | 4    | 4.45       |0.096667 
+
+* $L = 4$ Grados en el Colegio Campestre Montaigne (número de estratos).
+    
+* $N = \sum_{i = 1}^L N_i = \sum_{i = 1}^4 N_i = 20 + 20 + 20 + 20 = 80$ Número de estudiantes matriculados en el Colegio Campestre Montaigne (tamaño de la población).
+    
+* $n = \sum_{i = 1}^L n_i = \sum_{i = 1}^4 n_i = 3 + 6 + 3+ 4 = 16$ Estudiantes seleccionadas (tamaño total de la muestra) mediante una MAE.
+
+* $Z_{\alpha/2}= 1.96$
+
+Sea $\mu_i,\, (i=1,2,3,4)$ el promedio anual por estudiante $i$ del Colegio Campestre Montaigne Sabemos que, un IC del $(1 - \alpha)100\%$ para $\mu_i$ es:
+        $$\bar{y}_i \,\pm\, t_{\alpha/2}\, \text{se}(\bar{y}_i)$$
+        
+se necesitan los valores de los cuantiles $t_{0.025}$ de la distribución $t$ y las estimaciones $\text{se}(\bar{y}_i) = \sqrt{\widehat{V}(\bar{y}_i)}$, donde $\widehat{V}(\bar{y}_i) = (\frac{N_i - n_i}{N_i})\frac{s_i^2}{n_i}$
+
+|  $Estrato$  | $\widehat{V}(\bar{y}_i)$| $\sqrt{Var(y_i)}$ | $B$ |
+|-------------|---------|------|------------|
+|1            | $(\frac{20 - 3}{20})\frac{0.20333}{3}=0.0577611$       | 0.2400231    |    1.03272       |
+|2            | $(\frac{20 - 6}{20})\frac{0.466666}{6}=0.054444$      | 0.23    |    0.46346104     |
+|3            |$(\frac{20 - 3}{20})\frac{0.083333}{3}=0.02361111$       |  0.15365   | 0.660734          |
+|4            | $(\frac{20 - 4}{20})\frac{0.096667}{4}=0.019333$    | 0.139043 | 0.386049      | 
+
+|  $Estrato$  | IC del 95% para $\mu_=y_i\pm B$     |
+|-------------|-------------------------------------|
+|1            |$3.43333\pm1.03272$=[2.400,4.46603] |      
+|2            |$3.933333\pm0.46346104$=[3.469871,4.396794]|
+|3            |$3.833333\pm0.660734$=[3.1725,4.49406]         |  
+|4            |$4.45\pm0.386049$=[4.063951,4.836049]            |     
+
+Ahora con una confianza del 95%
+
+* Se estima que el promedio anual en el grado séptimo del Colegio Campestre Montaigne esta entre 2.400 y 4.46603
+ * Se estima que el promedio anual en el grado octavo del Colegio Campestre Montaigne esta entre 3.469871 y 4.396794
+  * Se estima que el promedio anual en el grado noveno del Colegio Campestre Montaigne esta entre 3.1725 y 4.49406
+   * Se estima que el promedio anual en el grado decimo del Colegio Campestre Montaigne esta entre 4.063951 y 4.836049
+   
+   
+Sabemos que:
+        $$\bar{y}_\text{st} = \frac{\sum_{i = 1}^L N_i\,\bar{y}_i}{N} = \frac{\sum_{i = 1}^4 N_i\,\bar{y}_i}{N} = \frac{20(3.43333 ) + 20(3.933333) + 20(3.833333)+ 20(4.45)}{80} = `r round((20*3.43333  + 20*3.933333 + 20*3.833333 + 20*4.45 )/80, 4)`$$
+        
+También, que un IC del $(1 - \alpha)100\%$ para $\mu$ es:
+        $$\bar{y}_\text{st} \,\pm\, t_{\alpha/2, n - L}\, \text{se}(\bar{y}_\text{st})$$
+
+Nuevamente, para una confianza del 95\% se tiene que $\alpha = 0.05$, por lo tanto el valor $t_{0.025, 80 - 4}$ es el cuantil $0.975$ de una distribución $t$ con 77 grados de libertad. Usando $R$ se obtiene $t_{0.025, 77} = `r round(qt(1 - 0.025,77 ), 3)`$.
+        
+Adicionalmente, se requiere la estimación de $\text{se}(\bar{y}_\text{st}) = \sqrt{\widehat{V}(\bar{y}_\text{st})}$, donde
+        $$
+        \begin{aligned}
+        \widehat{V}(\bar{y}_\text{st}) &= \widehat{V}\Big(\frac{\sum_{i = 1}^3 N_i\,\bar{y}_i}{N}\Big) = \frac{\sum_{i = 1}^3 N_i^2\,\widehat{V}(\bar{y}_i)}{N^2}\\[0.2cm]
+        &= \frac{20^2( 0.0577611) + 20^2(0.054444) + 20^2(0.02361111) + 20^2( 0.019333)}{80^2} = 0.009696825
+        \end{aligned}
+        $$
+
+por tanto, $\text{se}(\bar{y}_\text{st}) = \sqrt{ 0.009696825} = `r round(sqrt(0.009696825), 4)`$. Luego, un IC del 95\% para $\mu$ es:
+        $$3.9125 \,\pm\, 1.991(0.6698) = [`r round(3.9125 - 1.991*0.0985, 4)`; `r round(3.9125 + 1.991*0.0985, 4)`]$$
+
+Y así, con una confianza del 95\% se estima que el promedio anual por grado en el colegio Campestre Montaigne en el año 2019 esta entre 3.7164 y 4.1086 
+
+Sea p la proporción de estudiantes en cada grado que pierden materias (proporcion de los elementos con el atributo) y sea $a_i$ el número de estudiantes que pierden asignaturas (atributo)
+La siguiente tabla transpone y explica los datos dados en el enunciado:
+
+|  $Estrato$  |  $N_i$  | $n_i$ | $a_1$| $p_i$ 
+|-------------|---------|------|------------|--------
+|1            | 20      | 8    | 7       |3/8=0.375 
+|2            | 20      | 7    | 0   | 0/7=0
+|3            | 20      |  1   | 0  | 0/1=0
+|4            | 20      | 4    | 0      | 0/4=0
+   
+Luego, se necesitan las estimaciones $\text{se}(\widehat{p}_i) = \sqrt{\widehat{V}(\widehat{p}_i)}$, donde $\widehat{V}(\widehat{p}_i) = (\frac{N_i - n_i}{N_i})\frac{\widehat{p}_i(1-\widehat{p}_i)}{n_i - 1}$.
+
+|  $Estrato$  | $\widehat{V}(\bar{p}_i)$| $\sqrt{Var(p_i)}$ | $B$ |
+|-------------|---------|------|------------|
+|1            | $(\frac{20 - 8}{20})(\frac{0.375(1-0.375)}{7})=0.20008$ | 0.141736    | 0.334498       |
+|2            | 0      | 0    |    0       |
+|3            | 0     |  0   | 0          |
+|4            | 0   | 0 |  0     | 
+
+|  $Estrato$  | IC del 95% para $p_=p_i\pm B$     |
+|-------------|-------------------------------------|
+|1            |$0.375\pm00.334498$=[0.04050,0.41550]       
+Con una confianza del 95% se estima que el porcentaje de estudiantes que perdieron asignaturas en el grado septimo estuvo ente el 4% y el 41%, mientras que en los grados octavo,noveno y decimo fue casi nula.
+
+Luego, sabemos que:
+        $$
+        \begin{aligned}
+        \widehat{p}_\text{st} &= \frac{\sum_{i = 1}^L N_i\,\widehat{p}_i}{N} = \frac{\sum_{i = 1}^3 N_i\,\widehat{p}_i}{N}\\[0.2cm]
+        &= \frac{20(0.375) + 20(0) + 20(0) + 20(0)}{80} = 0.09375
+        \end{aligned}
+        $$
+  
+También, que un IC del $(1 - \alpha)100\%$ para $p$ es:
+        $$\widehat{p}_\text{st} \,\pm\, t_{\alpha/2, n - L}\, \text{se}(\widehat{p}_\text{st})$$
+
+Nuevamente, para una confianza del 95\% se tiene que $\alpha = 0.05$, por lo tanto el valor $t_{0.025, 80 - 4}$ es el cuantil $0.975$ de una distribución $t$ con 76 grados de libertad. Usando $R$ se tiene que $t_{0.025, 76} = `r round(qt(1 - 0.025, 76), 3)`$.
+
+Adicionalmente, se requiere la estimación de $\text{se}(\widehat{p}_\text{st}) = \sqrt{\widehat{V}(\widehat{p}_\text{st})}$, donde
+        $$
+        \begin{aligned}
+        \widehat{V}(\widehat{p}_\text{st}) &= \widehat{V}\Big(\frac{\sum_{i = 1}^3 N_i\,\widehat{p}_i}{N}\Big) = \frac{\sum_{i = 1}^3 N_i^2\,\widehat{V}(\widehat{p}_i)}{N^2}\\[0.2cm]
+        &= \frac{20^2( 0.20008) + 20^2(0) + 20^2(0) + 20^2(0)}{80^2} = `r round((20^2*0.20008)/80^2, 6)`
+        \end{aligned}
+        $$
+        
+por tanto, $\text{se}(\widehat{p}_\text{st}) = \sqrt{0.012505} = `r round(sqrt(0.012505), 4)`$. Luego, un IC del 95\% para $p$ es:
+        $$0.09375\,\pm\,  1.992(0.1118) = [`r round(0.09375 -  1.992*0.1118, 4)`; `r round(0.09375 +  1.992*0.1118, 4)`].$$
+
+        
+\newpage
+\begin{center}
+\textbf{Estimación de los parámetros 2020}
+\end{center}
+
+Sea Y el promedio anual de un estudiante en el colegio Campestre Montaigne (variable cuantitativa), y asociados a esta variable, sea $\mu$ el promedio academico anual por grado en el colegio Campestre MOntaigne(media poblacional de Y)
+
+La siguiente tabla transpone y explica los datos del enunciado:
+
+|  $Estrato$  |  $N_i$  | $n_i$ | $\bar{y}_i$| $s_i^2$ 
+|-------------|---------|------|------------|--------
+|1            | 20      | 2    | 3.1       | 0.02
+|2            | 20      | 5    | 3.38   |0.137
+|3            | 20      |  6   | 3.8   |0.328
+|4            | 20      | 4    | 4.125      | 0.2025
+
+* $L = 4$ Grados en el Colegio Campestre Montaigne (número de estratos).
+    
+* $N = \sum_{i = 1}^L N_i = \sum_{i = 1}^4 N_i = 20 + 20 + 20 + 20 = 80$ Número de estudiantes matriculados en el Colegio Campestre Montaigne (tamaño de la población).
+    
+* $n = \sum_{i = 1}^L n_i = \sum_{i = 1}^4 n_i = 2 + 5 + 6+ 4 = 17$ Estudiantes seleccionadas (tamaño total de la muestra) mediante una MAE.
+
+* $Z_{\alpha/2}= 1.96$
+
+Sea $\mu_i,\, (i=1,2,3,4)$ el promedio anual por estudiante $i$ del Colegio Campestre Montaigne Sabemos que, un IC del $(1 - \alpha)100\%$ para $\mu_i$ es:
+        $$\bar{y}_i \,\pm\, t_{\alpha/2}\, \text{se}(\bar{y}_i)$$
+        
+se necesitan los valores de los cuantiles $t_{0.025}$ de la distribución $t$ y las estimaciones $\text{se}(\bar{y}_i) = \sqrt{\widehat{V}(\bar{y}_i)}$, donde $\widehat{V}(\bar{y}_i) = (\frac{N_i - n_i}{N_i})\frac{s_i^2}{n_i}$
+
+|  $Estrato$  | $\widehat{V}(\bar{y}_i)$| $\sqrt{Var(y_i)}$ | $B$ |
+|-------------|---------|------|------------|
+|1            | $(\frac{20 - 2}{20})\frac{0.02}{2}=0.009$       | 0.09486833    |   1.03272       |
+|2            | $(\frac{20 - 5}{20})\frac{0.137}{5}=0.0822$      | 0.29    |0.61823563       |
+|3            |$(\frac{20 - 6}{20})\frac{0.328}{6}=0.03826667$       |  0.195618   | 0.502739          |
+|4            | $(\frac{20 - 4}{20})\frac{0.2025}{4}=0.0405$    | 0.201246 |  0.122446      | 
+
+|  $Estrato$  | IC del 95% para $\mu_=y_i\pm B$     |
+|-------------|-------------------------------------|
+|1            |$3.1\pm1.03272$=[2.06,4.13272]                          |      
+|2            |$3.38\pm0.61823563$=[2.76176,3.99823]          |
+|3            |$3.833333\pm0.346645$=[3.29726,4.3027399]         |  
+|4            |$4.125\pm0.122446$=[4.012554,4.237446]|
+
+Ahora con una confianza del 95%
+
+* Se estima que el promedio anual en el grado octavo del Colegio Campestre Montaigne esta entre 
+ * Se estima que el promedio anual en el grado noveno del Colegio Campestre Montaigne esta entre 2.871616 y 3.88838
+  * Se estima que el promedio anual en el grado decimo del Colegio Campestre Montaigne esta entre 3.29726 y 4.3027399
+   * Se estima que el promedio anual en el grado once del Colegio Campestre Montaigne esta entre 4.012554 y 4.237446
+   
+Sabemos que:
+        $$\bar{y}_\text{st} = \frac{\sum_{i = 1}^L N_i\,\bar{y}_i}{N} = \frac{\sum_{i = 1}^4 N_i\,\bar{y}_i}{N} = \frac{20(3.1 ) + 20(3.38) + 20(3.8)+ 20(4.125 )}{80} = `r round((20*3.1  + 20*3.38 + 20*3.8 + 20*4.125  )/80, 4)`$$
+        
+También, que un IC del $(1 - \alpha)100\%$ para $\mu$ es:
+        $$\bar{y}_\text{st} \,\pm\, t_{\alpha/2, n - L}\, \text{se}(\bar{y}_\text{st})$$
+
+Nuevamente, para una confianza del 95\% se tiene que $\alpha = 0.05$, por lo tanto el valor $t_{0.025, 80 - 4}$ es el cuantil $0.975$ de una distribución $t$ con 77 grados de libertad. Usando $R$ se obtiene $t_{0.025, 77} = `r round(qt(1 - 0.025,77 ), 3)`$.
+        
+Adicionalmente, se requiere la estimación de $\text{se}(\bar{y}_\text{st}) = \sqrt{\widehat{V}(\bar{y}_\text{st})}$, donde
+        $$
+        \begin{aligned}
+        \widehat{V}(\bar{y}_\text{st}) &= \widehat{V}\Big(\frac{\sum_{i = 1}^3 N_i\,\bar{y}_i}{N}\Big) = \frac{\sum_{i = 1}^3 N_i^2\,\widehat{V}(\bar{y}_i)}{N^2}\\[0.2cm]
+        &= \frac{20^2( 0.02) + 20^2(0.137) + 20^2(0.328) + 20^2(0.2025)}{80^2} = 0.04296875
+        \end{aligned}
+        $$
+
+por tanto, $\text{se}(\bar{y}_\text{st}) = \sqrt{ 0.04296875} = `r round(sqrt(0.04296875), 4)`$. Luego, un IC del 95\% para $\mu$ es:
+        $$ 3.6013 \,\pm\, 1.991( 0.2073) = [`r round( 3.6013 - 1.991* 0.2073, 4)`; `r round( 3.6013 + 1.991* 0.2073, 4)`]$$
+
+Y así, con una confianza del 95\% se estima que el promedio anual por grado en el colegio Campestre Montaigne en el año 2020 esta entre 3.1886 y 4.014
+
+Sea p la proporción de estudiantes en cada grado que pierden materias (proporcion de los elementos con el atributo) y sea $a_i$ el número de estudiantes que pierden asignaturas (atributo)
+La siguiente tabla transpone y explica los datos dados en el enunciado:
+   
+|  $Estrato$  |  $N_i$  | $n_i$ | $a_1$| $p_i$ 
+|-------------|---------|------|------------|--------
+|1            | 20      | 7    | 5       | 4/7=0.571428
+|2            | 20      | 4    | 1   |1/4=0.25
+|3            | 20      |  6   | 1  |1/6=0.16666
+|4            | 20      | 1    | 0      | 0/1=0
+
+
+Luego, se necesitan las estimaciones $\text{se}(\widehat{p}_i) = \sqrt{\widehat{V}(\widehat{p}_i)}$, donde $\widehat{V}(\widehat{p}_i) = (\frac{N_i - n_i}{N_i})\frac{\widehat{p}_i(1-\widehat{p}_i)}{n_i - 1}$.
+
+|  $Estrato$  | $\widehat{V}(\bar{p}_i)$| $\sqrt{Var(p_i)}$ | $B$ |
+|-------------|---------|------|------------|
+|1            | $(\frac{20 - 7}{20})(\frac{0.5714(1-0.5714)}{6})=0.026531$       | 0.162883    |  0.3990664      |
+|2            | $(\frac{20 - 4}{20})(\frac{0.25(1-0.25)}{3})=0.05$      | 0.2236    | 0.7116       |
+|3            |$(\frac{20 - 6}{20})(\frac{0.166(1-0.166)}{5})=0.019382$      |  0.13921  | 0.357794          |
+|4            | 0  | 0 |  0     | 
+
+
+
+|  $Estrato$  | IC del 95% para $ p_=\hat p\pm B$     |
+|-------------|-------------------------------------|
+|1            |$0.571428\pm1.0.394$=[1.78,0.965]                          |      
+|2            |$0.25\pm0.7116$=[2.76176,3.99823]          |
+|3            |$0.1666\pm0.3578$=[-0.46,0.96]         |  
+|4            |$4.125\pm0.122446$=[-0.1912,0.52244]|
+
+Nuevamente, el analisis continuo para un IC de la proporcion no es de utilidad sin embargo, el discreto a la luz de los datos, tampoco es diciente. 
+
+# Conclusiones:
+
+*Sobre el promedio:*
+
+Al analizar los datos obtenidos de las muestras podemos afirmar a un nivel de confianza del 95% que la nota promedio en el colegio MONTAIGNE en el año 2019 fue de 3.9 y en el 2020 fue de 3.6
+
+Como se menciono con anterioridad, al tener una diferencia de 0.3 en la nota, se puede afirmar que la virtualidad SI afectó de manera negativa a la poblacion estudiantil de dicha institucion. 
+
+En las tablas anterioires se puede observar que el estrato 4 (decimo 2019-once 2020) es el estrato con mejor promedio de notas academicas. Esto se explica a que, dicha institucion otorga becas e intercambios internacionales e internacionales a el mejor estudiante. Es de esperar pues; que el rendimiento, independiente de la pandemia o no, sea ligeramente superior en los ultimos grados pues la beca se hace del mejor promedio del grado 10 y 11. Esta informacion fue suministrada por los directivos de la insitucion al preguntar del posible motivo por el cual los promedios podrian ser mas altos en dicho estrato.
+
+Luego, sabemos que:
+Luego, sabemos que:
+        $$
+        \begin{aligned}
+        \widehat{p}_\text{st} &= \frac{\sum_{i = 1}^L N_i\,\widehat{p}_i}{N} = \frac{\sum_{i = 1}^3 N_i\,\widehat{p}_i}{N}\\[0.2cm]
+        &= \frac{20(0.571428) + 20(0.25) + 20(0.16666) + 20(0)}{80} = 0.247022
+        \end{aligned}
+        $$
+
+*Sobre la proporcion y el total poblacional*
+
+Acerca de la proporcion se tienen cierta redundancia en el calculo de dicha proporcion. La mejor aproximacion para la toma de datos no es un metodo continuo (y esto queda evidenciado al ver los IC negativos). Se recomienda usar un metodo discreto para el calculo de la proporcion poblacional a traves de una aproximacion binomial pues los datos con los que se cuentan son muy pocos. (tomando como referencia, la cantidad de asignaturas perdidas)
+
+Con esto en mente, al ver la cantidad de estudiantes que pierden asignaturas en ciertos estratos es practicamente nula (Por ejemplo, grado 10 y 11 del 2019 y 2020); de la misma manera para los otros estratos. 
+
+Por esto se plantea mirar el comportamiento del estimador de la proporcion para cada estrato y con esto se tiene que; en el 2019 la proporcion de estudiantes que perdio almenos una asignatura es de 0.09375 (cerca del 9.4 % de los estudiantes totales).
+
+Si pensamos en el total de estudiantes que han perdido una asignatura en ese año bastaria con calcular 0.09375*N donde N es el numero total de estudiantes(80) lo que implicaria que cerca de 7 estudiantes aproximadamente, han perdido una asignatura en el año 2019. (Nuevamente estos datos si son verificados, nos percatamos que a la luz de los datos, la cantidad de estudiantes que pierden asignatura es muy baja) por tanto, se plantea estas estimaciones a travez de una aproximacion binomial. 
+
+Analogamente, la proporcion de estudiantes que perdieron almenos una asignaturas fue de 0.247022 (cerca del 25%) y el total de estudiantes para el año 2020 que perdieron almenos una asignatura es de 80*0.247022 que es aproxiadamente 20 estudiantes. 
+
+Finalmente se concluye que la virtualidad ha afectado de manera negativa a los estudiantes de la institucion educativa COLEGIO CAMPESTRE MONTAIGNE basado en las estimaciones realizadas. 
+

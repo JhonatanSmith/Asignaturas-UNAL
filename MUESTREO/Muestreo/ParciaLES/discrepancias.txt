@@ -1,0 +1,75 @@
+Ejercicios en los que diferimos
+
+EJERCICIO 1: literales (c) y (d)
+
+Toma las varianzas muestrales como si fueran desviaciones
+
+(c) Para la media 
+
+JJ:       
+B = 1.401298	IC = (85.87143, 88.67403)
+
+Jhonatan: 
+B = 9.473757	IC = (68.94751, 106.22024)
+
+(d)Para el total
+JJ: 
+B = 7707.14	IC = (472292.9, 487707.1)
+
+Jhonatan:
+B = 2.715e+09	IC = (375788.7, 584211.3)
+
+EJERCICIO 3
+Coincidimos en el valor de p_est
+
+En la expresión de la varianza de ph usa n y N en lugar de nh y Nh 
+respectivamente (los cuales quedan definidos de un ejercicio anterior).
+Una vez corregido este pequeño error, las respuestas coinciden
+
+EJERCICIO 4
+
+Toma las varianzas como si fueran desviaciones. Después de corregir esto 
+las respuestas coinciden
+
+EJERCICIO 5
+
+Toma las varianzas como si fueran desviaciones, ademas hay un pequeño 
+detalle que sería bueno discutir
+
+EJERCICIO 7
+
+Hay diferencias en los tamaños de muestra (Literales (d) y (e), según yo
+por los niveles de confianza)
+
+JJ: Aproximadamente del 95% (B = 2 * e.e)
+
+Jhonatan: Una confianza del 95% (B = Z * e.e)
+
+EJERCICIO 10
+
+Discutir
+
+EJERCICIO 28
+
+Procedimientos y resultados diferentes
+
+EJERCICIO 26 
+
+Procedimientos y resultados diferentes diferentes
+
+
+EJERCICIO 21
+
+Diferentes formas de ver las frecuencias de la tabla
+
+JJ: Las frecuencias dadas en la tabla son MUESTRALES
+
+Jhonatan: Las frecuencias dadas en la tabla son POBLACIONALES
+ 
+EJERCICIO 20
+
+Es la tabla de contingencia ambigua, JJ solo hizo los literales (a) y 
+(b) (En dichos literales las respuestas coinciden)
+
+
+
