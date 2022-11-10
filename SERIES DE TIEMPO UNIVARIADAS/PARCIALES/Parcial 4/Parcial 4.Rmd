@@ -1,0 +1,38 @@
+---
+title: "Series de tiempo"
+author: "Jhonatan Smith"
+date: "2022-10-09"
+output: rmdformats::readthedown
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## R Markdown
+
+```{r}
+library(tidyverse)
+library(lubridate)
+datos <- read.csv("Nacidos_Vivos_en_Hospital_Manuel_Uribe_Angel.csv")
+datos$FECHA.NACIMIENTO <- gsub(" \\d+:\\d+:\\d+ .*", "", datos$FECHA.NACIMIENTO)
+datos$FECHA.NACIMIENTO <- as.Date(datos$FECHA.NACIMIENTO, format = "%m/%d/%Y")
+datos <- datos %>%
+  mutate(Anio = year(FECHA.NACIMIENTO), semana = week(FECHA.NACIMIENTO)) %>% 
+  group_by(Anio, semana) %>% 
+  summarise(ratio = sum(SEXO != "MASCULINO")/sum(SEXO == "MASCULINO"))
+lambda <- forecast::BoxCox.lambda(datos$ratio)
+datos$ratio <- forecast::BoxCox(datos$ratio, lambda)
+
+pacf(datos$ratio)
+```
+
+
+```{r}
+x = datos$ratio
+plot(x, type = "l")
+ 
+mod <- forecast::auto.arima(datos$ratio, seasonal = )
+```
+
