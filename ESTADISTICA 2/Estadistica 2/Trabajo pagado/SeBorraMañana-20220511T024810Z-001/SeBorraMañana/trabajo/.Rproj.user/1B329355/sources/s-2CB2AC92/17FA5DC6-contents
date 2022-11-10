@@ -1,0 +1,3 @@
+hii.criterio <- 2*(5/50)
+plot(base.diagnosticos$hii.value)
+abline(h = hii.criterio)

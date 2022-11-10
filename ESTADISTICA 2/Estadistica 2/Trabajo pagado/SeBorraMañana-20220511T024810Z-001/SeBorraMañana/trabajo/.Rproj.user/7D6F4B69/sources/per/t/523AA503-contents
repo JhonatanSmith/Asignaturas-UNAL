@@ -1,0 +1,539 @@
+---
+title: ''
+author: ''
+date: ''
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(rsm)
+library(car)
+library(leaps)
+library(scatterplot3d)
+library(GGally)
+library(olsrr)
+library(perturb)
+library(olsrr)
+```
+
+
+$\rule{6.5in}{1pt}$
+\begin{center}
+
+\textbf{UNIVERSIDAD NACIONAL DE COLOMBIA}
+
+\textit{REGRESIÓN LINEAL MULTIPLE PARTE 1}
+
+\textbf{Autor:}
+
+\textit{Edward Calderon Aristizabal}
+
+\textit{Juan Alejandro Espinosa Caceres}
+
+\textit{Carolina Rodriguez Ramirez}
+
+\textit{Kilmer Alejandro Peña Jimenez}
+
+\textbf{Profesor:}
+
+\textit{Raul Alberto Perez Agamez}
+
+\textbf{2022-01}
+\end{center}
+
+$\rule{6.5in}{1pt}$
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(rsm)
+library(car)
+library(leaps)
+library(scatterplot3d)
+library(GGally)
+library(olsrr)
+library(perturb)
+library(olsrr)
+library(ggplot2)
+```
+
+
+La base de datos se encuentra conformada por 5 variables, de las cuales se tiene a Y como regresora y a X1,X2,X3 y X4 como variables predictoras. Donde las variables representan lo siguiente:
+
+ 1) Y: Calificacion global de trabajo realizado por el supervisor
+ 
+ 2) X1:  Tasa de manejo de quejas de los empleados
+ 
+ 3) X2: Tasa de no permision de privilegios especiales
+ 
+ 4) X3: Tasa de oportunidad para aprender cosas nuevas
+ 
+ 5) X4: Tasa de avance del supervisor a mejires puestos
+ 
+Tiene la siguiente estructura.
+ 
+```{r include=FALSE}
+setwd("C:/Users/jhsga/OneDrive/Escritorio/Estadistica/Estadistica 2/Trabajo pagado/SeBorraMañana-20220511T024810Z-001/SeBorraMañana/trabajo")
+table <- read.table("Equipo44.txt", header = T)
+```
+
+
+```{r echo=FALSE}
+head(table)
+```
+ 
+ La base de datos cuenta con una muestra de 50 observaciones. Antes de entender pretender ajustar cualquier modelo o realizar cualquier procedimiento, se debe de realizar un analisis descriptivo de las variables.
+ 
+# Analisis descriptivo
+
+```{r echo=FALSE}
+df <- data.frame(table)
+attach(df)
+```
+
+```{r include=FALSE}
+gg2<-ggpairs(df,upper=list(continuous = wrap("smooth",alpha = 0.3, size=1.2,method = "lm")),lower=list(continuous ="cor"))
+for(i in 1:ncol(df)){
+  gg2[i,i]<-gg2[i,i]+
+    geom_histogram(breaks=hist(df[,i],breaks = "FD",plot=F)$breaks,
+                   colour = "red",fill="lightgoldenrod1")
+}
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+gg2
+```
+
+El anterioir grafico permite analizar tendencia lineal entre las variables respuestas y las predictoras. En este caso, interesa buscar relaciones lineales entre Y y las parejas $X_j$ para j=1,...,4
+
+Se observa una relacion lineal positiva con X1 y X3. Las variables X2 y X4 parecen tener una relacion mas debil.
+
+Ahora, la correlacion enter las variables ayuda a comprender si hay una relacion lineal para saber si es correcto o no ajustar un modelo.
+
+Se tiene correlacion de Y con X1 de 0.763 y con X3 de 0494; respecto a las otras variables, presentan correlacion mas baja.
+ 
+# Estimacion del modelo:
+
+Se procede a estimar un modelo de regresion lineal multiple con todas las variables predictoras. Ademas; se tiene en cuenta un analisis de significancia del modelo y de cada una de las variables.
+
+*El modelo:*
+
+Se plantea un modelo de RLM para el problema:
+
+$$Y_i = \beta_0 + \beta_1X_{i1} + \beta_2X_{i2} + \cdots+ \beta_4X_{i4}  + \varepsilon_i, \quad i = 1, 2, \ldots, 50$$
+
+Que tiene como supuesto:
+$$\varepsilon_i \overset{\text{iid}}{\sim} N\left(0,\sigma ^2 \right), \quad i = 1, 2, \ldots, 50$$
+
+También se puede especificar el modelo en términos matriciales, así:
+$$\boldsymbol{y} = \boldsymbol{X\beta} + \boldsymbol{\varepsilon} \quad \text{ con }\quad \boldsymbol{\varepsilon}\sim\boldsymbol{N}(\boldsymbol{0}, \sigma^2\boldsymbol{I})$$
+
+**Especificación del modelo de RLM, ANOVA y parámetros estimados**
+
+```{r include=FALSE}
+myAnova <- function(lm.model){
+ SSq <- unlist(anova(lm.model)["Sum Sq"])
+ k <- length(SSq) - 1
+ SSR <- sum(SSq[1:k])
+ SSE <- SSq[(k + 1)]
+ MSR <- SSR/k
+ df.error <- unlist(anova(lm.model)["Df"])[k + 1]
+ MSE <- SSE/df.error
+ F0 <- MSR/MSE
+ PV <- pf(F0, k, df.error, lower.tail = F)
+ result<-data.frame(Sum_of_Squares = format(c(SSR, SSE), digits = 6), DF = format(c(k, df.error), digits = 6),
+                    Mean_Square = format(c(MSR, MSE), digits = 6), F_Value = c(format(F0, digits = 6), ''),
+                    P_value = c(format(PV, digits = 6), ''), row.names = c("Model", "Error"))
+ result
+}
+```
+
+    ```{r, echo=FALSE, warning=FALSE, comment=FALSE, results="asis", message=FALSE, size=20}
+# Ajuste del modelo de RLM
+    modelo=lm(Y~X1+X2+X3+X4)
+```
+
+
+$$
+\begin{array}{lrrrrr} 
+& \text { Estimate } & \text { std. Error } & \text { t value } & \operatorname{Pr}(>|\mathrm{t}|) \\
+\text { (Intercept) } & 4.17527 & 7.74452 & 0.539 & 0.5925 & \\
+\text { X1 } & 0.67105 & 0.06793 & 9.879 & 7.60 \mathrm{e}-13 & \text { *** } \\
+\text { X2 } & 0.01889 & 0.06770 & 0.279 & 0.7815 & \\
+\text { X3 } & 0.29223 & 0.05369 & 5.443 & 2.08 \mathrm{e}-06 & \text { *** } \\
+\text { X4 } & -0.13123 & 0.07325 & -1.792 & 0.0799 &
+\end{array}
+$$
+ 
+Residual standard error: $6.859$ on 45 degrees of freedom
+Multiple R-squared: $0.7657, \quad$ Adjusted R-squared: $0.7449$
+F-statistic: $36.77$ on 4 and 45 DF, p-value: $1.201 e-13$
+
+**El modelo ajustado es:**
+
+$$Y_i = 4.17527 + 0.67105X_{i1} +0.01889X_{i2} + 0.29223 X_{i3}  -0.13123 X_{i4} + \varepsilon_i$$ $$ \quad i = 1, 2, \ldots, 50$$
+
+**Prueba de Significancia de la regresión**
+
+Se quiere probar:
+$$
+\begin{aligned}
+H_0:&\ \beta_1 = \beta_2 = \cdots = \beta_4 = 0, \quad \text{ vs.}\\
+H_1:&\ \text{Algún } \beta_j \neq 0, j = 1, \ldots, 4.
+\end{aligned}
+$$
+
+**Tabla ANOVA**
+
+```{r}
+myAnova(modelo)
+```
+
+
+Para ello se usa la tabla de análisis de varianza. De ella se obtienen los valores del estadístico de prueba $F_0 =36.7703$ y su correspondiente valor-P $\text{vp} = 1.20126e-13$.
+
+Dado que el valor p es menor que el nivel de significancia alfa dado, se rechaza la hipotesis nula a favor de la alterna y se concluye que el modelo es significativo.
+
+Esto implica que, existe almenos una variable que es significativa y que permite explicar la relacion de la variable respuesta.
+
+
+**Cálculo e interpretación del coeficiente de determinación**
+
+Sabemos que $R^2 = \frac{\text{SSR}}{\text{SST}} = 1 - \frac{\text{SSE}}{\text{SST}}$, de manera que se puede calcular de la tabla ANOVA.
+$$R^2 = \frac{\text{SSR}}{\text{SST}} = \frac{6919.40}{6919.40 + 2117.02} = 0.7657236$$
+Este coeficiente de determinacion permite entender la proporcion de varianza que el modelo está explicando de la variable respuesta. DE esta manera, se entiende que aproximadamente el 76.6% de la varianza total es explicada por el modelo. 
+
+Por otra parte, el $R^2$ ajustado es el siguiente:
+
+$$R_{\text{adj}}^2 = 1 - \frac{\left(n - 1\right)\text{MSE}}{\text{SST}} = 1 - \frac{\left(50 - 1\right)47.0448}{6919.40 + 2117.02} = 0.2551005$$
+La anterior medida ayuda a tener una mejor idea de como se comporta la variabilidad explicada por el modelo puesto que el ajustado, si penaliza a multiples variables que no sean significativas. En ese orden de ideas, el $R^2_{adj}$ es de 0.25551 aproximadamente. La variabilidad explicada por el modelo es de aproximadamente 25%. Es relativamente baja, esto puede darse por multiples motivos. 
+
+En otras palabras y teniendo en cuenta que $R^2_{adj}$ penaliza la varianza a medida que se agregan covariables (factor que no tiene en cuenta por si solo R^2) se prefiere usar para el caso de Regresion Lineal Multiple (RLM) el ajustado. 
+
+**Significancia de los parametros:**
+
+Se estandarizan las variables para tenerlas en la misma escala y que sean comparables.
+
+```{r include=FALSE}
+miscoeficientes=function(modeloreg,datosreg){
+coefi=coef(modeloreg)
+datos2=as.data.frame(scale(datosreg))
+coef.std=c(0,coef(lm(update(formula(modeloreg),~.+0),datos2)))
+resul=data.frame(Estimacion=coefi, Coef.Std=coef.std)
+cat("Coeficientes estimados y Coeficientes estimados estandarizados","\n")
+resul
+}
+```
+
+```{r echo=FALSE}
+miscoeficientes(modelo,df)
+```
+
+Estos son los coeficientes estandarizados del modelo puesto que, no se podria dictarminar si son comparables debido a su escala.
+
+Segun la magnitud del valor absoluto de los coeficientes estandarizados, se entiende que la variable con mayor efecto sobre el modelo es X1 seguido de x3. Este resultado es consistente con el primer analisis descriptivo. 
+
+**Prueba de significancia individual de los parametros usando la prueba t**
+
+Estas pruebas establecen el siguiente juego de hipótesis:
+$$\begin{array}{l} H_0: \beta_j = 0\\ H_1: \beta_j \ne 0 \end{array}\ \text{ para }\ j = 1, 2, \ldots, 5.$$
+
+De la tabla de parámetros estimados, a un nivel de significancia $\alpha = 0.05$ se rechaza $H_0$ si $\left | T_0 \right |> T_\frac{\alpha }{2} ,n-k-1$
+
+Donde k representa el numero de variables, n el numero de la muestra.
+
+Para este caso con la $T_{(1-\frac{0.05}{2},45)}=2.014103$ basta comparar con los datos suministrados en la tabla anterior en la columna de t-values:
+
+En ese orden de ideas, al analizar la columna "t value" se comparan los que su valor absoluto sea mayor al valor calculado. Segun esto, las variables significativas son X1 y X3. Nuevamente, esto es consistente con los analissi descriptivos realizados.
+
+Se concluye que los parámetros individuales $\hat\beta_1,\hat\beta_3$ son significativos cada uno en presencia de los demás parámetros; por otro lado, se encuentra que $\hat\beta_0,\hat\beta_2,\hat\beta_4$ no son individualmente  significativos en presencia de los demás parámetros.
+
+**Interpretación de los parámetros estimados**
+
+En este caso, el intercepto no tiene interpretabilidad. Por tanto, $\hat{\beta_0}$ no se interpreta
+
+$\hat{\beta_1}$ = 0.67105  indica que por cada unidad de aumento en la tasa de numero de quejas de los empleados la califiacion global del trabajo bien hecho (Y) aumenta en 0.67105  unidades, cuando las demás variables predictoras se mantienen fijas. 
+
+$\hat{\beta_2}$ = 0.01889  indica que por cada unidad de aumento en la tasa de no privilegios permitidos en la califiacion global del trabajo bien hecho (Y) aumenta en 0.01889  unidades, cuando las demás variables predictoras se mantienen fijas. 
+
+$\hat{\beta_3}$ = 0.29223  indica que por cada unidad de aumento en la tasa de oportunidad de aprender en la califiacion global del trabajo bien hecho (Y) aumenta en 0.29223  unidades, cuando las demás variables predictoras se mantienen fijas. 
+
+$\hat{\beta_4}$ = -0.13123 indica que por cada unidad de aumento en la taa de avance de superioir a mejores puestos la califiacion global del trabajo bien hecho (Y) disminuye en 0.13123  unidades, cuando las demás variables predictoras se mantienen fijas. 
+
+**Prueba F con sumas de cuadrados extras**
+
+Para esta prueba se elegiran convenientemente los parametros no significativos del modelo, en este caso $\beta_4,\beta_2,\beta_0$. Se plantean las siguientes hipotesis:
+
+
+$$H_0:\ \hat{\beta_4} =\ \hat{\beta_2}=\ \hat{\beta_0}= 0\quad \text{ vs. }\quad H_1:\ \text{Algún }\beta_j\neq 0, \ j = 0,2,4$$
+Reescribiendo las hipotesis matricialmente:
+
+$$\left\{\begin{array}{l}
+\mathrm{H}_{0}: \mathbf{L} \underline{\beta}=\underline{\mathbf{0}} \\
+\mathrm{H}_{1}: \mathbf{L} \underline{\beta} \neq \underline{\mathbf{0}}
+\end{array}\right.$$
+
+Donde la matriz L está dada por:
+
+$$\mathbf{L}=\left[\begin{array}{ccccc}
+1 & 0 & 1 & 0 & 1 \\
+\end{array}\right]$$
+
+
+Esta prueba se desarrolla usando sumas de cuadrados extra y se requiere la tabla de todas las regresiones posibles como se presenta a continuación.
+
+**Modelo FULL**
+
+$$\hat{Y_i} = \hat{\beta_0} + \hat{\beta_1X_{i1}} + \hat{\beta_2X_{i2}} + \cdots+ \hat{\beta_4X_{i4}}  + \varepsilon_i, \quad i = 1, 2, \ldots, 50$$ $$ \varepsilon_i \overset{\text{iid}}{\sim} N\left(0,\sigma ^2 \right), \quad i = 1, 2, \ldots, 80$$ 
+
+**Modelo reducido**
+$$\hat{Y_i}= \hat{\beta_1x_{i1}}+\hat{\beta_3x_{i3}}++E_i$$ $$ \varepsilon_i \overset{\text{iid}}{\sim} N\left(0,\sigma ^2 \right), \quad i = 1, 2, \ldots, 50$$
+
+**Estadistico de prueba F0**
+
+$$F_0=\frac{(SSE(MR)-SSE(MF))/2}{MSE(MF)}$$ $$=\frac{(SSE(X_1,X_3)-SSE(X_1,X_2,X_3,X_4))/(n-3)-(n-5)}{MSE(X_1,X_2,X_3,X_4))}$$$$=\frac{SSR(X_1,X_2,X_3,X_4|X_0,,X_2,X_4)/2}{MSE(X_1,X_2,X_3,X_4)}\sim f_2,_{45}\space bajo\space H_0$$
+
+
+```{r, echo=FALSE}
+linearHypothesis(modelo,c("X4=0", "X2=0", "(Intercept)=0"))
+```
+El estadistico F tiene valor de 1.1783 y su valor p asociado a dicha prueba es de 0.3286 por tanto no se rechaza la hipotesis nula y se concluye que el parametro $\beta_j$ no son significativos para el modelo para j =0,2,4
+
+Se concluye que el conjunto de predictoras simultaneamente no son significativas, en presencia de los demás parámetros lo que implica que las variable X2, X4 y el intercepto  no son significativas para explicar la variable respuesta Y. Notese que este resultado coincide con la prueba de significancia individual de los parametros. (Ver summary del modelo en las variables)
+
+**Graficos de residuales estudentizados vs valores ajustados**
+
+```{r echo=FALSE}
+residualPlots(modelo,tests=FALSE,type="rstudent",quadratic=FALSE,col=4,cex=1.0)
+```
+
+1) Se observa que los datos son aleatorios alrededor de 0, no se identifican patrones dentro de las graficas de estudentizados vs valores ajustados lo que indica que no hay problema de varianza constante. 
+
+2) No se evidencian puntos por encima de +- 3 desviaciones. En un principio, parece que no hay evidencia de datos atipicos.
+
+3) En apariencia en el grafico de valores ajustados pareciese haber un punto mas alejado de la nube de puntos. Quizas pueda tratarse de un punto de balanceo.
+
+4) No se observan patrones y se ve aleatoreamente distribuidos. Se asume que no hay carencia de ajuste (Lack of fit) en el modelo.
+
+**Gráfico de normalidad** 
+
+$$H_0:\space \varepsilon_i\space	\sim N(0,\sigma^2)$$
+
+$$H_1:\space \varepsilon_i\space	\nsim N(0,\sigma^2)$$
+
+
+```{r, echo=FALSE, fig.align = "center", fig.height = 6, fig.width = 6, out.width = "70%"}
+test=shapiro.test(rstudent(modelo)) #Test de normalidad sobre residuales estudentizados
+qqnorm(rstudent(modelo),cex=2)
+qqline(rstudent(modelo),col=4)
+legend("topleft",legend=rbind(c("Statistic W","p.value"),round(c(test$statistic,test$p.value),digits=5)),cex=1.2)
+```
+
+
+
+Dado el grafico qqnorm y la prueba de Shaphiro Wilk con el juego de hipotesis ya nombrado, se observa que el valor p es de 0.34 (grande) por tanto no se rechaza la hipotesis nula y se concluye que los residuales distribuyen normal estandar
+
+
+```{r, echo=FALSE}
+    # Cálculo de errores estándar de los valores ajustados
+    se.yhat <- predict(modelo, se.fit = T)$se.fit
+    
+    # Residuales crudos del modelo
+    residuals <- round(modelo$residuals, 4)
+    
+    #res.stud
+     ei <- round(rstandard(modelo), 4)
+    
+    ##rstudent
+     ri <- round(rstudent(modelo), 4) 
+     
+    
+    # Valores de la diagonal de la matriz H
+    hii.value <- round(hatvalues(modelo), 4)
+  
+
+  
+    # Tabla de diagnósticos
+    j <- data.frame(Y = Y, ri, ei, se.yhat, residuals, hii.value)
+    head(j)
+    ```
+Se asume que la observación i es atipica si un ei grande (|ei| > 3) y Se considera potencialmente atipica con ri grande (|ri| > 3). 
+
+No se encuentran observaciones atipicas al analizar los datos. Algo consistente con el analisis descriptivo.
+
+NOTA: Para esta seccion, se muestra solo un fragmento de la tabla de datos. De manera unicamente ilustrativa para ejemplificar que se está observando y en que criterios se puede realizar los analisis de interes. Para verificar si hay o no observaciones que sean atipicas, se usa la funcion filter del paquete dplyr
+
+**Observaciones de balanceo**
+
+Se asume que la observación i es un punto de balanceo si hii > 2p/n.
+En esta práctica tenemos como criterio que: hii > 2(k+1)/n = 2(5/50) = 0.2
+De acuerdo a la columna hii.value la observación 
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+library(dplyr)
+filter(.data = j, abs(j$hii.value)>(0.2))
+
+```
+
+Segun esto, las observaciones 32 y 47 son observaciones de balanceo. Ahora, el valor por el cual superan el criterio de la matriz hat no es muy elevado. Es decir, no sobrepasa muy por encima los valores exigidos entonces incluso aqui, se podria analizar dichos puntos para tenerlos presentes y mirar si se descartan o no. 
+
+**Observaciones influenciales**
+
+```{r include=FALSE}
+prb <-influence.measures(modelo)$is.inf
+prb <- data.frame(prb)
+```
+
+Para identificar estos valores utilizaremos 3 criterios, que son:
+
+* Se dice que la observacion sera influencial si Di > 1.
+ * una observacion sera influencial si |DFFITS| > 2(p/n)^0.5
+  * observaciones con un covratio tal que |COVRATIO-1| > 3(p/n)
+son cadidatas a ser influenciales donde p es el numero de variables
+
+```{r}
+head(prb)
+```
+
+NOTA: Con una funcion de usuario, se genera un data frame donde para cada criterio anterior mencionado, evalua cada observacion. Si sobre pasa la cota (es decir, es influencial, de balanceo o a tipico) lo marca como "TRUE". Se ilutra, como se puede observar de manera general dicho data frame.
+
+```{r}
+filter(prb, prb$cov.r=="TRUE")
+```
+Por criterio de cov.r se tiene que estas observaciones son observaciones influenciables. Por tanto, se recomienda analizar la observacion 22 y 46 para verificarlar, mirar si se pueden remover por algun error a la hora de tomar los datos. 
+
+Tenga presente que cada uno de los criterios utilizados tiene metodologias diferentes. Idealmente se espera consistencia entre todos los criteriores entre si. Si un metodo las categoriza como observaciones influenciales y otro no, depende del investigador mirar detenidamente las observaciones y tomar decisiones. 
+
+**Gráficas de chequeos y diagnosticos**
+
+```{r, echo=FALSE}
+
+jhs =infIndexPlot(modelo)
+
+```
+
+1) El primer grafico de la distancia de Cook, no hay ningun valor superior a 1. Entonces no se identifica puntos de balanceo.
+
+
+2) La segunda grafica señala a las observaciones 22 y 46 por tener valores altos. Pero no supera el criterio de +-3 respecto a la linea del grafico, se asumen no hay observaciones atipicas.
+
+3) El tercer grafico tambien ayuda a identificar si existen valores atipicos. Nuevamente, no existen entonces valores atipicos aunque si señala a la observacion 46 con un valor particularmente alto.
+
+4) En la gráfica de hat.values no se ven puntos de balanceo (no superan el valor del criterio)
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+influencePlot(modelo,xlim=c(0,1),ylim=c(-6.0,4.5))
+```
+ Dado este grafico, no se encuentran observaciones atipicas ni ninguna otra observacion que presente problemas.
+ 
+**Multicolinealidad para modelo full**
+
+Se debe realizar un analisis de multicolinealidad entre las variables.
+
+**Matriz de correlación de variables predictorias**
+```{r, echo=FALSE}
+cor(df)
+```
+
+Al observar la matriz de correlacion de las variables, no se percibe una correlacion fuerte entre las predictoras. Entonces se podria sospechar que no hay problemas de multicolinealidad.
+
+**VIF'S**
+Para analizar problemas de multicolinealidad con los VIF's, se analiza la siguiente tabla:
+
+```{r, echo=FALSE}
+vif(modelo)
+```
+Para VIF's con valores >10 indica que hay problemas de multicolinealidad. Según este criterio no se detecta problemas de multicolinealidad.
+
+**Proporciones de varianza**
+
+Como en los datos $\beta_0$ no tiene interpretabilidad, se trabaja con los datos centrados. Para ello:
+
+
+```{r,echo=FALSE}
+knitr::opts_chunk$set(error = TRUE)
+Ind=colldiag(modelo,center=TRUE)
+X=model.matrix(modelo)[,-1]
+val.prop=prcomp(X,center=TRUE,scale=TRUE)$sdev^2
+resul=data.frame(Val.propio=val.prop,Ind.Cond=Ind$condindx,Pi=Ind$pi)
+resul
+```
+Segun el indice de condicion, existe problemas graves de multicolinealidad si dicho indice es mayor de 31. En ninguna de estas variables hay problemas graves de multicolinealidad ni siquiera problemas ligeros. Esto era de esperarse puesto que en la matriz de correlacion se encontró que la covarianza entre las predictoras era muy pequeña.
+
+En terminos generales, no se detecta ningun probelma de multicolinealidad entre las variables predictoras.
+
+**Selección de variables**
+
+Bajo el modelo ajustado sin las observaciones, se procede a realizar el analisis correspondiente al mejor modelo a ajustar acorde a los criterios solicitados.
+
+comparando todos los posibles modelos y teniendo siempre presente el principio de parsimonia:
+
+ * Por criterio de $R^2_{adj}$ y $R^2$, se selecciona el modelo con el valor mas alto
+ 
+ * Por criterio de MSE se selecciona el modelo con menor valor de este estadistico, aunque es equivalente con el anterior (A menor MSE mayor $R^2_{adj}$ y $R^2$ asi que se esperan resultados similares)
+ 
+ * Por criterior de $C_p$ para el valor mas pequeño de dicho estadistico; estadistico que está dado por:
+ 
+ $$ C_p=\frac{SSE_p}{MSE(X_1,X_2,...,X_k)}-(n-2p)$$ 
+ 
+ Donde $SSE_p$ es el SSE del moderlo de regresion con $p-1\leq k$ variables predictoras y el MSE del denominador es el SSE con todas las k predictoras. 
+ 
+ 
+```{r, echo=FALSE}
+k = ols_step_all_possible(modelo);head(k)
+```
+
+Con esto en mente, se seleccionaria acorde a los criterios mencionados; sin embargo, revisar uno a uno los criterios de la tabla puede ser un trabajo poco efectivo y engorroso. Para ello, se apoya en la siguiente grafica:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+plot(k)
+```
+
+Al observar todos los criterios, se concluye queel mejor modelo a seleccionar es el 5. Puesto que si bien el 11 tiene valores "mejores" segun el resto de criterios, dicha diferencia no es significativa y por tanto, se decide utilizar el modelo 5.
+  
+```{r echo=FALSE}
+k[5,]
+```
+  
+Este modelo tiene a las variables X1 y X3.
+
+**Con las funciones suministradas por el docente**
+
+```{r echo=FALSE}
+# All Posible Regressions Table
+myAllRegTable <- function(lm.model, response = model.response(model.frame(lm.model)), MSE = F){
+  regTable <- summary(regsubsets(model.matrix(lm.model)[, -1], response,
+                                 nbest = 2^(lm.model$rank - 1) - 1, really.big = T))
+  pvCount <- as.vector(apply(regTable$which[, -1], 1, sum))
+  pvIDs <- apply(regTable$which[, -1], 1, function(x) as.character(paste(colnames(model.matrix(lm.model)[, -1])[x],
+                                                                         collapse = " ")))
+  result <- if(MSE){
+    data.frame(k = pvCount, R_sq = round(regTable$rsq, 3), adj_R_sq = round(regTable$adjr2, 3),
+               MSE = round(regTable$rss/(nrow(model.matrix(lm.model)[,-1]) - (pvCount + 1)), 3),
+               Cp = round(regTable$cp, 3), Variables_in_model = pvIDs)
+  } else {
+    data.frame(k = pvCount, R_sq = round(regTable$rsq, 3), adj_R_sq = round(regTable$adjr2, 3),
+               SSE = round(regTable$rss, 3),
+               Cp = round(regTable$cp, 3), Variables_in_model = pvIDs)
+  }
+  format(result, digits = 6)
+}
+myAllRegTable(modelo)
+```
+La anterior tabla muestra todas las posibles regresiones a realizar con una funcion de usuario. 
+Cabe destacar que para resolver el ejercicio se han usado funciones personalizadas. Sin embargo, esta funcion posee informacion mas concisa y, solo por si acaso, se presenta la tabla de posibles regresiones puesto que un inciso del taller asi lo exige. 
+
+**Ajuste del nuevo modelo**
+
+```{r, echo=FALSE}
+modelo_5=lm(Y~X1+X3,data = df)
+summary(modelo_5)
+```
+
+De este modelo, se muestran los parametros estimados y demas valores. Claramente todas las variables son significativas y es el que, siguiendo un principio de parsimonia, tiene menos variables y acoge una mayor proporcion de varianza explicada por el modelo siguiendo el principio de parsimonia.
+
+Por esto, se recomienda finalmente este modelo para trabajar.

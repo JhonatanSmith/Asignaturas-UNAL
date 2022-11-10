@@ -1,0 +1,1082 @@
+---
+title: | 
+  <center> Parcial # 1 </center>
+  <center> Estadistica Bayesiana </center>
+author: |
+  <center> Jhonatan Smith Garcia - Alexis Nieto Morales</center>
+  <center> c.c 1035879811 - c.c 1010088521</center>
+date: "Mayo, 2021"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+## Elicitación del impacto que tiene el sector de los peluqueros en la economía de Puerto Berrío.
+
+## 1. Introducción
+
+Muchas situaciones de estudio pueden estimular el uso de la elicitación como parte de su desarrollo observativo y científico. Es decir, este contexto plantea lo que en Estadística Bayesiana comprende el intentar cuantificar información de expertos, información arraigada principalmente a sus ideas y consideraciones sobre algún tema en específico y de clara relación con dichos sujetos, en consecuencia, esta breve descripción es la referida al concepto de elicitar. 
+
+En este trabajo se busca evidenciar el uso de este concepto con el fin de estudiar, como resultado general, el impacto económico que representa el *sector de peluquería* en la economía de la ciudad de Puerto Berrío. Para ello se busca inicialmente desarrollar un análisis sobre otros cuestionamientos de interes que de manera conjunta ayudarán a resolver el principal enfoque de este estudio. Por lo anterior, el desarrollo pasará primero por elicitar las siguientes medidas:
+
+- El número de peluqueros (estos reciben nombres como estilistas, barberos, etc.) que hay en la ciudad (una distribución discreta elicitada).
+
+- Número promedio de servicios a clientes (pueden ser los mismos clientes varias veces) que atiende cada peluquero en un mes.
+
+- Ingreso promedio por servicio.
+
+Por último, se decide entrevistar solo barberos, puesto que el interés es conocer el caso de estudio para los hombres en particular. Si bien, en las peluquerías también se atienden a hombres, allí gran parte de la población también son mujeres. Por tanto, se decide realizar el proceso de elicitación únicamente en barberías.  Cabe resaltar que para el estudio, el papel del profesional (estilistas, barberos, etc.) que cumpla cada experto no es el objetivo, lo importante es que sea evidente su participación como profesional en el *sector de peluquería* como *barbero*.
+
+## 2. Desarrollo o Metodología 
+
+A continuación, se describe el desarrollo del proceso de elicitación en cuestión. Para ello, el método ejecutado va desarrollado en dos etapas, primero una entrevista para estimar(subjetivamente) cada medida de interés y, segundo, la realización de la **elicitación gráfica a mano alzada** para cada medida investigada, con la finalidad de verificar concordancia con lo descrito en la entrevista y procurar una buena elicitación:
+
+* Primeramente se hizo la ubicación y elección respectiva de los tres expertos      necesarios para este trabajo. Los 3 expertos seleccionados identifican su         profesión como "Barberos", puesto que al interrogarles acerca de si eran lo       mismo que una peluquería su respuesta en todos los casos fue negativa.
+ 
+* Siguiendo la secuencia, se procedió a entregar a cada experto, de forma           individual, un contexto generalizado del estudio que se está realizando. Se les   explicó claramente, de manera individual, que toda la información a               interrogarles está completamente ligada a su experiencia como profesionales y     que contaban con la garantía de pedir mayor explicitud en caso de no entender     al entrevistador durante el proceso de elicitación, con el fin de precisar en     la facilidad y seguridad a la hora de responder. 
+
+* Para efectos prácticos, los entrevistados se describen brevemente en su perfil    laboral y ofrecerán información como: horas de trabajo semanal, cómo identifica   su profesión (peluquero, barbero, estilista, etc) y demás datos relevantes para   con cada individuo. La información sobre cada uno de ellos es la siguiente:
+    
+    - *Experto 1:* El primer experto es Jhoan Pulgarin, un hombre de 27 años que        ejerce la profesión desde la edad de 21 años (contando con 6 años de              experiencia). Se identifica como barbero, tiene su propio local comercial         donde ofrece sus servicios. Labora todos los días de la semana en horarios        de la tarde, a partir de las 12 pm hasta las 9 pm (Horario que comenta ha         sido modificado por la pandemia). 
+ 
+    - *Experto 2:* El segundo experto es Alejandro Jiménez. Un joven de 23 años         que labora de manera informal desde los 15 años de edad. En su momento,           inició su profesión en casa y actualmente posee un local comercial en el          centro del municipio. Labora todos los días, en las mañanas de 8-12 y de 1        a 9 de la noche. 
+ 
+    - *Experto 3:* El tercer experto es Juan Fernando Gómez. Un hombre de 39 años       que trabaja la profesión de barbería desde que terminó sus estudios               secundarios. No recuerda el dato exacto de hace cuanto comenzó a laborar          como barbero. Indica que fue a la edad aproximada de 17 años. Es quizás el        barbero más reconocido en el municipio de Puerto Berrío y cuenta con un           local comercial en el centro del mismo. Labora todos los días en jornada          continua, descansando solo para necesidades basicas (Jornada de 8 AM a 8          PM).
+
+* Se siguió con la realización de la entrevista y el gráfico así:
+    
+    + Al experto en cuestión se le aplica la entrevista en donde se le pregunta         por las distintas estimaciones de interés. El siguiente es un esquema             general aplicado para cada una de las encuestas realizadas, mostrado como         una idea general de las preguntas a ser realizadas, mas no como una               transcripción de los datos tomados. Por consiguiente, la entrevista adjunta       es solo de carácter ilustrativo sobre lo que ha de responderse y dar una          idea acerca de los datos generales otorgados:
+
+
+
+
+      Elicitador: Buenos días, Señor@ X, ¿Cómo se encuentra?
+ 
+      Experto: Muy bien gracias, ¿Qué tal usted?
+     
+      Elicitador: De maravilla. En la siguiente entrevista le haré unas breves                      preguntas, solo tiene que responder a dichas preguntas de manera                   natural y       acorde a su criterio o juicio personal. Si no                     conoce una respuesta,              simplemente puede señalarlo,                   diciendo directamente "no conozco o no sé",         pues la idea                   del proceso estadístico que se realizará acorde a esta                            recopilación de información es, ayudado de un conjunto de                         expertos, realizar una estimación basado en estadistica Bayesiana.
+ 
+      Experto: Perfecto. Suena complejo, pero entonces ¿Qué debo hacer?
+ 
+      Elicitador: En realidad es muy sencillo. Primero, voy a grabar la                             entrevista que le voy a realizar y le haré unas preguntas. Eso                    es todo.
+ 
+      Experto: Muy bien, pero, ¿Preguntas acerca de qué?
+ 
+      **Número de peluqueros en la ciudad.**
+ 
+      Elicitador: La pregunta a resolver es acerca del campo que usted conoce muy                   bien, es la siguiente: ¿Cuántos barberos o estilistas cree que                    hay en la ciudad?  Empecemos por allí, si tuviera que decir                       cuantos barberos o estilistas (en adelante, Profesionales)                        existen en la ciudad, ¿qué número asignaría?
+ 
+      Experto: Pues la verdad, yo no tendría muy claro cuantos exactamente. No                   sabría decirle cuantos exactamente.
+ 
+      Elicitador: Eso es lo que queria escuchar. Suponga por un momento que usted                   va caminando por una zona central de la ciudad, o simplemente va                   caminando por su barrio. ¿Cuántas barberías cree que podría                       encontrar?
+ 
+      Experto: Pues en mi barrio hay unas dos barberías, mal contadas. 
+ 
+      Elicitador: Volviendo a la pregunta anterior, si tuviera que caminar              nuevamente por su barrio o el centro de la ciudad, ¿cuántas barberías y           peluquerías cree que encontraría?
+ 
+      Experto: Hmmm... Pues yo diría que encontraría unos 3 locales en total.           Teniendo en cuenta que el barrio donde vivo no es muy grande. Sí, unas dos        barberías y una peluquería. Mas o menos.
+ 
+      Elicitador: Muy bien. Supongamos que en Puerto Berrío hay cien millones de        personas. ¿Cree usted esto muy probable?
+ 
+      Experto: Para nada. Es absurdo, en puerto Berrío a lo sumo hay unos 80 mil        habitantes.
+ 
+      Elicitador: Perfecto, entonces asumiendo que en Puerto Berrío hay unos 80         mil habitantes, ¿Cree usted entonces que hay 80 mil profesionales del área        en Puerto Berrío?
+ 
+      Experto: Por supuesto que no. No tendría ningún sentido que todos los             habitantes fuesen dichos profesionales.
+ 
+      Elicitador: Muy bien. Osea que en otras palabras, el número de                    profesionales es menor a 80 mil. ¿Es correcto?
+ 
+      Experto: Pues sí. Es correcto.
+ 
+      Elicitador: Si yo le dijese que por ejemplo, según el DANE y los datos            registrados en el censo del 2018, la población del municipio es inferior a        50.000 habitantes,¿Cambiaría la anterior estimación?
+ 
+      Experto: Por supuesto. Ya no podrían ser 80 mil. Es más, decir que son            incluso 10 mil es arriesgado. 
+  
+      Elicitador: Ok. Entonces asumimos que el número de profesionales es mayor a       1 y menor que 10 mil ¿Cierto?
+ 
+      Experto: Lógicamente. Si fuese solo una única persona, no daría a basto           para atender a los habitantes totales. 
+ 
+      Elicitador: ¿Considera que tiene mucha experiencia?
+ 
+      Experto: Sí. Además soy reconocido en el pueblo, supongo que por eso              también me va muy bien. 
+ 
+      Elicitador: Excelente. Cuénteme, ¿Hace cuánto vive en el pueblo?
+ 
+      Experto: Unos 23 años, ¿por qué? 
+ 
+      Elicitador: Es solo curiosidad. Y los 23 años, ¿todos trabajando como             peluquero?
+ 
+      Experto: Sí señor. 
+ 
+      Elicitador: Osea que podríamos decir que usted conoce relativamente bien el       pueblo, ademas de su barrio y el sector donde tiene el local.
+ 
+      Experto: Mas o menos. Algo se conoce. No puedo decir que soy experto pero         diría que sí.
+ 
+      Elicitador: Muy bien, entonces le hago una pregunta. ¿Cuántos barrios o           vecindarios identifica usted en Puerto Berrío? Haga una aproximación acorde       a lo que usted considere correcto. Y entiendase que estamos hablando              únicamente de la zona urbana del municipio.
+ 
+      Experto: Pues así a "vuelo de pájaro" diría que en el municipio hay unos 40       barrios, diría yo. 
+ 
+      Elicitador: Siguiendo entonces esta lógica, ¿cuántos profesionales hay en         la ciudad?
+ 
+      Experto: Ya le mencioné que no me es fácil estimar este número.
+ 
+      Elicitador: Planteemos lo siguiente. Si caminamos por cada uno de los 40          barrios del municipio, ¿cuántas peluquerías cree que encontraría en cada          uno de estos lugares?
+  
+      Experto: Pues, diría que mínimo una. Ya la profesión se ha expandido a lo         largo de los años. No, hasta 3 o 4.
+ 
+      Elicitador: ¿Sería posible encontrar 10 o quizás 20?
+ 
+      Experto: No, eso es imposible. Yo diría que unas 4 peluquerías máximo por         barrio y creo que serían muchas.
+ 
+      Elicitador: Si tuviera que escoger entre uno de dos valores, digamos 4            peluquerias o 5 peluquerias, ¿con cuál se queda?
+ 
+      Experto: Con 4. 5 ya son muchas.
+ 
+      Elicitador: ¿Y si tuviera que escoger entre 1 y 5?
+ 
+      Experto: Con nada mas una. Creo que es más probable encontrar mínimo una          peluquería por barrio que 5.
+ 
+      Elicitador: Lo está haciendo muy bien. ¿Y qué tal entre 3 y 4?
+ 
+      Experto: Con 3. 
+ 
+      Elicitador: ¿Y entre 2 y 3?
+ 
+      Experto: Hmmm creo que 2, aunque creo que sería igual que encontrar nada          más una. Osea, mínimo una o dos peluquerías, lo normal serían 3.
+ 
+      Elicitador: Si yo conociera la cantidad total de peluquerías por barrio y         le dijera que es uno de los siguientes números, y además; si usted adivina,       le doy un premio jugoso, ¿entre 1,2 y 3, cuál cree que es la respuesta?
+ 
+      Experto: Diría que el dos.
+ 
+      Elicitador: Lo está haciendo muy bien, pero ahora, volvamos a la pregunta.        Asumiendo que hay 40 barrios en el municipio y que, en cada uno de ellos          hay 2 barberías; entonces sería correcto pensar que la cantidad de                barberias totales en el municipio es de 80?
+ 
+      Experto: Pues, diría que sí.
+ 
+      Elicitador: Ahora, le informo que, según los datos registrados del DANE en        el 2018, en la ciudad hay 19 barrios, sin incluir zonas no urbanas. Segun         esto, la cantidad de barberias en total serian de 38 en todo el territorio.
+
+      Elicitador: Ahora, generalmente, ¿cuántas personas trabajan en una                barbería?
+ 
+      Experto: Pues normalmente, varias. Pero eso solo pasa en las ciudades             grandes, como medellín. Acá es más normal que cada barbero coloque su local       y ya.
+ 
+      Elicitador: ¿Sería correcto afirmar que en una barbería del municipio            laboran unos 4 profesionales?
+ 
+      Experto: Pues sí y no. Como le digo, lo más normal es encontrarlos               individuales pero conozco algunos pocos donde trabajan unos 3 o 4.
+ 
+      Elicitador: Entonces en promedio, ¿cuántos diría usted que trabajan por          local?
+ 
+      Experto: Pues diría que dos, máximo. Lo más normal es que uno.
+ 
+      Elicitador: Ok, una última pregunta. ¿Qué tan seguro se siente de estos          datos que me informa?
+ 
+      Experto: Pues diría que bastante seguro. Hasta ahora no ha preguntado nada       muy complicado.
+ 
+      Elicitador: Asumiendo estos datos y que hay máximo dos barberos por local,       entonces segun usted en la ciudad hay aproximadamente 76 profesionales. 
+ 
+      **Número promedio de servicios a clientes que atiende en un mes.**
+
+      Elicitador: Ahora, relacionado con la cantidad de personas que atiende al        día, ¿Generalmente, cuántas personas atiende?
+  
+      Experto: Sería bastante complicado de decir... eso es muy relativo y             depende mucho del mes, ¿Sí me entiende?
+ 
+      Elicitador: Si no le molesta, ¿me podría explicar mejor esto? 
+ 
+      Experto: Sí, osea, hay meses que son muy buenos y uno tiene trabajo todos         los días. Son meses donde uno se levanta a las 7 de la mañana y termina a         las 12 de la noche. Por ejemplo, Diciembre y Junio son dos meses donde uno        podría atender perfectamente unas 30 personas en un día. Sobre todo por las       vacaciones y fechas festivas. Ahí uno se have muy buena platica.
+ 
+      Elicitador: Oh entiendo. Mas o menos ¿cuánto podría ganarse en esos meses?
+ 
+      Experto: No pues, en esos meses yo he llegado a ganarme casi 4 millones de       pesos.
+ 
+      Elicitador: Oh, entiendo. Muy buen dinero. Y en un mes normal, ¿Cuánto cree       que gana en promedio?
+ 
+      *Nota: Estos datos de ingreso mensual no hacen parte de las preguntas problemas pero se pueden corroborar en la elicitacion para comparar el modelo simulado vs datos experto*
+ 
+      Experto: Pues en un mes normal, diría yo que unos dos millones a dos             millones y medio. Mas o menos.
+ 
+      Elicitador: ¿Y cree que todos sus colegas ganan lo mismo? 
+ 
+      Experto: Pues yo creo que sí. Aunque hay que entender que las barberías son       casi que exclusivas de hombres, no hay muchos barberos que hagan tinturas,       capas, tratamientos y demás cosas para el cabello. Así que, yo creería que       un barbero ganaría un poquito menos.
+
+      Elicitador:Unas tres preguntas finales y ya con esto acabamos. Si tuviera        que decirme cuantos servicios realiza en un día, en promedio, ¿cuántos           serían?
+ 
+      Experto: Unos 15 a 18 servicios, más o menos, en un día bueno. En un día         normal unos 9 o 10
+ 
+      Elicitador: Por ejemplo, ¿hoy a cuántas personas ha atendido?
+ 
+      Experto: Pues hoy van unas 7 personas.
+ 
+      Elicitador: ¿Y ayer cuántas atendió?
+ 
+      Experto: Creo que 12.
+ 
+      Elicitador: ¿Cuántas cree que pueda atender mañana?
+ 
+      Experto: Unas 10 también.
+ 
+      Elicitador: ¿Es igual en los fines de semana?
+ 
+      Experto: No, ahí se atiende un poquito más. En los fines de semana se puede       subir a 15 la cifra, por día. Sábado y domingo son los días más                  concurridos.
+ 
+      Elicitador: Ok, osea que podriamos decir que usted a la semana atiende           mínimo unas 70 personas, es decir, minimo 10 por día.
+ 
+      Experto: Sí. Diría que es correcto. Hay días que máximo son 15 y mínimo 8. 
+ 
+      **Ingreso promedio por servicio**
+ 
+      Elicitador:Ahora cuénteme, ¿cuánto cobra usted por un servicio?
+ 
+      Experto: 15 mil pesos solo el corte de cabello.
+ 
+      Elicitador: ¿Y cuánto gasta en materiales?
+ 
+      Experto: Pues, eso depende mucho. Pero diría que unos 500 mil pesos, ya que       yo en el local tengo muchas cositas como podrás ver. 
+ 
+      Elicitador: Muy bien. Muchas gracias y eso es todo por la entrevista             ¡Gracias por su tiempo!
+ 
+      Experto: Muchas gracias a usted.
+ 
+    + Una vez realizada la entrevista, se le pide al experto rellenar el gráfico        (Plantillas) a trabajar para verificar la congruencia de la entrevista con        los datos proporcionados en la misma. Dicha plantilla se muestra a                continuación:
+    
+```{r echo=FALSE}
+par(yaxt="n")
+plot(c(-10:0,seq(0,50,5)),seq(0, 58, by=2.64),type="n",ylab="",xlab="Rango de valores de interés", main="Plantilla Elicitación Gráfica\n a Mano Alzada")
+abline(v=seq(5,100,by=5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-15, 1,"Expresión verbal 1",cex=0.5,bg="white")
+legend(-15,15,"Expresión verbal 2",cex=0.5,bg="white")
+legend(-15,21,"Expresión verbal 3",cex=0.5,bg="white")
+legend(-15,31,"Expresión verbal 4",cex=0.5,bg="white")
+legend(-15,41,"Expresión verbal 5",cex=0.5,bg="white")
+legend(-15,49,"Expresión verbal 6",cex=0.5,bg="white")
+```
+ 
+## 3. Resultados
+
+Todos los expertos seleccionados cumplen con criterios necesarios para asegurar que los datos de las elicitaciones son lo suficientemente confiables. Con esto se refiere a los siguientes aspectos: 
+ 
+ 1) Son barberos hombres.
+ 2) Tienen más de 5 años de experiencia en su profesión. 
+ 3) Poseen un local comercial establecido.
+ 4) Son trabajadores independientes. 
+ 5) Son los encargados de manejar las finanzas de su local.
+ 6) Residen en el Municipio de Puerto Berrío almenos desde hace 4 años. 
+ 
+Estas condiciones se consideran importantes para asegurar que los expertos conocen bien su entorno de trabajo.
+
+Una vez verificada la confiabilidad de los expertos, se plantea un análisis sustentado en la ***elicitación gráfica a mano alzada***. 
+
+Una elicitación de un gráfico a mano alzada permite tener rapidez y claridad del experto a la hora de la recolección de su información disponible sobre un tema en cuestión. Se utiliza una plantilla en la cual, el eje "X" ubica los valores necesarios para responder la pregunta en cada caso puntual y en el eje "Y" se ubican expresiones verbales, expresiones las cuales son de utilidad para el experto asginar un valor de "verdad", dando en ellas un punto que intersepto con los datos que considere adecuos. 
+
+Así, por ejemplo, dependiendo de la elicitación a realizar, la expresión superior corresponde a la que presenta un valor de credibilidad más alto (e indirectamente, una probabilidad más alta) basado en la percepción del problema y la expresión inferior es la que expresa un valor de verdad prácticamente nulo, es decir, falso. Por lo tanto, en la secuencia de expresiones, cada una de ellas describirá mayor credibilidad o valor de verdad a medida que presente una altura mayor en su posición sobre el eje Y.
+
+Debido a que en la elicitacion no se recomienda pedirle al experto una estimación puntual acerca del parámetro que se desea estimar, se opta por realizar un proceso inductivo que lleve a una respuesta lo menos sesgada posible. Adicionalmente, para gozar de mayor información a partir de lo obtenido de los expertos, se hará uso de la simulación como herramienta poderosa en este caso.
+
+La simulacion es un proceso computacional de muestreo estadístico controlado. Para este caso particular, debido a que no se pueden realizar estimaciones de manera analítica, se opta por simular muestras de tamaño 10.000 para cada una de las elicitaciones. Esto implica que, se simula una repetición de la entrevista a un expero un total de diez mil veces.
+
+**NOTA:** Las entrevistas se realizan en la casa del elicitador por motivos de la pandemia. 
+
+
+### ***Elicitación 1.*** **Número de peluqueros que hay en la ciudad.**
+ 
+Para ello, en el proceso de elicitación se le realizan al experto dos preguntas de interés a resolver con los gráficos y, también, se muestra el bosquejo de la plantilla a utilizar en cada caso: 
+
+- **¿Cuántos locales de barberos cree que puedan llegar a existir en el municipio?**
+
+**Plantilla:**
+
+```{r echo=FALSE}
+par(yaxt="n")
+plot(c(-10:10,seq(0,80,5)),seq(0, 58, by=1.55),type="n",ylab="",xlab="Número de locales", main="Elicitación del Número de locales")
+abline(v=seq(0,80,5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-15,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-15,15,"No creo...",cex=0.5,bg="white")
+legend(-15,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-15,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-15,41,"Es muy posible",cex=0.5,bg="white")
+legend(-15,49,"Es el numero de locales",cex=0.5,bg="white")
+```
+
+- **¿Cuántas personas trabajan como profesionales en dichos locales?**
+
+**Plantilla:**
+
+```{r echo=FALSE}
+par(yaxt="n")
+plot(c(-1:0,seq(0,10,1)),seq(0, 58, by=4.5),type="n",ylab="",xlab="Número de barberos por local", main="Elicitación del No. de barberos por local")
+abline(v=seq(0,10,1),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-1.5,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-1.5,15,"No creo...",cex=0.5,bg="white")
+legend(-1.5,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-1.5,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-1.5,41,"Es muy posible",cex=0.5,bg="white")
+legend(-1.5,49,"Profesionales por local!",cex=0.5,bg="white")
+```
+
+De esta manera, se obtienen los siguientes resultados:
+
+#### *Para el Experto 1:*
+
+El experto 1 parte de la premisa de que en Puerto Berrío no pueden haber más de 40 barberías. De allí, se llega a los siguientes resultados de la elicitación a mano alzada: 
+
+```{r echo=FALSE,fig.width=5, fig.height=5}
+#Elicitacion EXP1:
+par(yaxt="n")
+plot(c(-10:10,seq(0,80,5)),seq(0, 58, by=1.55),type="n",ylab="",xlab="Número de locales", main="Elicitación del Número de locales")
+abline(v=seq(0,80,5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-15,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-15,15,"No creo...",cex=0.5,bg="white")
+legend(-15,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-15,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-15,41,"Es muy posible",cex=0.5,bg="white")
+legend(-15,49,"Es el numero de locales",cex=0.5,bg="white")
+
+points(seq(0,80,5),c(1, 1, 1, 15, 21, 41,49,41,31,21,21,15,15,1,1,1,1), type = "b", col="black") 
+```
+
+Ahora, la elicitación del número de barberos por local del experto 1 está dada por:
+
+```{r echo=FALSE}
+#Elicitación EXP1
+par(yaxt="n")
+plot(c(-1:0,seq(0,10,1)),seq(0, 58, by=4.5),type="n",ylab="",xlab="Número de barberos por local", main="Elicitación del No. de barberos por local")
+abline(v=seq(0,10,1),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-1.5,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-1.5,15,"No creo...",cex=0.5,bg="white")
+legend(-1.5,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-1.5,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-1.5,41,"Es muy posible",cex=0.5,bg="white")
+legend(-1.5,49,"Profesionales por local!",cex=0.5,bg="white")
+
+points(seq(0,10,1),c(1,49,49,41,21,15,15,15,1,1,1), type = "b", col="black") 
+```
+ 
+
+#### *Para el Experto 2:*
+
+Este experto se decanta por estimar un total de no más de 50 barberías en la cuidad, tal como lo muestra en su graficación sobre la plantilla:
+
+```{r echo=FALSE, fig.height=5, fig.width=5}
+#Elicitacion EXP2:
+par(yaxt="n")
+plot(c(-10:10,seq(0,80,5)),seq(0, 58, by=1.55),type="n",ylab="",xlab="Número de locales", main="Elicitación del Número de locales")
+abline(v=seq(0,80,5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-15,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-15,15,"No creo...",cex=0.5,bg="white")
+legend(-15,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-15,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-15,41,"Es muy posible",cex=0.5,bg="white")
+legend(-15,49,"Es el numero de locales",cex=0.5,bg="white")
+
+
+
+points(seq(0,80,5),c(1, 1, 1, 1, 1,15,21,31,41,41,49,41,41,31,21,15,1), type = "b", col="blue") #Modificacion del experto
+
+
+```
+
+Ahora, la elicitación del número de barberos por local del experto 2 está dada por:
+
+```{r echo=FALSE}
+#Elicitación EXP2
+par(yaxt="n")
+plot(c(-1:0,seq(0,10,1)),seq(0, 58, by=4.5),type="n",ylab="",xlab="Número de barberos por local", main="Elicitación del No. de barberos por local")
+abline(v=seq(0,10,1),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-1.5,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-1.5,15,"No creo...",cex=0.5,bg="white")
+legend(-1.5,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-1.5,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-1.5,41,"Es muy posible",cex=0.5,bg="white")
+legend(-1.5,49,"Profesionales por local!",cex=0.5,bg="white")
+
+
+points(seq(0,10,1),c(1,21,41,49,41,15,1,1,1,1,1), type = "b", col="blue") #Modificacion del experto
+
+```
+
+#### *Para el Experto 3:*
+
+Este experto considera que el número de locales de barbería no supera las 40 locaciones en la ciudad, tal y como lo evidenció a la hora de elicitar sobre la plantilla:
+
+```{r echo=FALSE, fig.height=5, fig.width=5}
+#Elicitacion EXP3:
+par(yaxt="n")
+plot(c(-10:10,seq(0,80,5)),seq(0, 58, by=1.55),type="n",ylab="",xlab="Número de locales", main="Elicitación del Número de locales")
+abline(v=seq(0,80,5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-15,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-15,15,"No creo...",cex=0.5,bg="white")
+legend(-15,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-15,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-15,41,"Es muy posible",cex=0.5,bg="white")
+legend(-15,49,"Es el numero de locales",cex=0.5,bg="white")
+
+points(seq(0,80,5),c(1, 1, 1, 1, 1,15,21,41,49,41,41,31,31,21,15,1,1), type = "b", col="red") #Modificacion del experto
+```
+
+Ahora, la elicitación del número de barberos por local del experto 3 está dada por:
+
+```{r echo=FALSE}
+#Elicitación EXP3
+par(yaxt="n")
+plot(c(-1:0,seq(0,10,1)),seq(0, 58, by=4.5),type="n",ylab="",xlab="Número de barberos por local", main="Elicitación del No. de barberos por local")
+abline(v=seq(0,10,1),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-1.5,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-1.5,15,"No creo...",cex=0.5,bg="white")
+legend(-1.5,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-1.5,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-1.5,41,"Es muy posible",cex=0.5,bg="white")
+legend(-1.5,49,"Profesionales por local!",cex=0.5,bg="white")
+
+points(seq(0,10,1),c(1,49,49,49,41,21,1,1,1,1,1), type = "b", col="red") 
+```
+  
+Una vez realizadas las elicitaciones, se trabajará con el cálculo simulado en R. (Revisar código notas de clase, semana 3).
+
+```{r echo=FALSE}
+set.seed(2021)
+nlocales<-seq(0,80,5) #Cantidad de locales barberias en Puerto BerrÍo
+#----------------------------------------------##------------------------------
+#Simulación EXP1:
+
+h_loc=c(1, 1, 1, 15, 21, 41,49,41,31,21,21,15,15,1,1,1,1)#Elicitación sobre la plantilla
+experto1=cbind(nlocales,h_loc) #Matriz de 2 columnas, col1->nlocales y col2->h_loc
+
+prob_locales=h_loc/sum(h_loc)#Frecuencia relativa de cada valor en h_loc
+
+muestra1_1=sample(nlocales, 10000, replace = TRUE, prob = prob_locales)#muestra simulada
+#----------------------------------------------##------------------------------
+#Simulación EXP2:
+
+h_loc2=c(1, 1, 1, 1, 1,15,21,31,41,41,49,41,41,31,21,15,1) #Elicitación sobre la plantilla
+experto2=cbind(nlocales,h_loc2)#Matriz de 2 collumnas, col1->nlocales y col2->h_loc2
+
+prob_locales2=h_loc2/sum(h_loc2)#Frecuencia relativa de cada valor en h_loc2
+
+muestra2_1=sample(nlocales, 10000, replace = TRUE, prob = prob_locales2)#muestra simulada
+#----------------------------------------------##------------------------------
+#Simulación EXP3: 
+h_loc3=c(1, 1, 1, 1, 1,15,21,41,49,41,41,31,31,21,15,1,1) #Elicitación sobre la plantilla
+experto3=cbind(nlocales,h_loc3)#Matriz de 2 collumnas, col1->nlocales y col2->h_loc3
+
+prob_locales3=h_loc3/sum(h_loc3)#Frecuencia relativa de cada valor en h_loc3
+
+muestra3_1=sample(nlocales, 10000, replace = TRUE, prob = prob_locales3)#muestra simulada
+
+#----------------------------------------------##------------------------------
+#Simulación Muestra Conjunta:
+
+prob_locales4=prop.table(table(c(muestra1_1,muestra2_1,muestra3_1)))#Frecuencia relativa de cada valor en la muestra4
+
+muestra4_1=sample(nlocales, 10000, replace = TRUE, prob = prob_locales4)#Muestra Simulada
+#----------------------------------------------##------------------------------
+ 
+plot(nlocales,prob_locales,type="b",ylab="Densidad",xlab="Número de locales",ylim=c(0,0.2))
+title(main="Número de barberias")
+points(nlocales,prob_locales2,type="b",col="blue")
+points(nlocales,prob_locales3,type="b",col="red")
+points(nlocales,prob_locales4,type="b",col="green")
+
+legend("topright",c("Experto1","Experto2","Experto3","Promedio"),lty = c(1,1,1,1), col=c("black","blue","red","green"),cex = 0.7)
+```
+
+Ahora, nuevamente se grafican las tres curvas elicitadas despues de realizar un proceso de simulación de 10 mil muestras aleatorias. La curva verde representa el promedio de las otras tres curvas elicitadas y de aquí se hace una idea de que el número de locales esperado se encuentra en el punto más alto de la curva promedio. 
+Pero antes de sacar esta conclusión se analiza como es la distribución de cada una de las muestras simuladas con la ayuda de histogramas:
+
+```{r echo=FALSE}
+set.seed(2021)
+par(mfrow=c(2,2))
+hist(muestra1_1,main = "Experto 1",xlab = "Número de locales", col = "black",border = "white") 
+hist(muestra2_1,main = "Experto 2",xlab = "Número de locales", col = "blue")
+hist(muestra3_1,main = "Experto 3",xlab = "Número de locales", col = "red")
+hist(muestra4_1,main = "Muestra Conjunta",xlab = "Número de locales", col = "green" )
+```
+
+Se observa que en este proceso de simulación las muestras resultantes mantienen la información sugerida por los expertos ilustradas en sus elicitaciones. Es decir, este proceso precide de confiabilidad para estimar la cantidad de locales en el municipio. Por lo tanto, la principal muestra a analizar es aquella que origina la curva promedio (color verde) obtenida en el gráfico anterior. 
+
+De esta menera, se obtienen las siguientes medidas de resumen para la muestra conjunta:
+
+```{r}
+set.seed(2021)
+summary(muestra4_1)
+```
+Con esto observamos un promedio de 44 y de lo que podemos deducir que el número esperado, según la información de los expertos, del total de locales en la ciudad de Puerto Berrío es de ***aproximadamente 44 locales***.
+
+Se realiza el mismo proceso de simulación para la cantidad de barberos por local, donde se obtiene que:
+
+```{r}
+set.seed(2021)
+nbarberos<-seq(0,10,1) #Barberos por local
+#----------------------------------------------##------------------------------
+#Simulación2 EXP1:
+h_bar=c(1,49,49,41,21,15,15,15,1,1,1)#Elicitación sobre la plantilla
+experto1=cbind(nbarberos,h_bar) #Matriz de 2 collumnas, col1->nbarberos y col2->h_bar
+
+prob_barberos=h_bar/sum(h_bar)#Frecuencia relativa de cada valor en h_bar
+
+muestra1_1_1=sample(nbarberos, 10000, replace = TRUE, prob = prob_barberos)#muestra simulada
+#----------------------------------------------##------------------------------
+#Simulación2 EXP2:
+
+h_bar2=c(1,21,41,49,41,15,1,1,1,1,1) #Elicitación sobre la plantilla
+experto2=cbind(nbarberos,h_bar2)#Matriz de 2 collumnas, col1->nbarberos y col2->h_bar2
+
+prob_barberos2=h_bar2/sum(h_bar2)#Frecuencia relativa de cada valor en h_bar2
+
+muestra2_1_1=sample(nbarberos, 10000, replace = TRUE, prob = prob_barberos2)#muestra simulada
+#----------------------------------------------##------------------------------
+#Simulación EXP3: 
+h_bar3=c(1,49,49,49,41,21,1,1,1,1,1) #Elicitación sobre la plantilla
+experto3=cbind(nbarberos,h_bar3)#Matriz de 2 collumnas, col1->nbarberos y col2->h_bar3
+
+prob_barberos3=h_bar3/sum(h_bar3)#Frecuencia relativa de cada valor en h_bar3
+
+muestra3_1_1=sample(nbarberos, 10000, replace = TRUE, prob = prob_barberos3)#muestra simulada
+#----------------------------------------------##------------------------------
+#Simulación Muestra Conjunta:
+
+prob_barberos4=prop.table(table(c(muestra1_1_1,muestra2_1_1,muestra3_1_1)))#Frecuencia relativa de cada valor en la muestra4
+
+muestra4_1_1=sample(nbarberos, 10000, replace = TRUE, prob = prob_barberos4)#Muestra simulada
+#----------------------------------------------##------------------------------
+
+plot(nbarberos,prob_barberos,type="b",ylab="Densidad",xlab="Número de barberos por local",ylim=c(0,0.3))
+title(main="Elicitación Número de Barberos por local")
+points(nbarberos,prob_barberos2,type="b",col="blue")
+points(nbarberos,prob_barberos3,type="b",col="red")
+points(nbarberos,prob_barberos4,type="b",col="green")
+
+legend("topright",c("Experto1","Experto2","Experto3","Promedio"),lty = c(1,1,1,1), col=c("black","blue","red","green"),cex = 0.7)
+```
+
+Análogamente se prevee que el número esperado de barberos por local corresponde al pico de curva promedio de color verde. Antes de concluir, se observan las distintas distribuciones relacionadas a estas muestras resultantes relacionadas a esta última elicitación:
+
+```{r echo=FALSE}
+set.seed(2021)
+par(mfrow=c(2,2))
+hist(muestra1_1_1,main = "Experto 1",xlab = "Número de locales", col = "black") 
+hist(muestra2_1_1,main = "Experto 2",xlab = "Número de locales", col = "blue")
+hist(muestra3_1_1,main = "Experto 3",xlab = "Número de locales", col = "red")
+hist(muestra4_1_1,main = "Muestra Conjunta",xlab = "Número de locales", col = "green")
+```
+
+Ya con estos resultados y observando las siguientes medidas de resumen:
+
+```{r echo=FALSE}
+set.seed(2021)
+summary(muestra4_1_1)
+```
+Implicando que el numero promedio de barberos por local es aproxiamadente 3.
+
+## Estimación Elicitada del Total de profesionales.
+
+A partir de la información elicitada se puede generar una nueva simulación basada en las
+elicitaciones realizadas por los expertos.
+
+De esta manera, sean las siguientes variables aleatorias:
+
+
+- $B_i, \; i=1,...,10000$: Valor aleatorio generado de la distribución del Número de Barberos por Local
+
+- $L_i, \; i=1,...,10000$: Valor aleatorio generado de la distribución del Número de locales.
+
+- Se calcula una distribución simulada para el Total de barberos haciendo a $Tb_i$ una variable aleatoria definida como $Tb_{i}=B_i*L_i, \; i=1,...,10000$ 
+
+utilizando la función **sample()** de **R** se obtiene la siguiente distribución:
+
+```{r echo=FALSE}
+set.seed(2021)
+#T_b = (B_i) * (L_i)
+T_b=(muestra4_1_1) * (muestra4_1) #Aquí se calculan todos los posibles totales
+prob_T=prop.table(table(T_b))# Aquí generamos cada posible probabilidad para cada posible total de acuerda a su frecuencia relativa
+muestraTb=sample(unique(T_b), 1000, replace = TRUE,prob= prob_T) #Muestra simulada
+
+#Distribución a partir de un Histograma para la mustra simulada
+par(mfrow=c(1,2))
+hist(muestraTb,main = "Distribución del Total de barberos", xlab = "Barberos", col = "7")
+plot(density(muestraTb), col="7", main = "Density Distribution", xlab = "Total barberos")
+polygon(density(muestraTb), col = "7")
+```
+  
+  Este gráfico resume la información descriptiva sobre el total de barberos en el municipio de Puerto Berrío. Con el fin de conocer la estimación elicitada de acuerdo a lo estudiado, se vale del uso de las siguiente medidas de resumen sobre la muestra simulada:
+  
+```{r}
+set.seed(2021)
+summary(muestraTb)
+```
+  Se concluye, basado en los procesos estimados, que el numero de barberos en en municipio de Puerto Berrío es de 183.9 ó aproximadamente 184. 
+  
+### ***Elicitación 2.*** **Número promedio de servicios a clientes que atiende cada peluquero en un mes.**
+
+Para realizar una mejor estimación de la cantidad de clientes que atiende un profesional en el área, al mes, se realizará el proceso de elicitación a mano alzada. Para dicho proceso, en la entrevista realizada a cada experto se le pregunta directamente por la cantidad de personas que atiende en su local (a través de un proceso de elicitación).
+
+A continuación, se adjunta una plantilla ilustrativa del proceso de elicitación. El eje X toma los valores de cero a 40, la cantidad de personas que asisten a una barbería. Y en el eje vertical, una serie de expresiones verbales:
+
+```{r echo=FALSE, fig.height=5, fig.width=5}
+#Plantilla2:
+par(yaxt="n")
+plot(c(-10:0,seq(0,70,5)),seq(0, 58, by=2.3),type="n",ylab="",xlab="Número de servicios por semana", main="Elicitación Número de Servicios a Clientes")
+abline(v=seq(0,100,by=5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-12,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-12,15,"Yo no creo...",cex=0.5,bg="white")
+legend(-12,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-12,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-12,41,"Es muy posible",cex=0.5,bg="white")
+legend(-12,49,"Mis clientes semanales",cex=0.5,bg="white")
+
+#points(seq(0,5,1),c(1, 21, 41, 31, 21, 1), type = "b", col="red") #Modificacion del experto
+
+```
+
+Todos los expertos coinciden en que en los fines de semana el número de clientes aumenta ligeramente, así que, el proceso de elicitación se hará para una semana cualquiera del mes y dicho valor se multiplicará por 4 para dar con el número de clientes al mes.
+
+La división de este proceso en semanas permite controlar la idea general del experto acerca de la cantidad de clientes, ya que de manera general, la cantidad de clientes al día es un valor que varía a partir de otros factores y se encontró cierta dificultad a la hora de plantear el proceso diariamente. Sin embargo, haciendo la división semanal, los expertos fueron más consistentes en sus respuestas.
+
+Lo siguiente es el listado de resultados elicitados por parte de los expertos:
+
+#### *Para el Experto 1:*
+
+Este experto menciona que semanalmente un número propicio para el total de clientes que maneja sondea entre los 45 y 50 clientes. Seguido a esta información se observa la elicitación realizada:
+
+```{r echo=FALSE, fig.height=5, fig.width=5}
+#Elicitacion EXP1:
+par(yaxt="n")
+plot(c(-10:0,seq(0,70,5)),seq(0, 58, by=2.3),type="n",ylab="",xlab="Número de servicios por semana", main="Elicitación Número de Servicios a Clientes")
+abline(v=seq(0,100,by=5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-12,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-12,15,"Yo no creo...",cex=0.5,bg="white")
+legend(-12,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-12,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-12,41,"Es muy posible",cex=0.5,bg="white")
+legend(-12,49,"Mis clientes semanales",cex=0.5,bg="white")
+
+points(seq(0,70,5),c(1,1,1,1,15,21,21,31,41,49,49,41,21,15,1), type = "b", col="black") #Modificacion del experto
+
+```
+ 
+#### *Para el Experto 2:*
+
+Este experto menciona que, en una semana, la cantidad de servicios realizados puenden estar entre 40 y 45 en total. Su elicitación gráfica es la siguiente: 
+
+```{r echo=FALSE,fig.width=5, fig.height=5}
+#Elicitacion EXP2:
+par(yaxt="n")
+plot(c(-10:0,seq(0,70,5)),seq(0, 58, by=2.3),type="n",ylab="",xlab="Número de servicios por semana", main="Elicitación Número de Servicios a Clientes")
+abline(v=seq(0,100,by=5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-12,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-12,15,"Yo no creo...",cex=0.5,bg="white")
+legend(-12,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-12,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-12,41,"Es muy posible",cex=0.5,bg="white")
+legend(-12,49,"Mis clientes semanales",cex=0.5,bg="white")
+
+points(seq(0,70,5),c(1,1,1,1,15,21,31,41,49,49,41,31,15,1,1), type = "b", col="blue") #Modificacion del experto
+
+```
+
+#### *Para el Experto 3:*
+
+Para este experto la cantidad de servicios realizados semanalmente se encuentra entre los 40 y 45 en total completados. Tal como lo muestra su elicitación gráfica: 
+
+```{r echo=FALSE,fig.width=5, fig.height=5}
+#Elicitacion EXP3:
+par(yaxt="n")
+plot(c(-10:0,seq(0,70,5)),seq(0, 58, by=2.3), type="n", ylab="", xlab="Número de servicios por semana", main="Elicitación Número de Servicios a Clientes")
+abline(v=seq(0,100,by=5),lty=2,col="grey") 
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-12,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-12,15,"Yo no creo...",cex=0.5,bg="white")
+legend(-12,21,"Pudiera ser, pero...",cex=0.5,bg="white")
+legend(-12,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-12,41,"Es muy posible",cex=0.5,bg="white")
+legend(-12,49,"Mis clientes semanales",cex=0.5,bg="white")
+
+points(seq(0,70,5),c(1,1,1,1,21,31,41,41,49,49,21,15,1,1,1), type = "b", col="red") #Modificacion del experto
+
+```
+
+
+Ahora, nuevamente y debido a que no es posible a muestrear más datos, se opta por metodologías de simulación. Para este caso, las elicitaciones se transforman en distribuciones ajustadas y con ellas se tiene que:
+
+```{r echo=FALSE}
+set.seed(2021)
+nclientes<-seq(0,70,5)#Cantidad de clientes por semana
+
+#----------------------------------------------##------------------------------
+#Simulación EXP1:
+
+h_cli=c(1,1,1,1,15,21,21,31,41,49,49,41,21,15,1)#Elicitación sobre la plantilla
+experto1=cbind(nclientes,h_cli) #Matriz de 2 collumnas, col1->nclientes y col2->h_cli
+
+prob_clientes=h_cli/sum(h_cli)#Frecuencia relativa de cada valor en h_cli
+
+muestra1_2=sample(nclientes, 10000, replace = TRUE, prob = prob_clientes)#muestra simulada
+
+#----------------------------------------------##------------------------------
+#Simulación EXP2:
+
+h_cli2=c(1,1,1,1,15,21,31,41,49,49,41,31,15,1,1) #Elicitación sobre la plantilla
+experto2=cbind(nclientes,h_cli2)#Matriz de 2 collumnas, col1->nclientes y col2->h_cli2
+
+prob_clientes2=h_cli2/sum(h_cli2)#Frecuencia relativa de cada valor en h_cli2
+
+muestra2_2=sample(nclientes, 10000, replace = TRUE, prob = prob_clientes2)#muestra simulada
+#----------------------------------------------##------------------------------
+#Simulación EXP3: 
+h_cli3=c(1,1,1,1,21,31,41,41,49,49,21,15,1,1,1) #Elicitación sobre la plantilla
+experto3=cbind(nclientes,h_cli3)#Matriz de 2 collumnas, col1->nclientes y col2->h_cli2
+
+prob_clientes3=h_cli3/sum(h_cli3)#Frecuencia relativa de cada valor en h_cli3
+
+muestra3_2=sample(nclientes, 10000, replace = TRUE, prob = prob_clientes3)#muestra simulada
+
+#----------------------------------------------##------------------------------
+#Simulación Muestra Conjunta:
+
+prob_clientes4=prop.table(table(c(muestra1_2,muestra2_2,muestra3_2)))#Frecuencia relativa de cada valor en la muestra4
+
+muestra4_2=sample(nclientes, 10000, replace = TRUE, prob = prob_clientes4)#Muestra simulada
+#----------------------------------------------##------------------------------
+
+plot(nclientes,prob_clientes,type="b",ylab="Densidad",xlab="Número de servicios",ylim=c(0,0.20))
+title(main="Elicitación Número de servicios a clientes")
+points(nclientes,prob_clientes2,type="b",col="blue")
+points(nclientes,prob_clientes3,type="b",col="red")
+points(nclientes,prob_clientes4,type="b",col="green")
+
+legend("topright",c("Experto1","Experto2","Experto3","Promedio"),lty = c(1,1,1,1), col=c("black","blue","red","green"),cex = 0.7)
+
+```
+
+Aquí se resalta el análisis sobre la curva promedio mostrada en color verde. De acuerdo a la información otorgada por los expertos y luego simulada se puede asumir que el valor estimado buscado corresponde al pico de dicha curva promedio.
+Pero antes observemos las distintas destribuciones correspondientes a las muestras simuladas: 
+
+```{r echo=FALSE}
+set.seed(2021)
+par(mfrow=c(2,2))
+hist(muestra1_2,main = "Experto 1",xlab = "Número de servicios a clientes", col = "black", border = "white") 
+hist(muestra2_2,main = "Experto 2",xlab = "Número de servicios a clientes", col = "blue")
+hist(muestra3_2,main = "Experto 3",xlab = "Número de servicios a clientes", col = "red")
+hist(muestra4_2,main = "Muestra Conjunta",xlab = "Número de servicios a clientes", col = "green")
+```
+
+
+Los datos de los expertos presentan una tendencia repetitiva entre si, generando estimaciones relativamente parecidas; algo completamente normal dada la naturaleza del problema (es decir, es posible incluso que 3 expertos, sin interactuar entre sí, diesen respuestas iguales). Como resultado, la muestra conjunta simulada, aparenta una simetría respecto a cierto valor de los datos. Nuevamente, esperable por la similitud de las elicitaciones pero no por ello, es exactamente simétrica.
+
+Ahora, para responder a lo cuestionado inicialmente, análisamos las siguientes medidas resumen:
+
+```{r echo=FALSE}
+set.seed(2021)
+summary(muestra4_2)
+```
+De esta manera se tiene que en promedio, y basado en el proceso de simulación estadística, el número promedio de servicio a clientes por semana estimado, en una barbería de Puerto Berrío, es de 40 servicios. En otras palabras, un barbero en el municipio de Puerto Berrío, en promedio, atiende 40 personas en una semana. 
+
+Con esto, podemos responder que el promedio de servicios a clientes en una barbería al mes en Puerto Berrío, ***es*** $40*4=160$ ***en total***. 
+
+NOTA: Cabe destacar que de los clientes que asisten a dichas barberías hay un pequeño porcentaje que son clientes recurrentes (asisten más de una ocasión) pero se toma como un servicio mas, independiente de ser un mismo cliente. 
+
+### ***Elicitación 3.*** **Ingreso promedio por servicio.**
+
+En el proceso de elicitación con los expertos, se le realiza una entrevista acerca de los ingresos que reciben en su profesión. La pregunta de interés es respecto al costo por servicio.
+
+La entrevista grabada da una idea general al elicitador de los datos a trabajar y sirven de guía para realizar los análisis correspondientes. 
+
+Se entiende que dentro del marco, los ingresos son medidos en pesos colombianos. Así, se tiene que, para cada uno de los expertos, la elicitación del ingreso por servicio realizado se encuentra en dicha divisa. En un principio se realizará una elicitación a mano alzada para cada experto indicando cuánto cobra por un servicio de corte de cabello. Asumiendo que el experto es consistente, los valores expresados en la entrevista, deberían de verse reflejados en la elicitación a mano alzada.
+
+De esta manera, utilizando la siguiente plantilla:
+
+
+```{r fig.height=5, fig.width=5}
+#Elicitacion1:
+par(yaxt="n")
+plot(c(-10:0,seq(0,50,5)),seq(0, 58, by=2.64),type="n",ylab="",xlab="Precio por servicio (en Miles de peso)", main="Elicitación Ingreso por Servicio")
+abline(v=seq(5,100,by=5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-15,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-15,15,"Se me hace extraño...",cex=0.5,bg="white")
+legend(-15,21,"Quizas...",cex=0.5,bg="white")
+legend(-15,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-15,41,"Es un precio ideal",cex=0.5,bg="white")
+legend(-15,49,"Esto es lo que cobro",cex=0.5,bg="white")
+``` 
+
+
+se obtuvo que:
+
+#### *Para el Experto 1:*  
+
+El experto #1 indica que el valor que este cobra por un servicio de corte de cabello estándar es de 10 mil pesos. Se realiza un análisis del abanico de posibilidades en un rango de precio entre 0 a 50 mil pesos colombianos. (Unidades del eje X)
+
+```{r echo=FALSE, fig.height=5, fig.width=5}
+#Elicitacion EXP1:
+par(yaxt="n")
+plot(c(-10:0,seq(0,50,5)),seq(0, 58, by=2.64),type="n",ylab="",xlab="Precio por servicio (en Miles de peso)", main="Elicitación Ingreso por Servicio")
+abline(v=seq(5,100,by=5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-15,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-15,15,"Se me hace extraño...",cex=0.5,bg="white")
+legend(-15,21,"Quizas...",cex=0.5,bg="white")
+legend(-15,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-15,41,"Es un precio ideal",cex=0.5,bg="white")
+legend(-15,49,"Esto es lo que cobro",cex=0.5,bg="white")
+
+points(seq(0,50,5),c(1, 15, 49, 41, 31, 15,1,1,1,1,1), type = "b", col="black") #Modificacion del experto
+
+``` 
+ 
+#### *Para el Experto 2:*
+
+El experto #2 indica que el valor que este cobra por un servicio de corte de cabello estándar es de 15 mil pesos. Tambien indica que, comunmente sube los precios de su servicio durante ciertas épocas. Se realiza un análisis del abanico de posibilidades en un rango de precio entre 0 a 50 mil pesos colombianos. (Unidades del eje X)
+
+```{r echo=FALSE,fig.width=5, fig.height=5}
+#Elicitacion EXP2:
+par(yaxt="n")
+plot(c(-10:0,seq(0,50,5)),seq(0, 58, by=2.64),type="n",ylab="",xlab="Precio por servicio (en Miles de peso)", main="Elicitación Ingreso por Servicio")
+abline(v=seq(5,100,by=5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-15,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-15,15,"Se me hace extraño...",cex=0.5,bg="white")
+legend(-15,21,"Quizas...",cex=0.5,bg="white")
+legend(-15,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-15,41,"Es un precio ideal",cex=0.5,bg="white")
+legend(-15,49,"Esto es lo que cobro",cex=0.5,bg="white")
+
+points(seq(0,50,5),c(1, 15, 41, 49, 41, 15,15,1,1,1,1), type = "b", col="blue") #Modificacion del experto
+
+```
+
+#### *Para el Experto 3:*
+Este experto indica que el valor que cobra por un servicio de corte de cabello estándar es de 18 mil pesos. También indica que, comunmente sube los precios de su servicio durante ciertas épocas. Se realiza un analisis del abanico de posibilidades en un rango de precio entre 0 a 50 mil pesos colombianos. (Unidades del eje X). Finalmente, la elicitación a mano alzada del experto 3 es la siguiente:
+
+```{r echo=FALSE,fig.width=5, fig.height=5}
+#Elicitacion EXP3:
+par(yaxt="n")
+plot(c(-10:0,seq(0,50,5)),seq(0, 58, by=2.64),type="n",ylab="",xlab="Precio por servicio (en Miles de peso)", main="Elicitación Ingreso por Servicio")
+abline(v=seq(5,100,by=5),lty=2,col="grey")
+abline(h=0)
+abline(h=c(1,15,21,31,41,49), lty=2, col="gray")
+legend(-15,1,"Definitavamente no",cex=0.5,bg="white")
+legend(-15,15,"Se me hace extraño...",cex=0.5,bg="white")
+legend(-15,21,"Quizas...",cex=0.5,bg="white")
+legend(-15,31,"Un poco acertado",cex=0.5,bg="white")
+legend(-15,41,"Es un precio ideal",cex=0.5,bg="white")
+legend(-15,49,"Esto es lo que cobro",cex=0.5,bg="white")
+
+points(seq(0,50,5),c(1, 1, 15, 49, 49, 31,15,1,1,1,1), type = "b", col="red") 
+```
+
+Con las tres elicitaciones a mano alzadas se tiene una pregunta inmediata. Según estos expertos, ¿cuál es el costo por servicio de las barberías en Puerto Berrío? Teniendo en cuenta que, cada uno de los expertos ha asignado un valor y una curva de distribución, sería esperable observar cada una de ellas. De esta manera, realizando un promedio entre todos los expertos mediante una simulación de 10.000 entrevistas, se tiene que:
+
+```{r echo=FALSE}
+set.seed(2021)
+
+ingresos<-seq(0,50,5) #Ingresos en miles de pesos COP(variable fija)
+
+#----------------------------------------------##------------------------------
+
+#Simulación EXP1:
+
+h_ing=c(1, 15, 49, 41, 31, 15,1,1,1,1,1)#Elicitación sobre la plantilla
+experto1=cbind(ingresos,h_ing) #Matriz de 2 collumnas, col1->ingresos y col2->h_ing
+
+prob_ingresos=h_ing/sum(h_ing)#Frecuencia relativa de cada valor en h_ing
+
+muestra1_3=sample(ingresos, 10000, replace = TRUE, prob = prob_ingresos)#muestra simulada
+
+#----------------------------------------------##------------------------------
+
+#Simulación EXP2:
+
+h_ing2=c(1, 15, 41, 41, 41, 15,15,1,1,1,1) #Elicitación sobre la plantilla
+experto2=cbind(ingresos,h_ing2)#Matriz de 2 collumnas, col1->ingresos y col2->h_ing2
+
+prob_ingresos2=h_ing2/sum(h_ing2)#Frecuencia relativa de cada valor en h_ing2
+
+muestra2_3=sample(ingresos, 10000, replace = TRUE, prob = prob_ingresos2)#muestra simulada
+#----------------------------------------------##------------------------------
+
+#Simulación EXP3: 
+h_ing3=c(1, 1, 15, 41, 31, 31,15,1,1,1,1) #Elicitación sobre la plantilla
+experto3=cbind(ingresos,h_ing3)#Matriz de 2 collumnas, col1->ingresos y col2->h_ing2
+
+prob_ingresos3=h_ing3/sum(h_ing3)#Frecuencia relativa de cada valor en h_ing3
+
+muestra3_3=sample(ingresos, 10000, replace = TRUE, prob = prob_ingresos3)#muestra simulada
+#----------------------------------------------##------------------------------
+
+#Simulación Muestra Conjunta:
+
+prob_ingresos4=prop.table(table(c(muestra1_3,muestra2_3,muestra3_3)))#Frecuencia relativa de cada valor en la muestra4
+
+muestra4_3=sample(ingresos, 10000, replace = TRUE, prob = prob_ingresos4)#Muestra simulada
+
+plot(ingresos,prob_ingresos,type="b",ylab="Densidad",xlab="Ingreso por servicio(en miles de pesos COP)",ylim=c(0,0.35))
+title(main="Ingreso por servicio Barberias")
+points(ingresos,prob_ingresos2,type="b",col="blue")
+points(ingresos,prob_ingresos3,type="b",col="red")
+points(ingresos,prob_ingresos4,type="b",col="green")
+
+legend("topright",c("Experto1","Experto2","Experto3","Promedio"),lty = c(1,1,1,1), col=c("black","blue","red","green"),cex = 0.7)
+
+```
+
+El gráfico anterior presenta con claridad las posibles distribuciones de cada uno de los expertos bajo las muestras simuladas para cada uno en esta elicitación. Además, una distribución en color verde referente al promedio de los datos que involucran a todos los expertos. Los datos han sido simulados debido a la dificultad que puede llegar a presentar realizar estimaciones puntuales con una muestra de n=3 (expertos). Por tal motivo, se hace uso de esta herramienta.
+
+En particular, la curva de interés es aquella que simula el promedio de las 3 curvas juntas y que está en color verde. Con esta muestra se puede realizar una estimación del valor promedio del servicio de los barberos en la ciudad de Puerto Berrío.  La gráfica nos da una idea aproximada de como se distribuyen los datos simulados y que valores puede llegar a tomar. 
+ 
+Se espera que el valor promedio de la estimación de ingreso por servicio sea un valor entre 14 a 18 mil pesos, acorde con la gráfica. Para verificar esta proposición, se procede a trabajar con las muestras simuladas tanto para los 3 expertos como para la utilizada para calcular el promedio correspondiente.
+
+Primero hagamos un análisis gráfico de la distribución de cada muestra existente a partir de un histograma, tal y como se presenta a continuación:
+  
+```{r echo=FALSE}
+set.seed(2021)
+par(mfrow=c(2,2))
+hist(muestra1_3,main = "Experto 1",xlab = "Costo/Servicio(miles de pesos COP)", col = "black", border = "white") 
+hist(muestra2_3,main = "Experto 2",xlab = "Costo/Servicio(miles de pesos COP)", col = "blue")
+hist(muestra3_3,main = "Experto 3",xlab = "Costo/Servicio(miles de pesos COP)", col = "red")
+hist(muestra4_3,main = "Muestra Conjunta",xlab = "Costo/Servicio(miles de pesos COP)", col = "green")
+```
+
+
+Los histogramas son una representación a modo de frecuencia de las elicitaciones a mano alzada realizadas por los expertos. En ellos se observa, primero que todo, que el proceso de simulación conserva que las frecuencias mayoritarias corresponden al rango de ingresos por servicios dado por los expertos. Por tal motivo, consideramos válidas estas simulaciones y con la ***Muestra Conjunta*** se trabaja para capturar la información de interés, ya que es originaria o resultante de lo entregado por los expertos. 
+
+A continuación, se muestran algunas medidas de resumen enlazadas a la muestra de la distribución promedio (Muestra Conjunta): 
+
+```{r}
+set.seed(2021)
+summary(muestra4_3)
+```
+Con esto, vemos que la media es equivalente a 15 miles de pesos colombianos. Esto implica que, este valor es la estimación elicitada de lo esperado, en ingreso monetario, por un servicio de barbería en Puerto Berrío, acorde a información otorgada por los expertos.
+
+## Estimación Elicitada del Ingreso Total del sector por mes.
+
+En este nuevo contexto, esta estimación no entró como una elicitación directa para los expertos interrogados. Sin embargo, se cuenta con la información necesaria para hacer este cálculo. Es decir, podemos ver el ingreso total del sector como una variable aleatoria que dependa o se genere a partir de la información recogida de los expertos como:
+
+Sean,
+
+- $N_i, \; i=1,...,10000$: Valor aleatorio generado de la distribución del Número de Peluqueros simulada.
+
+- $S_i, \; i=1,...,10000$: Valor aleatorio generado de la distribución del Número de Servicios a Clientes simulado.
+
+- $P_i, \; i=1,...,10000$: Valor aleatorio generado de la distribución del Costo promedio por Servicio simulada.
+
+- Se calcula una distribución simulada para el Total haciendo a $T_i$ una variable aleatoria definida como $T_i=N_i*S_i*P_i, \; i=1,...,10000$ 
+
+De esta manera, hemos definido esta nueva variable aleatoria en fución de la información que ya se conoce y se ha trabajado. Por lo tanto, bajo esta estrategia, se simulará una muestra aleatoria de tamaño 10000 donde cada valor perteneciente esté definido tal como está descrito $T_i$, $i=1,..,10000$ utilizando la función **sample()** de **R**. 
+
+De esta manera se obtiene la siguiente distribución:
+
+```{r echo=FALSE}
+set.seed(2021)
+#T_i = (N_i) * (S_i) * (P_i)
+T_i=(muestra4_1*muestra4_1_1) * (muestra4_2) * (muestra4_3) #Aquí se calculan todos los posibles totales
+prob_T=prop.table(table(T_i))# Aquí generamos cada posible probabilidad para cada posible total de acuerda a su frecuencia relativa
+muestraT=sample(unique(T_i), 1000, replace = TRUE,prob= prob_T) #Muestra simulada
+
+#Distribución a partir de un Histograma para la mustra simulada
+par(mfrow=c(1,2))
+hist(muestraT,main = "Distribución del Total de Ingresos", xlab = "Total", col = "olivedrab1")
+plot(density(muestraT), col="olivedrab1", main = "Density Distribution", xlab = "Total")
+polygon(density(muestraT), col = "olivedrab1")
+```
+
+
+Se puede decir que la distribución asociada a esa muestra presenta un pico o abultamiento claramente notable en la parte izquierda del gráfico. En otras palabras, este gráfico resume la información descriptiva sobre el total de ingresos mensual generado por el sector de la peluquería. Con el fin de conocer la estimación elicitada de acuerdo a lo estudiado, se vale del uso de las siguiente medidas de resumen sobre la muestra simulada:
+
+```{r}
+set.seed(2021)
+summary(muestraT)
+```
+
+De esta manera, y gracias a la distribución calculada, podemos inferir que el ***Ingreso Total del sector por mes*** esperado es equivalente a $195000*1000=195.000.000$ pesos COP.
+
+## 4. Conclusiones
+
+Según el Departamento Administrativo Nacional de Estadísticas (DANE), para el año 2019 (a precios corrientes), Puerto Berrío tuvo un PIB equivalente a $\$\,664.000.000.000$ COP (seiscientos sesenta y cuatro mil millones de pesos COP). 
+
+Traslapando todo lo hasta aquí calculado a este resultado, se observa que en términos de proporción el sector de la peluquería en Puerto Berrío, anualmente, representa una cantidad no muy influyente sobre el PIB del municipio para lo que fue el año 2019, tal y como lo indica el siguiente resultado:
+
+$$Ingreso\;Anual\;Estimado=195.000.000*12=2.340.000.000$$
+$$Porcentaje\;Respecto\;al\;PIB\;2019:\frac{2.340.000.000}{664.000.000.000}=0.00352409638\approx0.0035\%$$
+Por lo tanto, debido a la emergencia sanitaria mundial que se vive en estos momentos, a inicios y durante de la misma, este sector de la economía pudo haber sufrido un gran estancamiento debido posiblemente a cierres de locales por falta de sostenimiento, cuanrentenas obligatorias, autocuidado, entre otros aspectos que generacen claramente una posible disminución de los ingresos aportados por este sector y vale una vez más aclarar que todo es resultado estimaciones subjetivas y solo se tuvo en cuenta el gremio de las barberías. 
+
+## 5. Evidencias.
+
+Se adjuntan las fotos de los locales de cada uno de los expertos, ademas, sus respectivas elicitaciones a mano alzada. Las elicitaciones fueron realizadas por los expertos siguiendo las indicaciones via telefonica del elicitador, debido a que estas son realizadas de manera digital. 
+
+Se debe tener en cuenta que debido a la pandemia, dos de las entrevistas fueron realizadas de manera virtual.
+
+Por otra parte, las elicitaciones a mano alzada fueron "trascritas" al formato de una grafica en R para facilitar los calculos. Las graficas vistas al inicio y con las que se ha trabajado; son una replica de los valores dados por los expertos. 
+
+NOTA: Experto 2 no permite tomar foto del frente comercial del local, se toma fotografia ocultando parte de la fachada.
+
+# Evidencia del experto 1:
+
+
+![](C:/Users/jhsga/Downloads/1.jpeg)
+![](C:/Users/jhsga/Downloads/Numero locales experto 1.jpeg)
+
+![](C:/Users/jhsga/Downloads/Ingreso 1.jpeg)
+
+![](C:/Users/jhsga/Downloads/Numero barberos experto 1.jpeg)
+![](C:/Users/jhsga/Downloads/Clientes 1.jpeg)
+
+
+
+# Evidencia del experto 2:
+
+
+![](C:/Users/jhsga/Downloads/2.jpeg)
+![](C:/Users/jhsga/Downloads/2.1.jpeg)
+
+
+![](C:/Users/jhsga/Downloads/Ingreso 2.jpeg)
+
+![](C:/Users/jhsga/Downloads/Numero clientes 2.jpeg)
+
+![](C:/Users/jhsga/Downloads/Numero locales experto 2.jpeg)
+![](C:/Users/jhsga/Downloads/Numero barberos experto 2.jpeg)
+
+
+# Evidencia del experto 3:
+
+![](C:/Users/jhsga/Downloads/Ingreso 3.jpeg)
+
+
+![](C:/Users/jhsga/Downloads/Numero locales experto 3.jpeg)
+
+![](C:/Users/jhsga/Downloads/Numero clientes 3.jpeg)
+
+![](C:/Users/jhsga/Downloads/Numero barberos experto 3.jpeg)
+
+![](C:/Users/jhsga/Downloads/3.jpeg)
+
+## 6. Referencias.
+
+https://es.wikipedia.org/wiki/Anexo:Municipios_de_Colombia_por_Producto_Interno_Bruto
+

@@ -1,0 +1,2 @@
+"0","test=shapiro.test(rstudent(modelo)) #Test de normalidad sobre residuales estudentizados"
+"0","qqnorm(rstudent(modelo),cex=2)"

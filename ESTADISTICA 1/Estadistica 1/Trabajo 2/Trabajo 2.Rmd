@@ -1,0 +1,182 @@
+---
+title: "**Trabajo 2**"
+author:
+- "**Jhonatan Smith Garcia Muñoz**"
+- "**1039705595**"
+- "**Natalia Valencia Nuñez**"
+- "**1006502467**"
+date: "**Enero 2021**"
+output: pdf_document
+geometry: "left=2cm,right=1.5cm,top=1.5cm,bottom=1cm"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+**Preparacion de los datos**
+
+Se utiliza la cedula de jhonatan smith garcia.
+
+
+$$\right\ulcorner_{\alpha}\right\ulcorner$$
+
+
+```{r}
+base <- read.table(file.choose(), header=T)
+```
+
+```{r}
+genera <- function(cedula){
+set.seed(cedula)
+data <- base[sample(1:2000,120),]
+data
+}
+df = genera(1039705595)
+```
+
+```{r}
+df[,4] <- as.factor(df[,4])
+df[,5] <- as.factor(df[,5])
+```
+
+**1.**
+
+Se tiene la creencia de que la ESTATURA media de los estudiantes es inferior a 170 cms. ¿Es esto cierto? Justifique su respuesta.
+
+Para identificar que tan cierto es el problema, se empieza por analizar la media de los datos y ver siquiera si tiene sentido dicha hipotesis. 
+
+```{r}
+attach(df)
+mean(ESTATURA)
+```
+
+AL analizar la media de los datos, se tiene el resultado anterior. 
+
+¿Los datos se distribuyen de manera normal?
+
+```{r}
+shapiro.test(ESTATURA)
+```
+$H_0:$ Datos normales vs $H_1:$ Datos NO normales.
+
+Dado el valor p, donde es mayor que un nivel de significancia dado, por tanto NO se rechaza la hipotesis nula y se concluye que los datos distribuyen normal. 
+
+Para realiazr dicho procedimiento, se plantea la prueba de hipotesis donde $H_0: \mu=170$ vs $H_1: \mu\leq170$
+
+```{r}
+t.test(x = ESTATURA, alternative = "less", mu = 170, conf.level = 0.95 )
+```
+
+Con esto, se tiene que el valor P segun la prueba dada es de 0.3718 y por tanto NO se rechaza la hipotesis nula y se concluye que en efecto la estatura de los estudiantes es de 170 y no menor. Con un nivel de confianza del 95%.
+
+
+**2**
+¿Puede afirmarse que la MASA promedio de los Hombres es superior a la de las Mujeres? Justifique su respuesta
+
+Para verificar la afirmacion, primero observemos la proporcion de hombres.
+
+Siguiendo con el analisis anterior se debe comprobar normalidad en las masas para hombres y mujeres. 
+
+```{r}
+
+
+mean(df$MASA[df$SEXO=="Hombre"]) # Media de los hombres
+
+mean(df$MASA[df$SEXO=="Mujer"]) # Media masa mujeres
+
+
+```
+
+En un principio, parece haber cierta diferencia de medias. Verificando normalidad.
+
+```{r}
+shapiro.test(df$MASA[df$SEXO=="Hombre"]) # Para hombres
+```
+Se concluye datos normales a un nivel de significancia del 0.95
+
+```{r}
+shapiro.test(df$MASA[df$SEXO=="Mujer"]) # Para mujeres
+```
+
+
+Se concluyen datos normales a un nivel de significancia del 0.95
+
+Ahora, respecto a la pregunta problema:
+
+```{r}
+t.test(x = df$MASA[df$SEXO=="Hombre"], y = df$MASA[df$SEXO=="Mujer"], alternative = "greater")
+```
+Planteado el juego de hipotesis siguiente; donde mu1 es la media de los hombres y mu2 la media de las mujeres:
+
+$H_1:\mu_2=\mu_1$ 
+
+$H_0:\mu_2\leq\mu_1$ 
+
+Y teniendo en cuenta el resultado del valor-p, no se rechaza la hipotesis nula y se concluye a un nivel de confianza del 95% que la masa promedio de los hombres es mayor a la de las mujeres. 
+
+
+
+
+```{r}
+summary(SEXO)
+```
+```{r}
+# Por tanto se tienen segun estimacion puntual
+
+p1<-61/120 # Porcentaje hombres
+p1
+p2<-59/120 # Porcentaje de mujeres
+p2
+
+
+```
+
+En ambos casos, la muestra es grande. Se realiza la siguiente prueba de hipotesis dado teorema del limite central. 
+
+$H_0:\hat{p}_1=0.52$ vs $H_1:\hat{p}_1\geq0.52$
+
+Esto, segun la prueba de Wald:
+
+$$z=\frac{\hat{p}-p_{0}}{\sqrt{\frac{p_{0}\left(1-p_{0}\right)}{n}}}$$
+
+```{r}
+z <- (p1 - 0.52) / sqrt(0.52 * (1 - 0.90) / 120)
+z  # Para obtener el valor del estadístico
+```
+Para obtener el valor-P de la prueba debemos tener en cuenta el sentido en la hipótesis alternativa, que es H1<0.52 por esa razón el valor-P será P(Z<z):
+
+```{r}
+pnorm(q=z, lower.tail=TRUE) 
+```
+Se tiene que el valor p es mayor que un nivel de significancia del 0.95 por tanto no se rechaza la hipotesis nula y por tanto no se puede concluir que la proporcion de hombres sea mayor al 52% con una confianza del 95%.
+
+**4**
+Un investigador afirma que la proporción de estudiantes que proviene de cada una de las 6 ciudades es la misma. ¿Es cierta esta afirmación? 
+
+```{r}
+summary(CIUDAD)
+
+```
+
+Al analizar las proporciones, se tiene lo siguiente:
+
+```{r}
+# Proporciones por orden de ciudad dado el summary anterior
+Ar = 20/120 
+br = 26/120
+bt = 18/120
+cl = 17/120
+ct <- 21/120
+md <- 18/120
+```
+
+H0: Ar=br=..=md vs H1: Alguna de ellas diferente
+
+```{r}
+prop.test(x = c(20,26,18,17,21,18), n = c(120,120,120,120,120,120),  )
+```
+
+Dado el p-valor No se rechaza la hipotesis nula y se concluye que las proporciones son iguales.
+

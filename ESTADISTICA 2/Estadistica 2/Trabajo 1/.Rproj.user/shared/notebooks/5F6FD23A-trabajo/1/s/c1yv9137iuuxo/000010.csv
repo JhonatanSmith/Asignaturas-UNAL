@@ -1,0 +1,8 @@
+"0","#identificando cuales son los que exceden
+row.names(base.diagnosticos[base.diagnosticos$hii.value > hii.criterio, ])
+"
+"1","[1]"
+"1"," ""38"""
+"1"," ""43"""
+"1","
+"

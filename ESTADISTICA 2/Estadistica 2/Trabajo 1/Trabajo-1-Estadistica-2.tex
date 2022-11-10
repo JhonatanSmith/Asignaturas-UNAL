@@ -1,0 +1,350 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+  \usepackage{amssymb}
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Trabajo 1 Estadistica 2},
+  pdfauthor={Jhonatan Smith Garcia},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Trabajo 1 Estadistica 2}
+\author{Jhonatan Smith Garcia}
+\date{8/5/2022}
+
+\begin{document}
+\maketitle
+
+\hypertarget{pregunta-1}{%
+\section{Pregunta 1:}\label{pregunta-1}}
+
+\begin{verbatim}
+##    Y X1 X2 X3 X4
+## 1 46 68 75 10 63
+## 2 43 55 75 10 57
+## 3 53 46 36 58 76
+## 4 37 63 41 15 64
+## 5 63 67 45 63 71
+## 6 73 90 64 67 74
+\end{verbatim}
+
+La base de datos se encuentra conformada por 5 variables, de las cuales
+se tiene a Y como regresora y a X1,X2,X3 y X4 como variables
+predictoras. Donde las variables representan lo siguiente:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi})}
+\item
+  Y: Calificacion global de trabajo realizado por el supervisor
+\item
+  X1: Tasa de manejo de quejas de los empleados
+\item
+  X2: Tasa de no permision de privilegios especiales
+\item
+  X3: Tasa de oportunidad para aprender cosas nuevas
+\item
+  X4: Tasa de avance del supervisor a mejires puestos
+\end{enumerate}
+
+\hypertarget{estimacion-del-modelo}{%
+\section{Estimacion del modelo:}\label{estimacion-del-modelo}}
+
+Se procede a estimar un modelo de regresion lineal multiple con todas
+las variables predictoras. Ademas; se tiene en cuenta un analisis de
+significancia del modelo y de cada una de las variables.
+
+\includegraphics{Trabajo-1-Estadistica-2_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+Al observar un grafico de dispersion entre las variables, se observa una
+tendencia lineal positiva entre X1 con la variable Y. Las demas
+variables no poseen una tendencia muy marcada aunque, podria
+interpretarse algo.
+
+X1 y X3 son las variables con mayor correlacion.
+
+\emph{El modelo:}
+
+Se plantea un modelo de RLM para el problema:
+\[Y_i = \beta_0 + \beta_1X_{i1} + \beta_2X_{i2} + \cdots+ \beta_4X_{i4}  + \varepsilon_i, \quad i = 1, 2, \ldots, 50\]
+
+Que tiene como supuestos lo siguiente:
+\[\varepsilon_i \overset{\text{iid}}{\sim} N\left(0,\sigma ^2 \right), \quad i = 1, 2, \ldots, 50\]
+
+También se puede especificar el modelo en términos matriciales, así:
+\[\boldsymbol{y} = \boldsymbol{X\beta} + \boldsymbol{\varepsilon} \quad \text{ con }\quad \boldsymbol{\varepsilon}\sim\boldsymbol{N}(\boldsymbol{0}, \sigma^2\boldsymbol{I})\]
+
+\textbf{Especificación del modelo de RLM, ANOVA y parámetros estimados}
+
+\begin{verbatim}
+Call:
+lm(formula = Y ~ X1 + X2 + X3 + X4)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-11.649  -5.286   1.066   3.456  11.826 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 23.99789    6.87983   3.488  0.00110 ** 
+X1           0.52747    0.05417   9.738 1.19e-12 ***
+X2          -0.15931    0.05223  -3.050  0.00383 ** 
+X3           0.25968    0.04365   5.949 3.71e-07 ***
+X4          -0.09286    0.07258  -1.279  0.20732    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 5.856 on 45 degrees of freedom
+Multiple R-squared:  0.7674,    Adjusted R-squared:  0.7467 
+F-statistic: 37.11 on 4 and 45 DF,  p-value: 1.028e-13
+\end{verbatim}
+
+\textbf{El modelo ajustado es:}
+
+\[Y_i = 23.99789 + 0.52747X_{i1} -0.15931X_{i2} + 0.25968 X_{i3} + -0.09286 X_{i4} + \varepsilon_i\]
+\[ \quad i = 1, 2, \ldots, 80\]
+
+\textbf{Prueba de Significancia de la regresión}
+
+Se quiere probar: \[
+\begin{aligned}
+H_0:&\ \beta_1 = \beta_2 = \cdots = \beta_8 = 0, \quad \text{ vs.}\\
+H_1:&\ \text{Algún } \beta_j \neq 0, j = 1, \ldots, 4.
+\end{aligned}
+\]
+
+\begin{verbatim}
+      Sum_of_Squares DF Mean_Square F_Value     P_value
+Model        5090.64  4   1272.6605 37.1091 1.02755e-13
+Error        1543.28 45     34.2951                    
+\end{verbatim}
+
+Para ello se usa la tabla de análisis de varianza. De ella se obtienen
+los valores del estadístico de prueba \(F_0 =37.1091\) y su
+correspondiente valor-P \(\text{vp} = 1.02755e-13\).
+
+Dado estos resultados se concluye que el modelo es significativo, puesto
+que se rechaza la hipotesis nula a favor de la alterna. Esto es
+justificado dado que el valor p de la prueba de significancia es menor
+que un alfa dado (puesto que es casi cero).
+
+Esto implica que, existe almenos una variable que es significativa y que
+permite explicar la variabilidad de la variable respuesta.
+
+\textbf{Cálculo e interpretación del coeficiente de determinación}
+
+Sabemos que
+\(R^2 = \frac{\text{SSR}}{\text{SST}} = 1 - \frac{\text{SSE}}{\text{SST}}\),
+de manera que se puede calcular de la tabla ANOVA.
+\[R^2 = \frac{\text{SSR}}{\text{SST}} = \frac{5090.64}{5090.64 + 1543.28} = 0.7673653\]
+Este coeficiente de determinacion permite entender la proporcion de
+varianza que el modelo está explicando de la variable respuesta. DE esta
+manera, se entiende que aproximadamente el 76.7\% de la varianza total
+es explicada por el modelo.
+
+Por otra parte, el \(R^2\) ajustado es el siguiente:
+
+\[R_{\text{adj}}^2 = 1 - \frac{\left(n - 1\right)\text{MSE}}{\text{SST}} = 1 - \frac{\left(50 - 1\right)34.2951}{5090.64+1543.28} = 0.2533133\]
+La anterior medida ayuda a tener una mejor idea de como se comporta la
+variabilidad explicada por el modelo puesto que el ajustado, si penaliza
+a multiples variables que no sean significativas. En ese orden de ideas,
+el \(R^2_{adj}\) es de 0.2533 aproximadamente. La variabilidad explicada
+por el modelo es de aproximadamente 25\%. Es relativamente baja, esto
+puede darse por multiples motivos.
+
+En otras palabras y teniendo en cuenta que \(R^2_{adj}\) penaliza la
+varianza a medida que se agregan covariables (factor que no tiene en
+cuenta por si solo R\^{}2) se prefiere usar para el caso de Regresion
+Lineal Multiple (RLM) el ajustado.
+
+\textbf{Sobre los parametros:}
+
+En el problema planteado, no se especifica las escalas de las variables,
+si quiera se puede identificar si tienen o no la misma escala. En
+apariencia, parece que en efecto, son medidas en la misma escala. Sin
+embargo, se procede a estandarizarlas para asegurar que sea comparable
+los siguientes analisis.
+
+\begin{verbatim}
+## Coeficientes estimados y Coeficientes estimados estandarizados
+\end{verbatim}
+
+\begin{verbatim}
+##             Estimacion    Coef.Std
+## (Intercept) 23.9978919  0.00000000
+## X1           0.5274720  0.70206841
+## X2          -0.1593096 -0.22051064
+## X3           0.2596755  0.43202199
+## X4          -0.0928575 -0.09276353
+\end{verbatim}
+
+Estos son los coeficientes estandarizados del modelo puesto que, no se
+podria dictarminar si son comparables debido a su escala.
+
+Segun la magnitud del valor absoluto de los coeficientes estandarizados,
+se entiende que la vaiable con mayor efecto sobre el modelo es X1
+seguido de x3. Este resultado es consistente con el primer analisis
+descriptivo.
+
+\textbf{Prueba de significancia individual de los parametros usando la
+prueba t}
+
+Estas pruebas establecen el siguiente juego de hipótesis:
+\[\begin{array}{l} H_0: \beta_j = 0\\ H_1: \beta_j \ne 0 \end{array}\ \text{ para }\ j = 1, 2, \ldots, 8.\]
+
+De la tabla de parámetros estimados, a un nivel de significancia
+\(\alpha = 0.05\) se rechaza \(H_0\) si
+\(\left | T_0 \right |> T_\frac{\alpha }{2} ,n-k-1\)
+
+Donde k representa el numero de variables, n el numero de la muestra.
+
+Para este caso con la \(T_{(1-\frac{0.05}{2},45)}=2.014103\) basta
+comparar con los datos suministrados en la tabla anterior en la columna
+de t-values:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(modelo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Y ~ X1 + X2 + X3 + X4)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -11.649  -5.286   1.066   3.456  11.826 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 23.99789    6.87983   3.488  0.00110 ** 
+## X1           0.52747    0.05417   9.738 1.19e-12 ***
+## X2          -0.15931    0.05223  -3.050  0.00383 ** 
+## X3           0.25968    0.04365   5.949 3.71e-07 ***
+## X4          -0.09286    0.07258  -1.279  0.20732    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.856 on 45 degrees of freedom
+## Multiple R-squared:  0.7674, Adjusted R-squared:  0.7467 
+## F-statistic: 37.11 on 4 and 45 DF,  p-value: 1.028e-13
+\end{verbatim}
+
+En ese orden de ideas, al analizar la columna ``t value'' se comparan
+los que su valor absoluto sea mayor al valor calculado. Segun esto,
+todas las variables son significativas a exepcion de x4.
+
+Se concluye que los parámetros individuales
+\(\beta_0,\beta_1,\beta_2,\beta_3\) son significativos cada uno en
+presencia de los demás parámetros; por otro lado, se encuentra que
+\(\beta_4\) no es individualmente significativos en presencia de los
+demás parámetros.
+
+\textbf{Interpretación de los parámetros estimados}
+
+En este caso, el intercepto no tiene interpretabilidad. Por tanto,
+\(\beta_0\) no se interpreta
+
+\$\widehat\beta\_1 = 0.52747 \$ indica que por cada unidad de aumento en
+la tasa de numero de quejas de los empleados la califiacion global del
+trabajo bien hecho (Y) aumenta en 0.52747 unidades, cuando las demás
+variables predictoras se mantienen fijas.
+
+\end{document}

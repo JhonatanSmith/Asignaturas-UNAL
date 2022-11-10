@@ -1,0 +1,3 @@
+"0","with(base.diagnosticos,"
+"0","     plot(res.stud, xlab = ""Observación"", ylab = ""Residuales"","
+"0","          main = ""Residuales estudentizados"", pch = 20, ylim = c(-3.5, 3.5)))"

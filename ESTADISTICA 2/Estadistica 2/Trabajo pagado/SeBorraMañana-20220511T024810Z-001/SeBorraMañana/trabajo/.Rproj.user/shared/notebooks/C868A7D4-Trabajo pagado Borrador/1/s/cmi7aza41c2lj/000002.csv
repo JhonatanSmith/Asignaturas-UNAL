@@ -1,0 +1,8 @@
+"0","miscoeficientes=function(modeloreg,datosreg){"
+"0","coefi=coef(modeloreg)"
+"0","datos2=as.data.frame(scale(datosreg))"
+"0","coef.std=c(0,coef(lm(update(formula(modeloreg),~.+0),datos2)))"
+"0","resul=data.frame(Estimacion=coefi, Coef.Std=coef.std)"
+"0","cat(""Coeficientes estimados y Coeficientes estimados estandarizados"",""\n"")"
+"0","resul"
+"0","}"
