@@ -1,0 +1,1171 @@
+---
+title: "Solucion taller 2"
+author: "Jhonatan Smith Garcia"
+date: "3/7/2021"
+output: html_document
+---
+
+# Taller muestreo Estratificado (Taller 2)
+
+ Punto 1: 
+ 
+ Nh = c(500, 1000, 4000)
+ nh = c(50,80,160)
+ yh = c(40,60,100)
+ s2h = c(400,300,100)
+ 
+$\bar{y}_{est} = \sum_{h=1}^H(Nh/N)*\bar{y}_h$ 
+
+Donde:
+
+```{r}
+Nh = c(500, 1000, 4000) #Poblacion en cada estrato
+N = sum(Nh)  #Poblacion total (un numero, no vector)
+y_h = c(40,60,100) #Será el promedio en cada estrato
+y_bar_est = sum((Nh/N)*y_h)
+y_bar_est
+  
+```
+a) Media poblacional es 87.27273 
+
+b) Para la media poblacional se tiene que:
+
+$\hat{T}_{est}=N*\bar{y}_{est}=\sum^H_{h=1}{N_h*\bar{y}_h}$
+
+```{r}
+t_est= sum(N*y_bar_est)
+t_est
+```
+
+
+varianza estratificada de la media "Y barra estratificado":
+
+$Var[\bar{y}_{est}]=\frac{1}{N^2}*Var[\bar{y_h}]$ Donde;
+
+$Var[\bar{y_h}]=(1-\frac{n_h}{N_h})*\frac{\sigma^2}{n_h}$
+
+con EE (error estimado)
+ 
+```{r}
+nh = c(50,80,160) #Vector con los valores de las muestras n-h
+n = sum(nh)
+
+#En este caso dieron la desviacion, se eleva al cuadrado para varianza
+
+s2h = c(400,300,100) #Vector con las desviacion (muestrales)
+#Vector con las varianzas se trabaja con este siempre
+#s2h = c(5.95,15.25,9.36) #Vector con las varianzas (muestrales)
+
+
+var_yh_bar= (1-nh/Nh)*s2h/nh #Varianza de Y-Barra para cada estrato
+
+var_y_est = 1/N^2*sum(Nh^2*var_yh_bar) # Varianza media estratificada
+
+var_y_est
+
+ee = sqrt(var_y_est)
+ee
+```
+
+ Un IC para Media mu estratificada (este es el B, limite del error estimado) =
+ 
+```{r}
+B1 = 2*ee 
+B1
+IC1 = c(y_bar_est-B1,y_bar_est+B1)
+IC1 #ESTE ES UN IC APROXIMADAMENTE DEL 95%
+```
+ Varianza total poblacional estratificado:
+ 
+ $Var[\hat{t}_{est}]=\sum{N_h^2*Var[\bar{y}_{h}}]$
+ 
+```{r}
+var_t_est = sum(Nh^2*var_yh_bar)
+var_t_est
+#ERROR DE ESTIMACION ES RAIZ DE LA VARIANZA CALCULADA
+ee = sqrt(var_t_est)
+ee
+```
+  Calculando el IC con el EE se tiene que:
+  
+```{r}
+B1 = 2*ee
+B1
+IC1 = c(t_est-B1,t_est+B1)
+IC1
+```
+
+# Ejercicio 2
+
+n=210
+Nh =c(1000,2000,5000)
+s2h = c(225,81,36)
+
+usando la afijacion igual, se tendria que se divide sobre el numero de estratos, asi:
+
+ *Afijacion igual*
+
+```{r}
+ wh = 1/3
+n = 210
+Nh =c(1000,2000,5000)
+s2h = c(225,81,36)
+
+# La afijacion optima será simplemente
+afijacion_Igual = n*wh
+afijacion_Igual
+```
+70 para cada estrato.
+
+ *Afijacion Proporcional*
+
+*Porpocional al tamaño del estrato*
+
+$ w_h= \frac{N_h}{\sum(N_h)}$ 
+
+```{r}
+Nh =c(1000,2000,5000)
+w_h_proporcional = (Nh)/(sum(Nh))
+afijacion_proporcional = n*w_h_proporcional
+afijacion_proporcional
+```
+
+*Afijacion Optima de Neyman (Costos iguales)*
+
+```{r}
+s2h = c(225,81,36)
+sh = sqrt(s2h)
+wh_optima_costo_igual = (Nh*sh)/(sum(Nh*sh))
+wh_optima_costo_igual
+afijacion_optima_costo_igual = n*wh_optima_costo_igual
+afijacion_optima_costo_igual
+```
+
+# Punto 3.
+
+```{r}
+Nh = c(65,42,93,25)
+nh = c(14,9,21,6)
+cuentas_morosas = c(4,2,8,1)
+ph = cuentas_morosas/nh
+ph
+```
+$\hat{P}_{est}=\sum^H_{h=1}\frac{N_h}{N}*p_h$
+
+ademas;
+
+$\hat{A}_{est}=N*\hat{P}_{est}$
+
+```{r}
+N = sum(Nh)
+p_est = sum((Nh/N)*ph)
+p_est
+A_est = N*p_est
+```
+El 30% de los clientes tienen deudas morosas
+
+
+Varianza proporcion estratificada y el IC de aprox 95%
+
+```{r}
+#Recuerde que varianza proporcion esta dada por:
+
+var_ph = ph*(1-ph)/(nh-1)*(Nh-nh)/Nh
+
+qh = 1-ph
+
+var_ph = (1 - nh/Nh)*ph*qh/(nh-1)
+
+#var_ph = c(0.002548,0.006113,0.003704)
+
+var_p_est = 1/N^2*sum(Nh^2*var_ph)
+var_p_est
+
+```
+```{r}
+ee = sqrt(var_p_est)
+ee
+
+B = ee*2
+B
+```
+ee es el limite del error estimado, que en este caso es de 0.009223807.
+
+Ahora, B para calcular el IC de aprox 95 es 0.01844761
+
+Ahora, un IC de apro 95% es:
+
+```{r}
+IC_P_est = c(p_est-B,p_est+B)
+IC_P_est
+```
+# Punto 4.
+
+sh = c(36,25,9)
+Nh = c(132,92,27)
+n = 300
+
+*Afijacion de Neyman para costos iguales*
+
+```{r}
+sh = c(36,25,9)
+Nh = c(132,92,27)
+n = 300
+wh_optima_costo_igual = (Nh*sh)/(sum(Nh*sh))
+wh_optima_costo_igual
+afijacion_optima_costo_igual = n*wh_optima_costo_igual
+afijacion_optima_costo_igual
+```
+# Punto 5.
+
+Se pide el numero total de horas perdidas. Para ello, se tiene
+
+```{r}
+obreros = c(8,24,0,0,16,32,6,0,16,7,4,4,9,5,8,18,2,0)
+tecnicos = c(4,0,8,3,1,5,24,12,2,8)
+admin =c(1,8)
+sh = c(36,25,9)
+Nh = c(132,92,27)
+N = sum(Nh)
+```
+
+Con estos datos muestrales, se tiene que: 
+
+```{r}
+n1 =length(obreros)
+n2 = length(tecnicos)
+n3 = length(admin)
+nh = c(n1,n2,n3)
+n = sum(nh)
+```
+
+Para el total, necesito el promedio de cada muestra. 
+
+```{r}
+y_h = c(mean(obreros),mean(tecnicos),mean(admin)) # Media en cada estrato.
+```
+
+
+```{r}
+N = sum(Nh)  #Poblacion total (un numero, no vector)
+y_bar_est = sum((Nh/N)*y_h)
+y_bar_est
+```
+
+Finalmente, el calculo del total será:
+
+```{r}
+t_est= sum(N*y_bar_est)
+t_est
+```
+*Calculo varianza (Sigma cuadrado)*
+
+Necesito a sigma cuadrado, calculando la muestral, se tiene que
+
+```{r}
+
+
+```
+
+
+```{r}
+varianzaMediasEnCadaEstrato <- function(Nh, nh, s2h){
+  Varhaty <- (1- nh/Nh)*s2h/nh
+  return(Varhaty)
+}
+```
+
+```{r}
+prueba_1 = varianzaMediasEnCadaEstrato(Nh,nh,s2h)
+x = sum(Nh^2*prueba_1)
+x
+
+```
+
+```{r}
+s2h = c(var(obreros), var(tecnicos), var(admin))
+
+var_yh_bar= (1-nh/Nh)*s2h/nh #Varianza de Y-Barra para cada estrato
+
+var_t_est = sum(Nh^2*var_yh_bar)
+var_t_est
+#ERROR DE ESTIMACION ES RAIZ DE LA VARIANZA CALCULADA
+ee = sqrt(var_t_est)
+2*ee
+```
+
+#Punto 6
+
+
+```{r}
+ch =c(9,25,36)
+s2h =c(2.25,3.24,3.24)
+Nh = c(112,68,39)
+```
+
+Recordemos que, por teoria siempre se tiene que
+
+$B=2*\sqrt{Var[\bar{y}_{est}]}$
+
+Por tanto, en el ejercicio se tiene que 
+ 
+ $Var[\bar{y}_{est}]=0.1$
+ 
+ Primero se calcula la afijacion de la muestra wh para el caso de costos diferentes:
+ 
+```{r}
+
+# ESTA FORMULA SE REEMPLAZA TAMAÑO n
+sh = sqrt(s2h)
+numerador = (Nh*sh)/(sqrt(ch))
+denominador = sum((Nh*sh)/(sqrt(ch)))
+wh_optmina_muestra = numerador/denominador #Afijacion de la muestra para costos difts
+
+
+```
+
+Ahora, se tiene que el tamaño de la muestra estará dado por:
+
+```{r}
+wh = wh_optmina_muestra
+Nh = c(112,68,39) #Total cd estrato
+N = sum(Nh) # Total poblacional
+D = 0.1 # D es igual a la varianza de ybar o tmbien B^2/Z^2
+n = sum(((Nh^2*s2h)/wh))/(N^2*D+sum(Nh*s2h))
+n # Este es el tamaño de la muestra a tomar
+```
+Ahora, la muestra se debde tomar de la sgt manera
+
+```{r}
+ceiling(n*wh)
+```
+
+# Punto 7
+
+
+
+```{r}
+Nh = c(55,80,64)
+N = sum(Nh)
+n = 50
+nh =c(14,20,16)
+
+itinerario_1 = c(80,92,68,85,72,87,85,91,90,81,62,79,61,83)
+itinerario_2 =c(85,82,48,75,53,73,65,78,49,69,72,81,53,59,68,52,71,61,59,42)
+itinerario_3 =c(42,32,36,31,65,29,43,19,53,14,61,31,42,30,39,32)
+```
+
+a) Promedio y limite del error:
+
+```{r}
+
+y_h= c(mean(itinerario_1),mean(itinerario_2),mean(itinerario_3))
+y_bar_est = sum((Nh/N)*y_h)
+y_bar_est
+
+```
+Nota promedio es de 60.10194 de los estudiantes de sexto grado. 
+
+*Calculo limite del error estimado*
+
+Recuerde que el limite del error estimado es
+
+LEE1 = qt(1-alpha-medios,n)*sqrt(varianza) o tambien de una Z
+
+Para este caso; el limite del error se aproxima con una Z debido a que n>30
+
+```{r}
+#LEE1 = qnorm(0.975)*sqrt(varianza_y_barra_estratificado)
+```
+
+Pero todavia no tengo la varianza de y barra estratificado:
+
+```{r}
+var_yh_bar= (1-nh/Nh)*s2h/nh #Varianza de Y-Barra para cada estrato
+
+var_y_est = 1/N^2*sum(Nh^2*var_yh_bar) # Varianza media estratificada
+
+var_y_est
+```
+```{r}
+LEE1 = 2*sqrt(var_y_est)
+LEE1
+```
+Luego, un IC para la nota promedio al 95% de confianza es:
+
+```{r}
+c(y_bar_est-LEE1,y_bar_est+LEE1)
+```
+b) Comparar promedio itinerario 1 y 2
+
+```{r}
+Nh/N*y_h
+y_h
+```
+c) Use afijacion optima de Neyman
+
+```{r}
+s2h = c(var(itinerario_1),var(itinerario_2),var(itinerario_3))
+sh = sqrt(s2h)
+wh_optima_costo_igual = (Nh*sh)/(sum(Nh*sh))
+n= 50
+afijacion_n = n*wh_optima_costo_igual
+ceiling(afijacion_n)
+```
+
+d) calcular tamaño de muestra necesario para un LEE 4 puntps y usando afijacion proporcional. 
+
+```{r}
+w_h_proporcional = (Nh)/(sum(Nh)) # Afijacion proporcional
+```
+
+```{r}
+#LEE = B = 2*sqrt(varianza)=4, esto lo piden
+B= 4
+Z = qnorm(1-0.025)
+wh = w_h_proporcional#Aqui va la afijacion de la muestra
+D = B^2/Z^2 # D es igual a la varianza de ybar o tmbien B^2/Z^2
+n = sum(((Nh^2*s2h)/wh))/(N^2*D+sum(Nh*s2h))
+n
+asignacion = wh*n
+ceiling(asignacion)
+
+```
+e) Use afijacion de Neyman
+
+```{r}
+wh_optima_costo_igual = (Nh*sh)/(sum(Nh*sh))
+
+```
+
+```{r}
+#LEE = B = 2*sqrt(varianza)=4, esto lo piden
+B= 4 #Limite del error
+Z = qnorm(1-0.025) #Una z al 95
+wh =wh_optima_costo_igual#Aqui va la afijacion de la muestra
+D = B^2/Z^2 # D es igual a la varianza de ybar o tmbien B^2/Z^2
+n = sum(((Nh^2*s2h)/wh))/(N^2*D+sum(Nh*s2h))
+n
+asignacion = wh*n
+ceiling(asignacion)
+
+```
+
+# Punto 8
+
+```{r}
+
+Nh = c(86,72,52,30)
+nh = c(14,12,9,5)
+N = sum(Nh)
+n = sum(nh)
+estrato_1 = c(97,42,25,105,27,45,53,67,125,92,86,43,59,21)
+estrato_2 = c(125,67,256,310,220,142,155,96,47,236,352,190)
+estrato_3 = c(142,310,495,320,196,256,440,510,396)
+estrato_4 = c(167,220,780,655,540)
+
+```
+
+*a) Total acres plantados con LEE *
+
+
+
+Pero para usar este codigo, necesito la media estratificada.
+
+```{r}
+y_h = c(mean(estrato_1),mean(estrato_2),mean(estrato_3),mean(estrato_4)) #Será el promedio en cada estrato
+y_bar_est = sum((Nh/N)*y_h)
+y_bar_est
+```
+
+```{r}
+t_est= sum(N*y_bar_est)
+t_est
+```
+El limite del error B estará dado por 
+
+
+```{r}
+s2h = c(var(estrato_1),var(estrato_2),var(estrato_3),var(estrato_4)) #varianza
+sh = sqrt(s2h)
+var_yh_bar= (1-nh/Nh)*s2h/nh #Varianza de Y-Barra para cada estrato
+
+var_y_est = 1/N^2*sum(Nh^2*var_yh_bar) # Varianza media estratificada
+
+var_y_est
+```
+
+
+
+```{r}
+Z = qnorm(0.975)
+var_t_est = sum(Nh^2*var_yh_bar)
+var_t_est
+B =  2*sqrt(var_t_est)
+B
+```
+
+```{r}
+B= 5000 #Limite del error  B = 2*raiz varianza=5000
+Z = 2 #qnorm(0.975)
+
+wh_optima_costo_igual = (Nh*sh)/(sum(Nh*sh)) #Neyman
+wh = wh_optima_costo_igual #Aqui va la afijacion de la muestra
+
+D = B^2/(Z^2*N^2) # D es igual a la varianza de ybar o tmbien B^2/(Z^2*N^2) cuando se calcula el total poblacional
+tamaño_n = sum(((Nh^2*s2h)/wh))/(N^2*D+sum(Nh*s2h))
+tamaño_n
+asignacion = wh*tamaño_n
+ceiling(asignacion)
+```
+# punto 9
+
+hombres = 43
+
+Para hombres variacion de 5 a 20
+
+mujeres = 96-43
+
+para mujeres amplitud de variacion de 3 a 14
+N = hombres+mujeres
+costos iguales
+LEE = 1= B
+
+*tamaño de muestra*
+
+```{r}
+N= 96
+Nh = c(43,53) 
+sigma1 = (20-5)/6 #varianza hombres NO SABEMOS POR QUE PUTAS
+sigma2= (14-3)/6 #Varianza mujeres
+sh = c(sigma1,sigma2)
+s2h = sh^2
+```
+
+Ahora...
+
+```{r}
+
+wh_optima_costo_igual = (Nh*sh)/(sum(Nh*sh)) #Neyman
+
+
+B= 1 #Limite del error
+wh = wh_optima_costo_igual #Aqui va la afijacion de la muestra
+D = B^2/(Z^2) # D es igual a la varianza de ybar estratificado
+
+#OJO: D ES IGUALA B^2/Z^2 NE GENERAL PERO, PARA CALCULAR EL **TOTAL** POBLACIONAL, SE USA LA EXPRESION DE D = B^2/(Z^2* #N^2) dividido sobre N cuadrado
+
+n_optimo = sum(((Nh^2*s2h)/wh))/(N^2*D+sum(Nh*s2h))
+n_optimo
+asignacion = wh*n_optimo
+asignacion
+
+
+
+
+
+```
+
+# Ejercicio 10
+
+Estrato 1: Personas ciudad que lo usan
+Estrato 2: Personas ciudad que NO lo usan
+Estrato 3: Personas alrededores lo usan
+Estrato 4: Personas alrededores NO lo usan
+C = c(4,8) #Costos de muestreo zona urbana y rural
+
+# Se dice que el 90% de los usuarios actualoes lo va a usar
+# Se dice que el 50% NO usuarios lo va a usar.
+
+Usuarios_Estratos=c(97,43,145,68)
+
+personas_urbanos=c(97,43)
+personas_rural = c(145,68)
+
+proporcion_urbana= 97/sum(personas_urbanos) #Proporcion pers urban. Asisten
+proporcion_rural= 145/sum(personas_rural) #Proporcion, rural, asisten
+
+ph = c(proporcion_urbana,proporcion_rural) *Proporcion de asistentes por estratos*
+
+qh = 1-ph
+
+```{r}
+Usuarios_Estratos=c(97,43,145,68)
+
+personas_urbanos=c(97,43)
+personas_rural = c(145,68)
+
+proporcion_urbana=97/sum(personas_urbanos) #Proporcion pers urban. Asisten
+proporcion_rural=145/sum(personas_rural) #Proporcion, rural,  asisten
+
+ph = c(proporcion_urbana,proporcion_rural) #Proporcion asistentes
+
+qh = 1-ph
+```
+
+Calculemos su varianza:
+
+```{r}
+nh = 
+varianza = ph*qh/(nh-1)*(Nh-nh)/(N)
+
+N = sum(Usuarios_Estratos)
+Nh = Usuarios_Estratos
+p_est = sum((Nh/N)*ph)
+var_p_est = 1/N^2*sum(Nh^2*varianza)
+```
+
+a) #Sea B = 0.05, halle tamaño n y afijacion necesaria
+
+```{r}
+B= 0.05 #Limite del error
+Z = qnorm(0.975)
+s2h = var_p_est #Sigma cuadrado sacado de la mmuestra
+
+
+# ESTA FORMULA SE REEMPLAZA TAMAÑO n
+
+ch = c(4,8)
+sh = sqrt(s2h)
+numerador = (Nh*sh)/(sqrt(ch))
+denominador = sum((Nh*sh)/(sqrt(ch)))
+wh_optmina_muestra = numerador/denominador
+
+
+
+wh = wh_optmina_muestra #Aqui va la afijacion de la muestra
+D = B^2/(Z^2) # D es igual a la varianza de ybar estratificado
+
+
+#OJO: D ES IGUALA B^2/Z^2 NE GENERAL PERO, PARA CALCULAR EL **TOTAL** POBLACIONAL, SE USA LA EXPRESION DE D = B^2/(Z^2* #N^2) dividido sobre N cuadrado
+
+n_optimo = sum(((Nh^2*s2h)/wh))/(N^2*D+sum(Nh*s2h))
+n_optimo
+asignacion = wh*n_optimo
+asignacion
+```
+
+b) Proporcion #*PENDIENTE NO LO SUPER HACER*#
+
+```{r}
+
+ph = c(0.87,0.93,0.6,0.53)
+p_est = sum((Nh/N)*ph)
+A_est = N*p_est
+p_est
+A_est
+
+```
+Limite del error: 
+
+```{r}
+#Calculo de varianzas nuevas
+qh = 1-ph
+#Recuerde que varianza proporcion esta dada por:
+#p*(1-p)/(n-1)*(N-n)/N
+var_ph = ph*qh
+
+var_p_est = 1/N^2*sum(Nh^2*var_ph)
+var_p_est
+
+B=2*sqrt(var_p_est)
+B
+
+```
+
+28) *Proporcion de niños aguevados utilizaran instalaciones*
+
+
+Datos: 
+
+```{r}
+Nh = c(97,43,145,68) # UsanUrbano,UsanRural, NoUrbano,NoRural
+nh = c(39,17,69,33)
+ph = c(0.87,0.93,0.6,0.53)
+qh = 1-ph
+usuarios_usar = c(97,43)
+usuarios_no = c(145,68)
+N = sum(Nh)
+n = sum(nh)
+```
+
+Calculo de la proporcion segun MAE:
+
+```{r}
+ph_1 = c(0.87,0.93) #Lo usan
+p_est = sum((usuarios_usar/N)*ph_1) 
+p_est
+
+```
+Calculo de la varianza proporcional estratificada:
+
+```{r}
+var_ph = (1 - nh/Nh)*ph*qh/(nh-1)
+var_p_est = 1/N^2*sum(Nh^2*var_ph)
+var_p_est
+ee = sqrt(var_p_est)
+```
+El IC de aprox 95% 
+
+```{r}
+B = 2*ee
+#B = 0.05
+IC = c(p_est-B,p_est+B)
+IC
+```
+C) Si señor. 
+
+D) Tamaño de la muestra con: 
+
+B = 0.01
+```{r}
+
+B= 0.01 #Limite del error
+Z = qnorm(0.975)
+s2h = var_ph #Sigma cuadrado sacado de la mmuestra
+w_h_proporcional = (Nh)/(sum(Nh))
+wh = w_h_proporcional #Aqui va la afijacion de la muestra
+N = sum(Nh) # Total poblacional
+D = B^2/(Z^2)  # D es igual a la varianza de ybar estratificado
+
+
+#OJO: D ES IGUALA B^2/Z^2 NE GENERAL PERO, PARA CALCULAR EL **TOTAL** POBLACIONAL, SE USA LA EXPRESION DE D = B^2/(Z^2* #N^2) dividido sobre N cuadrado
+
+n_optimo = sum(((Nh^2*s2h)/wh))/(N^2*D+sum(Nh*s2h))
+n_optimo
+asignacion = wh*n_optimo
+asignacion
+ceiling(asignacion)
+```
+
+
+27) 
+
+Estratifique teniendo en cuenta la vble "numero de niños por minicipio" y arme la tabla de frecuencias y raices acumuladas.
+
+Q= raiz maxima/H <- estratificacion de Q, 2Q,..., (H-1)Q
+
+Finalmente, se seleccionan una MAE de tamaño 20 de 100, se construyen los estratos deseados (2, edad y estududia o no) y se lo maman. 
+
+
+26) 
+
+B=0.05=1.644854*sqrt(var(p_est))
+
+sqrt(var(p_est))=0.05/1.644854=0.03039783
+
+var(p_est)=0.0009240281
+
+Se aplica formula de muestreo sistemaatico lineal  para tamaño muestral de n. En esta formula se conoce a la varianza
+poblacional (en este ejemplo), al total poblacional, a D y faltaria hacer el muestreo para calcular la proporcion de p y q.
+
+Usando muestreo sistematico lineal, se llega a que:
+
+```{r}
+
+N= 20000
+#K = N/n #Conozco y tengo la lista de estudiantes. Se selcciona uno de cada 50
+K = 35
+n= N/K
+n
+floor(n)
+
+```
+#Preguntar Raul
+
+Asi se distribuye la asignacion de la muestra. 
+
+```{r}
+
+Nh = c(5000,2000,1000,4000)
+n=500
+wh = Nh/sum(Nh)
+ceiling(n*wh)
+
+```
+# Ejercicio 25)
+
+Proporcion personas Si reciclaron
+
+DE TODOS LOS ENCUESTADOS, PROPORCIONES
+
+```{r}
+
+Nh = c(340,340,340)
+N= sum(Nh)
+
+ph = c(214/340,249/340,261/340) # Proporcion SI reciclan
+p_est = sum((Nh/N)*ph) 
+p_est
+
+# wh = 0.33= Nh/N afijiacion proporcional y recuerde que wh=Nh/N
+
+
+
+```
+```{r}
+
+Ah = c(724,284,12)
+n = sum(Ah)
+
+ph = 724/n # si reciclan
+ph_1 = 284/n # No reciclan
+ph_2  = 12/n # Valen verga
+
+ph = Ah/n # Recicla, No reciclan, N-N
+
+
+```
+
+B) 
+
+
+```{r}
+ph = c(214/340,249/340,261/340)
+ph
+```
+En efecto, los valores aumentan a medida que nos movemos de estrato. Y hay una diferencia entre el primer y tercer estrato es de 0.1382353 (casi 14%)
+
+C) Si cambia pero no significativamente. 
+
+D) 
+
+Forma 1:
+
+```{r}
+ah1 = c(85,101,94)
+ph1 = ah1/280 # Prop rta 1 por estrato que si
+p_est1 = sum((ah1/340)*ph) 
+
+ah2 = c(126,124,161)
+ph2 = ah2/411 #Prop rta 2 por estrato que si
+p_est2 = sum((ah2/340)*ph) 
+#p_est = sum((1/3)*ph) 
+
+p_est1+p_est2
+
+```
+
+Forma 2: ESTA ES LA CORRECTA!! OJO
+
+```{r}
+
+a = c(85+126,101+124,94+162)
+n = 340
+ph_s = a/n
+ph_s
+
+
+p_est = (1/3)*sum(ph_s) 
+p_est
+
+```
+
+21) *Proporcion poblacional han trabajado un chingo*
+
+
+Datos:
+
+Forma 1: Usando a Nh/N de la tabla
+
+```{r}
+
+ph = c(0.687,0.824,0.782) # Propo. Estratos que Si trabajan como uribe
+
+Nh = c(417+913,29+136,240+860)
+N = sum(Nh)
+p_est = sum((Nh/N)*ph) 
+p_est
+
+```
+
+
+Forma 2: 
+
+Usando el Nh/N como el sgt vector
+
+```{r}
+
+ph = c(0.687,0.824,0.782) # Propo. Estratos que Si trabajan como uribe
+
+wh = c(0.5,0.1,0.4)
+
+#Recuerde wh=Nh/N y estos datos los dan
+
+p_est = sum((wh)*ph) 
+p_est
+
+```
+
+En ambos casos, aprox el 74% bla bla bla
+
+
+Ahora, establezcamos el LEE 
+
+```{r}
+
+qh = 1-ph
+
+
+var_ph = ph*qh/(Nh-1)*(N-Nh)/(N) #Varianza cada estrato, se calcula de esta manera porque estoy trabajando con toda la poblac.
+
+
+var_ph
+
+var_p_est = 1/N^2*sum(Nh^2*var_ph)
+
+B = 2*sqrt(var_p_est)
+B
+
+```
+Este es el IC para ese mierdero
+
+```{r}
+
+p_est-B
+
+p_est+B
+
+
+```
+
+
+22) Promedio Poblacional 
+
+REVISAR NUEVAMENTE, OJO Wh
+
+# PREGUNTAR EN ASESORIA PUNTO B.
+
+```{r}
+
+yh = c(7.63,7.74,6.55)
+nh = c(1347,163,1095)
+sh = c(0.15,0.35,0.11)
+s2h = sh^2
+n = sum(nh)
+
+```
+
+
+Calculo del promedio
+
+```{r}
+
+wh = c(0.5,0.1,0.4) #Afijacion poblacional, este caso, 50,10 y 40% respectivamente
+
+y_bar_est = sum((wh)*yh)
+y_bar_est
+
+```
+
+Calculemos la varianza de Y_MAE asumiendo que n es muy grande
+
+```{r}
+
+# Formula varianza pero com n es grande entonce
+#var_yh_bar= (1-nh/Nh)*s2h/nh
+
+var_yh_bar= 1*s2h/nh
+
+var_y_est = sum((wh)^2*var_yh_bar) # Varianza media estratificada
+
+var_y_est
+
+```
+
+```{r}
+B = 2*sqrt(var_y_est)
+B
+```
+
+20)
+
+a) Proporcion administradores les gusta normativa:
+
+Datos:
+
+```{r}
+Nh = c(300,500)
+N = sum(Nh)
+nh = c(100,100)
+n = 200
+```
+
+Calculemos la proporcion.
+
+A)
+
+```{r}
+Nh = c(300,500)
+N =800
+
+ph1 = c(70/100) #Prop admin gta norma
+
+p1_est = sum((Nh/N)*ph1) #Propo trabas estr les gusta
+p1_est
+
+```
+
+B:
+
+```{r}
+Nh = c(300,500)
+N =800
+
+ph = c(70/100,66/100) #Prop trab gusta
+
+p2_est = sum((Nh/N)*ph) #Propo trabas estr les gusta
+p2_est
+
+```
+
+C:
+
+```{r}
+
+Nh = c(300,500)
+N =800
+
+ph3 = c(7/100,20/100) #Num Mujeres no gta norma
+
+p3_est = sum((Nh/N)*ph3) #Propo mjres estrt no gta norma
+p3_est
+
+```
+Entonces el #TOtal de mujeres no gta norma será
+
+```{r}
+
+p3_est*N
+
+```
+19) 
+
+Datos:
+
+N = 1000
+
+ph1 = 0.8 de los llamados, este era %Censado
+qh1 = 1-ph1 de los llamados, no censados
+
+nh = c(80,20) # Tamaño muestras Electores, no elec
+n = sum(nh)
+ph = c(60/100,8/20) #Proporcion a favor se anexan
+
+```{r}
+
+N = 1000
+
+ph1 = 0.8 # de los llamados, este era %Censado
+qh1 = 1-ph1 # de los llamados, no censados
+
+nh = c(80,20) # Tamaño muestras Electores, no elec
+n = sum(nh)
+ph = c(60/80,8/20) #Proporcion a favor se anexan
+
+
+```
+
+Calculo proporcion 
+
+```{r}
+#Nh/N=wh
+
+wh = c(.8,.2)
+
+p_est = sum((wh)*ph) 
+p_est
+```
+Calculo de la varianza
+
+```{r}
+N=1000
+Nh = c(800,200)
+qh = 1-ph
+var_ph = (1 - nh/Nh)*ph*qh/(nh-1) #Varianza cd ph
+
+var_p_est = 1/N^2*sum(Nh^2*var_ph) # Varianza estimador
+
+
+B = 2*sqrt(var_p_est)
+B
+```
+
+18) 
+
+Datos Primer muestreo:
+
+```{r}
+k = 10
+n_prima_h = c(84,57)
+# k= N/n_prima
+Nh = k*n_prima_h
+Nh
+N=sum(Nh)
+n_prima = sum(n_prima_h)
+n_prima
+
+```
+
+Datos segundo muestreo:
+
+```{r}
+nh= c(11,12)
+
+profe1 = c(122,88,65,55,79,79,40,75,32,428,110)
+
+profe2 = c(452,131,996,50,106,106,506,371,108,298,128,280)
+
+yh = c(mean(profe1),mean(profe2))
+yh
+
+
+```
+
+
+```{r}
+
+wh_prima= n_prima_h/n_prima
+wh_prima
+y_bar_mdest = sum(wh_prima*yh)
+y_bar_mdest #Media MAE de MDEST
+
+```
+Varianza para MDEST:
+
+```{r}
+
+s2h = c(var(profe1),var(profe2))
+
+var_y_bar_mdest = sum(wh_prima^2*s2h/nh)+sum((wh_prima*(yh-y_bar_mdest)^2)/n_prima)
+var_y_bar_mdest
+
+B = 2*sqrt(var_y_bar_mdest)
+B
+```
+
+
+```{r}
+var_y_bar_mdest = (n_prima/(n_prima-1))*sum(((wh_prima)^2 - wh_prima/n_prima)*s2h/nh+(wh_prima*(yh-y_bar_mdest)^2)/(n_prima))
+var_y_bar_mdest
+```
+
+EL IC seria 
+```{r}
+y_bar_mdest- 75.50602
+y_bar_mdest+ 75.50602
+```
+
+17) 
+
+
+
+
+
+
+
+
+
+
+
+

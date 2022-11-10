@@ -1,0 +1,285 @@
+---
+title: ''
+author: ''
+date: ''
+output:
+  pdf_document: default
+  word_document: default
+---
+$\rule{6.5in}{1pt}$
+\begin{center}
+
+\textbf{UNIVERSIDAD NACIONAL DE COLOMBIA}
+
+\textit{REGRESIÓN LINEAL MULTIPLE PARTE 2}
+
+\textbf{Autor:}
+
+\textit{Daniela Pico}
+
+\textit{Jhonatan Smith}
+
+\textbf{Profesor:}
+
+\textit{Isabel Cristina Ramirez}
+
+\textbf{2021-01}
+\end{center}
+
+$\rule{6.5in}{1pt}$
+
+
+```{r}
+data=read.table(file.choose(),header=T,sep=";",dec=",",
+colClasses=c(rep("numeric",7),"factor",rep("numeric",3),"factor"))
+datar=data[-c(19:20),]
+```
+
+
+Sin considerar las observaciones con ID=47 e ID=112 de la base de datos asignada y usando variables indicadoras R1,R2,R3 para las regiones 1,2 y 3 respectivamente, suponga inicialmente que las rectas de regresión de DPERM VS. PDP en cada región no son iguales (que difieren tanto en el intercepto como en las pedientes) realice lo siguiente:
+
+1) Plantee el modelo de regresión apropiado si se espera una diferencia entre las rectas de DPERM VS PDP que corresponden a las cuatro regiones.
+
+2) Ajuste el modelo general (muestre la tabla de parámetros estimados) y halle las ecuaciones ajustadas de las rectas en cada región.
+
+3) Analice supuestos de normalidad y varianza constante mediante los residuales, para el modelo general (residuales estudentizados vs. valores ajustados y vs. PDP). Identifique en estos gráficos las observaciones según la región a la cual pertenecen.
+
+4) Determine si existe diferencia entre las ordenadas en el origen de las rectas correspondientes a las regiones.
+
+5) Determinee si existe diferencia en las pendientes de las rectas correspondientes a las regiones. Interprete a la luz de los datos. 
+
+6) Si se quiere probar que la recta de DPERM VS PDP es diferente para cada región, plantee la hipoteis a probar, el estadítico de prueba y región crítica a nivel de 0.05, realice la prueba y concluya.
+
+7) Determine si el efecto medio de PDP sobre DPERM es igual a las cuatro regiones (no depende de la región).
+
+Nota: Aquí el estadístico de prueba se calcula recordando la siguiente expresión.
+
+$$F=\frac{SSR(Modelo Completo)-SSR(Modelo reducido)}{glssr(Modelo Completo)-glssr(Modelo reducido)} \div MSE(Modelo Completo)$$
+Donde el modelo completo es el modelo 1) y el modelo reducido es el resultante de aplicar lo que dice $H_0$ acerca de las pendientes en las regiones.
+
+$H_0$= pendiente región 1=pendiente región 2=pendiente región 3=pendiente región 4.
+
+$H_1$= Alguna de las pendientes es distinta.
+
+Traduzca estas hipotesis en términos de los parámetros apropiados en el mmodelo. Ajuste el modelo reducido, muestre la tabla de párametros ajustados y escriba las ecuaciones de ajuste para cada región. Interprete los resultados a la luz de los datos.
+
+\newpage
+
+\begin{center}
+\textbf{Resultados}
+\end{center}
+
+1) Se desea modelar la relación lineal de DPERM VS PDP (variable predictoria cuantativa), en presencia de REGION, esta última variable cualitativa con 4 categorias (R1,R2,R3 y R4), Para este caso usaremos las indicadoras de las primeras 3 categorias, con:
+
+* DPERM:Longitud de permanencia.
+ * REGION:Región.
+  * PDP: Censo promedio diario.
+   * R1= Región 1.
+* R2= Región 2.
+ * R3= Región 3.
+
+**CASO 1**: El efecto promedio del censo promedio diario sobre la respuesta de la longitud de permanencia cambia según la categoria en que la régión es observada, se plantea el siguiente modelo y usaremos como referencia la categoría Región 4 
+(R4)
+
+$$Y_i=\beta_0+\beta_1X_{i1}+\beta_2I_{i1}+\beta_3I_{i2}+\beta_4I_{i3}+\beta_{1,1}X_{i1}I_{i1}+\beta_{1,2}X_{i1}I_{i2}+\beta_{1,3}X_{i1}I_{i3}+ei$$ $$\space \varepsilon_i\space	\sim N(0,\sigma^2)$$
+Esta ecuación define 4 rectas de regresión simple de DPERM VS PDP
+
+* Si $I_1$=1 entonces $I_2$=0,$I_3$=0
+
+$$Y_i=\beta_0+\beta_1X_{i_1}+\beta_2+\beta_{1,1}X_{i1}+ei$$ $$= (\beta_0+\beta_2)+(\beta_1+\beta_{1,1})X_{i1}$$ $$\space \varepsilon_i\space	\sim N(0,\sigma^2)$$
+
+* Si $I_2$=1 entonces $I_1$=0,$I_3$=0
+ 
+$$Y_i=\beta_0+\beta_1X_{i1}+\beta_3+\beta_{1,2}X_{i1}+ei$$ $$= (\beta_0+\beta_3)+(\beta_1+\beta_{1,2})X_{i1}$$ $$\space \varepsilon_i\space	\sim N(0,\sigma^2)$$
+  
+* Si $I_3$=1 entonces $I_2$=0,$I_1$=0
+   
+
+$$Y_i=\beta_0+\beta_1X_{i1}+\beta_4+\beta_{1,3}X_{i1}+ei$$ $$\space \varepsilon_i\space	\sim N(0,\sigma^2)$$ $$= (\beta_0+\beta_4)+(\beta_1+\beta_{1,3})X_{i1}$$ $$\space \varepsilon_i\space	\sim N(0,\sigma^2)$$
+   
+* Si $I_1$=0,$I_2$=0,$I_3$=0
+
+$$Y_i=\beta_0+\beta_1X_{i1}+ei$$ $$\space \varepsilon_i\space	\sim N(0,\sigma^2)$$
+```{r,echo=FALSE}
+plot( datar$PDP,datar$DPERM,pch=as.numeric(datar$REGION),col=as.numeric(datar$REGION),
+     xlab="Longitud de Permanencia",
+     ylab="Censo Promedio Diario",cex=2,cex.lab=1.5)
+legend("topleft",legend=c("R1","R2","R3","R4"),pch=c(1:4),col=c(1:4),cex=1.5)
+```
+Un primer analisis descriptivo del grafico anterior podria indicar una relacion lineal con respecto a R1, ya que si la longitud de  permanencia aumenta, el censo promedio diario tambien lo hace en relacion a la region 1.
+
+Se podria pensar que la region 2 (representada por los triangulos) tambien tiene una relacion lineal pues se cunmple lo mencionado en las lineas anterioires, sin embargo se obvserva que sus datos se encuentran mas dispersos y esto finalmente, podria afectar la pendiente del modelo. 
+
+Las regiones 3 y 4 (simbolos "+" en verde y simbolos "x" en azul) en un principio se podria pensar que "no tienen pendiente" y esto se interpreta como una carencia de relacion entre las variables epxlicatorias y las regiones 3 y 4. 
+
+En resumen; a primera vista se podría sospechar que la variable longitud de permanencia y censo promedio diario tienen una relacion lineal entre las regiones 1 y 2. Para las regiones 3 y 4 no se puede dar indicios claros y se sospecha que no son relevantes. 
+
+Por esto se podria pensar que se ha de tener en cuenta que la longitud de permanencia se ve afectada por la variable PDP dadas las regiones 1 y 2. 
+
+
+2) A continuación se presenta la tabla de parámetros estimados
+
+```{r,echo=FALSE,message=FALSE}
+attach(datar)
+REGION=relevel(REGION,ref="4")
+```
+
+
+```{r,echo=FALSE}
+modelo1=lm(DPERM~PDP*REGION)
+summary(modelo1)
+```
+
+Se Ajusto el siguiente modelo teniendo en como región de referencia R4 (Región 4) y se llegó al siguiente modelo ajustado:
+
+$$\hat{y_i}=7.5129900+0.0043779X_{i1}+1.5562908I_{i1}$$$$+1.2701019I_{i2}+1.4118256 I_{i3}+0.0040337X_{i1}I_{i1}-0.0007404X_{i1}I_{i2}-0.0030364X_{i1}I_{i3}$$
+
+Cuando $I_{ii}$ hace referencia a: $I_{i1}$=R1,$I_{i2}$=R2,$I_{i3}$=R3
+
+* Recta ajustada para la Región 1, Si $I_1$=1 entonces $I_2$=0,$I_3$=0
+
+$$\hat{y_i}=7.5129900+0.0043779X_{i_1}+ 1.5562908 +0.0040337X_{i1}$$ $$= (7.5129900+1.5562908)+(0.0043779+0.0040337)X_{i1}$$
+  * Recta ajustada para la Región 2, Si $I_2$=1 entonces $I_1$=0,$I_3$=0
+ 
+$$\hat{y_i}=7.5129900+0.0043779X_{i1}+1.2701019-0.0007404X_{i1}$$ $$= (7.5129900+1.2701019)+(0.0043779-0.0007404)X_{i1}$$ $$\space \varepsilon_i\space	\sim N(0,\sigma^2)$$
+   
+  * Recta ajustada para la Región 3, Si $I_1$=0,$I_2$=0,$I_3$=1
+
+$$\hat{y_i}=7.5129900+0.0043779X_{i1}+1.4118256-0.0030364X_{i1}$$ $$= (7.5129900+1.4118256)+(0.0043779-0.0030364)X_{i1}$$
+
+   * Recta ajustada para la Región 4, Si $I_1$=0,$I_2$=0,$I_3$=0
+
+
+$$\hat{y_i}=7.5129900+0.0043779X_{i1}$$
+\newpage
+3)
+
+\begin{center}
+\textbf{Gráfico de Residuales vs. Valores Ajustados y vs.PDP}
+\end{center}
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+library(car)
+win.graph(width=8.5,height=5)
+residualPlots(modelo1,groups=REGION,type="rstudent",linear=F,cex=1,pch=1:4,col=1:4)
+```
+
+Los residuales estudentizados entre aproximadamente 0 y 150 (valores de PDP) se mueven mas o menos entre los mismos valores; entre -2 y 2, alrededor del cero.
+
+Sin embargo, a partir de poco mas 300 dichos valores se mueven mas o menos entre -2 y 1. Si bien estos datos mas a la derecha no representan una gran parte de los datos, si se puede llegar a pensar que por esto hay problemas de varianza constante. 
+
+Al ver los residuales estudentizados vs los valores ajustados vemos como al inicio los valores estan mas concentrados (mas concentrados alrededor del cero) pero a medida que aumenta el valor ajustado, los valores se hacen mas amplios en el eje y. Esto nos ayuda a confirmar que hay problemas de varianza constante.
+
+```{r}
+boxplot(rstudent(modelo1)~REGION,border=1:4)
+abline(h=c(-2,0,2),lty=3)
+```
+
+Los colores siguen representando las regiones dadas en el grafico de dispersion. Claramente el boxplot color negro representa una region con datos mas concentrados  (Region 1) mientras que la region 2 (boxplot rojo) claramente tiene una variabilidad mas alta. Se concluye que hay problemas de varianza constante. 
+
+
+\begin{center}
+\textbf{Gráfico de Normalidad}
+\end{center}
+
+```{r,echo=FALSE}
+
+test=shapiro.test(rstudent(modelo1))
+qqnorm(rstudent(modelo1),pch=as.numeric(REGION),cex=1.5,col=as.numeric(REGION))
+qqline(rstudent(modelo1))
+legend("topleft",legend=rbind(c("Statistic W","p.value"),
+                              round(c(test$statistic,test$p.value),digits=4)),cex=0.8)
+```
+
+En este caso, el p-value= 0.014<$\alpha=0.05$ por tanto NO se rechaza la hipotesis nula y se concluye que los residuales NO distribuyen normal. 
+
+Este modelo no cumple los supuestos de varianza constante y normalidad. 
+
+4) Si los interceptos de las rectas para la R1,R2,R3 son igueles entonces:
+
+$$\beta_0=\beta_0+\beta_2=\beta_0+\beta_3=\beta_0+\beta_4$$
+Se plantea el siguiente juego de Hipotesis:
+
+$$H_0=\beta_2=\beta_3=\beta_4=0$$ vs $H_a:Algún \space\beta_j\neq0$
+
+```{r,echo=FALSE}
+linearHypothesis(modelo1,c("REGION1=0","REGION2=0","REGION3=0"))
+```
+Como P-valor=0.09156>0.05 entonces no se rechaza la hipotesis nula y se concluye que los interceptos de las rectas para la región 1, región 2 y región 3 son iguales 
+
+5) Para determinar si existe diferencia entre las pendientes de las rectas, se plantea el siguiente juego de hipotesis partiendo de que:
+
+$\beta_1+\beta_{1,1}=\beta_1+\beta_{1,2}=\beta_1+\beta_{1,3}=\beta_1$ Dadas estas pendientes, se desea probar que:
+
+$H_0:\beta_{1,1}=\beta_{1,2}=\beta_{1,3}$ vs $H_1:$ Algún $\beta_j\neq0$.
+
+```{r}
+names(coef(modelo1))
+```
+
+```{r}
+linearHypothesis(modelo1,c("PDP:REGION1=0","PDP:REGION2= 0","PDP:REGION3=0")) 
+```
+Segun esto, las pendientes son iguales
+
+$H_0:\beta_{1,1}=\beta_{1,2}$ vs $H_1:$Algún $\beta_j\neq0$.
+
+```{r}
+linearHypothesis(modelo1,c("PDP:REGION1-PDP:REGION2= 0")) 
+
+```
+Como el P-value = 0.1339> $\alpha=0.05$ no se rechaza la hipotesis nula y se concluye que la incidencia de la region 1 y 2 es la misma pues la pendiente de sus respectivas rectas es igual. 
+
+```{r}
+linearHypothesis(modelo1,c("PDP:REGION1-PDP:REGION3= 0")) 
+
+
+```
+Como el P-value = 0.01775> $\alpha=0.05$ no se rechaza la hipotesis nula y se concluye que la incidencia de la region 1 y 3 es la misma pues la pendiente de sus respectivas rectas es igual. 
+
+
+```{r}
+linearHypothesis(modelo1,c("PDP:REGION2-PDP:REGION3= 0")) 
+# p=0.5493 > alfa no se rechaza por tanto son iguales
+```
+Como el P-value = 0.4247> $\alpha=0.05$  se rechaza la hipotesis nula y se concluye que la incidencia de la region 2 y 3 es diferente pues las pendientes de cada recta es diferente. 
+
+Asi, la pendiente de REGION 1 y REGION 2 es la misma pero la recta correspondiente a la region 3 es diferente. Esto es concistente con el primer analisis descriptivo. 
+
+
+6) Se desea probar que la recta de regresion DPERM vs PDP es diferente en cada region.
+
+Para probar que cada recta sea diferente, se debe verificar que tenga pendiente e intercepto diferente. Para ello, se plantea el siguiente juego de hipotesis.
+
+$H_0:\beta_2=\beta_3=\beta_4=\beta_{1,1}=\beta_{1,2}=\beta_{1,3}=0$ vs $H_1:$Algún parametro anterior diferente de cero. 
+
+```{r}
+names(coef(modelo1))
+```
+
+```{r}
+linearHypothesis(modelo1,c("PDP:REGION2=0","PDP:REGION3= 0","PDP:REGION1=0","REGION1=0","REGION2=0","REGION3=0"  ))
+```
+
+El valor del p-value es casi cero, p-value>$\alpha=0.05$ por tanto no se rechaza la hipotesis nula y se concluye que las rectas son iguales y no existe un cambio diferente por pendiente e intercepto.  
+
+7) 
+
+```{r}
+matriz_diseño = as.data.frame(model.matrix(modelo1))
+```
+
+```{r}
+
+REGION1 = matriz_diseño$REGION1
+REGION2 = matriz_diseño$REGION2
+REGION3 = matriz_diseño$REGION3
+
+```
+
+# Ajuste modelo reducido:
+
+```{r}
+
+```
+

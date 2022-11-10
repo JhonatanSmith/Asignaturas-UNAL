@@ -1,0 +1,6 @@
+---
+title: "Primera entrega muestreo"
+author: "smith"
+date: "11/3/2021"
+output: pdf_document
+---
