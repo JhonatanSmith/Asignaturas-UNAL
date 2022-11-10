@@ -1,0 +1,214 @@
+---
+title: "Comparaciones pareadas"
+author: "Jhonatan Smith Garcia"
+date: "26/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Se realizo un experimento para ver si dos tecnicos tienen alguna tendencia a obtener diferentes resultados cuando determinan la pureza de cierto producto. Cada muestra
+fue dividida en dos porciones y cada tecnico determin ´ o la pureza de una de las por- ´
+ciones. Los resultados se muestran a continuacion.
+
+VER NOTAS DE CLASE SEMANA 1, EJEMPLO 2, DIAPOSITIVA 35
+
+
+```{r}
+rm(list=ls(all=TRUE))
+datos9= data.frame(Técnico=factor(rep(c(1,2),each=8)),muestra=factor(rep(1:8,times=2)),
+ Pureza=scan())
+```
+
+El codigo anterioir, crea el dataframe con el que se va a trabajar. De acá, se parte de dos ideas.
+
+El data frame va a ir categorizado por 2 tecnicos, entonces se hace un replicate de "ocho" unos y "ocho" 2, representando las 8 observaciones del tecnico 1 y las 8 observaciones del tecnico 2. 
+
+Luego, se introduce la muestra, emparejandola por fila.
+
+Finalmente, escanea los datos de la pureza. 
+
+```{r}
+74.0 73.1 73.5 73.9 71.2 72.5 73.0 74.3
+73.0 71.3 73.2 71.1 70.3 71.5 73.4 72.4
+```
+
+```{r}
+attach(datos9)
+```
+
+
+```{r}
+medias=sapply(split(Pureza,Técnico),mean) #Medias medidas según técnico
+medias
+```
+
+
+```{r}
+medias2=sapply(split(Pureza,muestra),mean)#Medias medidas en cada muestra
+medias2
+```
+
+
+```{r}
+difer=Pureza[Técnico==1]-Pureza[Técnico==2] #diferencias entre pares de observaciones
+mean(difer) #media muestral diferencias entre pares de observaciones
+var(difer) #Varianza muestral diferencias entre pares de observaciones
+```
+
+
+```{r}
+#Gráficos descriptivo
+plot(as.numeric(muestra),Pureza,col=as.numeric(Técnico),pch=as.numeric(Técnico),
+ xlab="muestra",cex=1.5,ylim=c(70,75))
+lines(1:8,medias2,type="b",pch=19,lty=2,col=4)
+segments(1:8,Pureza[Técnico==1],1:8,Pureza[Técnico==2])
+legend("topleft",legend=c("Técnico 1","Técnico 2","Media medidas pureza por pieza"),
+ pch=c(1:2,19),col=c(1:2,4),bg="cornsilk")
+```
+
+
+```{r}
+boxplot(difer,boxwex=0.5,ylab="Diferencias por pares") #Distribución de las diferencias
+ #pareadas
+abline(h=0,lty=3,col=2) 
+```
+
+Ahora, se realizarán las pruebas pertinentes:
+
+```{r}
+t.test(Pureza~Técnico,var.equal=TRUE,alternative="two.sided",paired=TRUE)
+```
+La preba de hipotesis planteada fue:
+
+$$H_0: \mu_1=\mu_2\space vs \space H_1:\mu_1 \neq \mu_2$$ 
+
+ De estos datos, interesa 
+ 
+ * p-value de 0.01308
+ * t-value de 3.3025
+ * un IC para $\mu_d=\mu_1-\mu_2$ de 0.3301447 1.9948553
+ * Media muestral diferencias 1.1625 
+
+Como el P-value> 0.05 se rechaza H0 a favor de H1 y en promedio las medias de los tecnicos no son iguales.
+
+# Solucion mediante modelo ANOVA de efectos de tratamientos y bloques
+
+Acá se utiliza el modelo que tiene a mu, alfa-i, beta-j. (comparacion pareada diap 38)
+
+```{r}
+# Primero se crea el modelo
+modeloanova = aov(Pureza ~Técnico+muestra)
+
+# Luego, se saca la tabla anova
+anova(modeloanova)
+```
+Datos de está tabla:Hay 3 sumas de cuadrados (tecnico, muestra y residuales)
+
+ * Los DF de los residuales es el producto de DF de Tecnicos*muestra = 1*7 o directamente (n-1)
+ 
+ * La Sum Sq de tecnico = SSA= (n/2)*dbar^2=5.4056
+ 
+ * MSE = Sd^2/2 = 0.4956 (el Mean sq de residuales)
+ 
+Gracias a este valor.p de la prueba F, entonces se rechaza H0 a favor de H1
+
+# Solucion por modelo de regresion
+
+```{r}
+#INDICADORAS
+I1=ifelse(Técnico=="1",1,0); I2=ifelse(Técnico=="2",1,0); Z1=ifelse(muestra=="1",1,0); Z2=ifelse(muestra=="2",1,0)
+Z3=ifelse(muestra=="3",1,0); Z4=ifelse(muestra=="4",1,0); Z5=ifelse(muestra=="5",1,0); Z6=ifelse(muestra=="6",1,0)
+Z7=ifelse(muestra=="7",1,0); Z8=ifelse(muestra=="8",1,0)
+```
+
+```{r}
+#VARIABLES EXPLICATORIAS PARA EL AJUSTE POR REGRESIÓN
+X=I1-I2; W1=Z1-Z8; W2=Z2-Z8; W3=Z3-Z8; W4=Z4-Z8; W5=Z5-Z8; W6=Z6-Z8; W7=Z7-Z8
+mrlm=lm(Pureza~X+W1+W2+W3+W4+W5+W6+W7)
+ 
+```
+ 
+
+```{r}
+# Finalmente, un resumen del modelo
+summary(mrlm)
+```
+
+Datos:
+
+Nos interesa el valor P de la prueba de significancia de la variable X (teoria).
+
+Al final de la tabla, el parametro residual sdn error es $\sqrt{MSE}=0.704=\frac{S_d}{\sqrt{2}}$
+
+# Tambien, mediante el test ANOVA donde:
+
+$$H_0:\alpha_1 =0\space vs \space H_1:\alpha_1\neq0$$
+
+```{r}
+library(car) # Se llama esta libreria
+linearHypothesis(mrlm,"X=0") # modelo es ese y vble explicatoria vale 0
+
+```
+
+Datos de esta tabla:
+
+ El de arriba es modelo reducido y el de abajo modelo full
+ 
+ Res.Df = 8 es g.l(SSE(MR))
+ res.Df = 7 es g.l(SSE(MF))
+ 
+ RSS = 8.875 es SSE(ME)
+ RSS = 3.4694 es SSE(MF)
+ 
+ Df  = 1 es gl(SSE(MR)-gl(SSE(MF)))
+ 
+ sum sq = SSE(MR)-SSE(MF)
+ F0 PUES DAAAA
+ 
+ P-value PUES DAAAA
+ 
+
+```{r}
+#GRÁFICO DE RESIDUOS ESTUDENTIZADOS INTERNAMENTE
+win.graph(width=8.5,height=6)
+layout(rbind(c(1,1,2,2,3,3),c(4,4,5,5,6,6)))
+plot(fitted(modeloanova),rstandard(modeloanova),main="residuos estudentizados vs. ajustados\nModelo ANOVA",
+ ylim=c(-2.5,2.5),cex=1.5)
+abline(h=c(-2,0,2),lty=2,col=2)
+stripchart(rstandard(modeloanova)~Técnico, main="residuos estudentizados vs. Técnico\nModelo ANOVA",
+ xlab="Técnico",vertical=T, ylim=c(-2.5,2.5),pch=1:2,col=c(1:2),cex=1.5)
+abline(h=c(-2,0,2),lty=2,col=2)
+stripchart(rstandard(modeloanova)~muestra,main="residuos estudentizados vs. muestra\nModelo ANOVA",
+ ylim=c(-2.5,2.5),xlab="muestra",vertical=T,pch=1,cex=1.5)
+abline(h=c(-2,0,2),lty=2,col=2)
+plot(fitted(mrlm),rstandard(mrlm),main="residuos estudentizados vs. ajustados\nMRLM",
+ ylim=c(-2.5,2.5),cex=1.5)
+abline(h=c(-2,0,2),lty=2,col=2)
+plot(X,rstandard(mrlm),xlab="X",main="residuos estudentizados vs. X\nModelo de efectos con MRLM",
+ ylim=c(-2.5,2.5), pch=as.numeric(Técnico),col=as.numeric(Técnico),cex=1.5)
+abline(h=c(-2,0,2),lty=2,col=2)
+legend("top",legend=c(expression(paste("Técnico 1",sep=" ","(",sep="",X==+1,sep="",")")),
+ expression(paste("Técnico 2",sep=" ","(",sep="",X==-1,sep="",")"))),
+ pch=1:2,col=1:2,bg="cornsilk")
+stripchart(rstandard(mrlm)~muestra,main="residuos estudentizados vs. muestra\nModelo de efectos con MRLM",
+ylim=c(-2.5,2.5),xlab="muestra",vertical=T,pch=1,cex=1.5)
+abline(h=c(-2,0,2),lty=2,col=2) 
+
+```
+
+
+
+Que se concluye?
+
+Los residuos estudentizados vs valores ajustados se distribuyen de manera aleatoria.
+
+No hay problemas de varianza constante al mirar los residuos ni ajustados ni estudentizados. 
+
+No hay carencia de ajuste
+
+
+
+
