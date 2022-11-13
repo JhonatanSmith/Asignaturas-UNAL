@@ -9,13 +9,19 @@ output: rmdformats::readthedown
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 # Base de datos cerditos
 # holiiiii
 ```{r}
 require(janitor)
-df = read.csv('cerdos.csv', sep = ';')
+library(readr)
+
+df <- read_delim("cerdos.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
 df = clean_names(df)
 ```
+
+
 
 
 ```{r}
@@ -54,6 +60,7 @@ plot(df$date, df$sacrificio_totales, type = 'l',main = 'Sacrificios totales',xla
 ```
 
 ```{r}
+require(forecast)
 mod1 = auto.arima(df$sacrificio_totales)
 summary(mod1)
 ```
