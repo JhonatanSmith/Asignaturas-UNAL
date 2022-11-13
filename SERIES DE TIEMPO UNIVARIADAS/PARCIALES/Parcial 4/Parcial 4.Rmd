@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Base de datos cerditos
-
+# holiiiii
 ```{r}
 require(janitor)
 df = read.csv('cerdos.csv', sep = ';')
