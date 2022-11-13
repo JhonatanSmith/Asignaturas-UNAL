@@ -40,8 +40,7 @@ de la serie se encuentran inapropiados para trabajar con ellos.
 
 ```{r message=FALSE, warning=FALSE}
 
-df = read_delim("cerdos.csv", 
-    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+df = read_delim("cerdos.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
 ```
 La variable año se convierte en 'ano'. Nos gusta ese nombre entonces, asi se queda.
 Basicamente esta es la estructura de la base de datos. La cual, tiene las siguientes variables.
@@ -117,12 +116,6 @@ ggplot(df, aes(x=date,y=sacrificio_totales))+
 
 ```
 
-=======
->>>>>>> Stashed changes
-
-```{r}
-plot(df$date, df$sacrificio_totales, type = 'l',main = 'Sacrificios totales',xlab = 'Fecha',ylab = 'Total sacrificios ')
-```
 
 ```{r}
 mod1 = auto.arima(df$sacrificio_totales)
@@ -150,19 +143,19 @@ df2 =cerditos_2_la_venganza
 
 
 df2 = cerditos_2_la_venganza
-df2 = df %>% clean_names()
+df2 = df2 %>% clean_names()
 df2 %>% head(3)
 
 ```
 
 ```{r}
-plot(df2$date, df2$sacrificio_totales, 'l')
+plot(df2$fecha, df2$t_cabezas, 'l')
 ```
 
 
 ```{r}
 
-a=df2$sacrificio_totales
+a=df2$t_cabezas
 test = auto.arima(na.omit(a))
 test
 ```
