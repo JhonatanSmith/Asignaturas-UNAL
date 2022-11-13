@@ -9,32 +9,63 @@ output: rmdformats::readthedown
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+require(dplyr)
+require(janitor)
+```
+
+# FELIPE CAREMONDA
+
+
 # Base de datos cerditos
 
+
+## Marco teorico: Por qué los cerditos?
+
+## Procesamiento de la base de datos
+
+El primer paso es la lectura de los datos. Note que los nombres
+de la serie se encuentran inapropiados para trabajar con ellos.
+
 ```{r}
-require(janitor)
 df = read.csv('cerdos.csv', sep = ';')
-df = clean_names(df)
+df %>% head(3)
 ```
-
+La variable año se convierte en 'ano'. Nos gusta ese nombre entonces, asi se queda.
+Basicamente esta es la estructura de la base de datos. La cual, tiene las siguientes variables.
 
 ```{r}
-df$mes %>% unique()
+df = clean_names(df)
+df %>% names()
 ```
+Descripcion de las variables en el dataframe:
 
+ *Ano:* Año en el que se toma el registro
+ 
+ *sacrificios_porcinos_machos:* El nombre lo indica, cantidad de sacrificios porcinos machos
+ 
+ *
+ 
+Note que, la variable 'mes' se encuentra en formato caracter y, representa los meses por las tres primeras letras del respectivo mes en español.
+
+```{r}
+df$mes %>% unique() # Se verifica que no estén repetidos valores
+```
+Se procede entonces a crear la variable 'date' que representará la fecha asociada a cada dato.
 
 ```{r}
 df$mes =as.factor(df$mes)
 df$mes %>% levels# CUando se convierte en factor, cambia el orden
-```
-
-```{r message=FALSE, warning=FALSE}
-
-require(dplyr)
 month_id = c(4,8,12,1,2,7,6,3,5,11,10,9)
 levels(df$mes) = month_id
 df$mes = df$mes %>% as.character()
 ```
+Cuando se aplica la funcion as.factor, el orden de los mismos cambia. Entonces simplemente, se cambiará los niveles de la variable como factor a un valor numerico, siendo 1 enero, 2 febrero y asi sucesivamente. Luego, se transforma en string (Caracter) para obtener finalmente lo siguiente en la estructura del dataframe
+
+```{r}
+df %>% head(1)
+```
+Ahora mes, es un numero. 
 
 ```{r}
 df$dia = replicate(length(df$ano), '13')
