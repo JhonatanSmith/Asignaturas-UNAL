@@ -9,18 +9,6 @@ output: rmdformats::readthedown
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r message=FALSE, warning=FALSE, include=FALSE}
-require(dplyr)
-require(tidyverse)
-require(latticeExtra)
-require(datetime)
-library(lubridate)
-library(readxl)
-require(forecast)
-require(readr)
-require(janitor)
-```
-
 
 # Base de datos cerditos
 
@@ -47,6 +35,7 @@ La variable año se convierte en 'ano'. Nos gusta ese nombre entonces, asi se qu
 Basicamente esta es la estructura de la base de datos. La cual, tiene las siguientes variables.
 
 ```{r}
+
 df = clean_names(df)
 df %>% names()
 ```
@@ -59,6 +48,8 @@ Descripcion de las variables en el dataframe:
  *
  
 Note que, la variable 'mes' se encuentra en formato caracter y, representa los meses por las tres primeras letras del respectivo mes en español.
+
+
 
 ```{r}
 df$mes %>% unique() # Se verifica que no estén repetidos valores
@@ -87,44 +78,14 @@ df$date = as.Date(df$date, format = '%d-%m-%Y')
 df = df[order(df$date),] # ordenando por fecha mas vieja
 ```
 
-## Grafico de la serie
-<<<<<<< Updated upstream
 
-## Total por Macho y Hembra
-
-
-```{r}
-
-xyplot(sacrificios_porcinos_machos+ sacrificio_porcinos_hembras ~ date, df, type = "l", col=c("steelblue", "#69b3a2") , lwd=2)
-```
-
-
-## Total de sacrificios porcinos
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-require(ggplot2)
-require(hrbrthemes)
-
-x = df$date
-y = df$sacrificio_totales
-
-# plot 
-
-ggplot(df, aes(x=date,y=sacrificio_totales))+
-  geom_line(color = '#69b3a2', size = 1.5, alpha = 0.9)+
-  theme_ipsum()+
-  ggtitle('Total de sacrificios porcinos')
-
-```
-
-=======
->>>>>>> Stashed changes
 
 ```{r}
 plot(df$date, df$sacrificio_totales, type = 'l',main = 'Sacrificios totales',xlab = 'Fecha',ylab = 'Total sacrificios ')
 ```
 
 ```{r}
+require(forecast)
 mod1 = auto.arima(df$sacrificio_totales)
 summary(mod1)
 ```
@@ -324,37 +285,36 @@ datos.total.kids = datos.total.kids %>% mutate(Anio = year(FECHA.NACIMIENTO), se
 #Miremos que salió
 ```
 
-Misma base de datos, ah verdad, no se la hemos mostrado al profesor. La base de datos. PROFE!
-
+Para esta base de datos, estudiaremos un conjunto de información del sector salud, para dictaminar conclusiones acerca del análisis en cuestión de series temporales que podamos hacer para estos datos, se tomara información del Hospital Manuel Uribe Ángel, el cual está ubicado en el departamento de Antioquia, específicamente en el municipio de envigado; la fecha de emisión de la base de datos fue el 2019-10-08 y esta se actualiza de manera trimestral,  los datos que residen en esta base apuntan hacia la caracterización de los nacimientos que hubo en este hospital desde el 2018, entre los datos hay información como el sexo del niño, el departamento, el municipio, el área de nacimiento, el peso en gramos, la talla de nacimiento, la fecha de nacimiento y demás.
 ```{r}
 datos %>% head() # Hay muchas variables. 
 ```
 
-Para este enfoque, interesa contar numero de machos que nacen,o de mujeres y analizar si hay un comportamiento en el timepo de los nacimientos.
+Para este enfoque, nos interesamos en hacer conteos de nacimientos por periodos específicos, ya sea separando por machos y hembras o totalizando este conjunto, la temporalidad que elegiremos será mensual para buscar patrones en cuanto a los meses del año y si esto puede brindar algún tipo de información relevante en cuanto al análisis que realizaremos de los nacimientos en el centro hospitalario.
 
-Dicho de otra manera, si hay una estacionalidad en una fecha; implica entonces que nueve meses antes se encuentran los mas culiones.
-
-*Podriamos dictaminar, los signos zodiacales mas promiscuos? Donde estan las perras? Les leemos el Tarot con un modelo ARIMA?*
+*Podriamos dictaminar entonces, algun tipo de estacionaldiad en los datos y nacimientos? ? Les leemos el Tarot con un modelo ARIMA?*
 
 ```{r}
 
 plot(datos.total.kids$total.kids, type = 'l') # se ve mas chimbita
 ```
 
+Vemos en la gráfica de la serie que hay periodos donde la serie de tiempo presenta tendencia creciente y que hay ciertos picos y valles, de cierta manera podríamos decir que al final de serie la predominancia es una tendencia bajista, a primera vista no es evidente alguna estacionalidad y se sospecha que la serie por su componente de tendencia necesitara una diferenciación.
+
 ```{r}
 b=auto.arima(datos.total.kids$total.kids) # tiene mas sentido
 b
 ```
-
+Como era de esperarse, la serie requiere una diferenciación, además tiene ordenes p y q de 1 y 2 respectivamente.
 ```{r}
 pacf(datos.total.kids$total.kids)
 ```
+En el análisis de la autocorrelación parcial de la serie de tiempo, vemos que esta tiene un comportamiento tipo corte de orden 1 ( lo que puede dictaminar el orden autorregresivo de 1).
 
 ```{r}
 acf(datos.total.kids$total.kids)
 ```
-
-Si señor. Este modelo tiene mas sentido. Puesto que la naturaleza del problema TIENE mas sentido. No como la pinche proporcion. Muy bien SMith, a este paso; cuando grande serás como Mazo.
+Analizando la acf, vemos que esta tiene un decaimiento lento, que como vimos anteriormente se puede deber a la presencia de tendencia; esto confirma la necesidad de una diferenciación para buscar la estacionariedad en la serie.
 
 ```{r}
 fit <- b
@@ -366,8 +326,7 @@ plot(maroots(fit),main="Inverse MA roots")
 remember: (And as a consequence, the solution of a homogeneous autoregressive difference equation is stable if all roots of its characteristic polynomials are inside the unit circle, or equivalently, the roots of its inverse characteristic polynomial are outside of the unit circle.)
 
 
- Mas melo para donde?
-
+Según la prueba de las raíces unitarias y analizando sus inversos para poder hacer una gráfica ilustrativa como se ve en la propuesta anterior, vemos que este modelo es estacionario e invertible, lo cual nos indica que el modelo tiene validez y que podemos proseguir con los análisis pertinentes.
 
 
 #
