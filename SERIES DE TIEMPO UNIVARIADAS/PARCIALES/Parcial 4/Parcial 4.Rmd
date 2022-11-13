@@ -10,37 +10,63 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+
 # Base de datos cerditos
-# holiiiii
-```{r}
-require(janitor)
-library(readr)
 
-df <- read_delim("cerdos.csv", 
+## Marco teorico: ¿Por qué los cerditos?
+
+Tenga presente que el analisis del consumo carnico para una poblacion es importante pueto que a las entidades gubernamentales le permite controlar y entender dicho comportamiento para identificar y preveer posibles problemas de salud publica o en su defecto, generar politicas para controlar la economia 
+del consumo. Se entiende pues, que un analisis para con el consumo es de vital importancia para los analisis demograficos de una poblacion. 
+
+Tambien, tener un control total sobre la cantidad de cerdos sacrificados, ayuda a las entidades sanitarias a mantener un estandar en dicha produccion. Si esto no es regulado, se pueden propagar enfermedadas por la mala praxis en la industria. 
+
+En el presente analisis, se desea predecir el numero total de cabezas porcinas sacrificadas. 
+
+## Procesamiento de la base de datos
+
+El primer paso es la lectura de los datos. Note que los nombres
+de la serie se encuentran inapropiados para trabajar con ellos.
+
+```{r message=FALSE, warning=FALSE}
+
+df = read_delim("cerdos.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
-df = clean_names(df)
 ```
+La variable año se convierte en 'ano'. Nos gusta ese nombre entonces, asi se queda.
+Basicamente esta es la estructura de la base de datos. La cual, tiene las siguientes variables.
 
+```{r}
+
+df = clean_names(df)
+df %>% names()
+```
+Descripcion de las variables en el dataframe:
+
+ *Ano:* Año en el que se toma el registro
+ 
+ *sacrificios_porcinos_machos:* El nombre lo indica, cantidad de sacrificios porcinos machos
+ 
+ *
+ 
+Note que, la variable 'mes' se encuentra en formato caracter y, representa los meses por las tres primeras letras del respectivo mes en español.
 
 
 
 ```{r}
-df$mes %>% unique()
+df$mes %>% unique() # Se verifica que no estén repetidos valores
 ```
-
+Se procede entonces a crear la variable 'date' que representará la fecha asociada a cada dato.
 
 ```{r}
 df$mes =as.factor(df$mes)
 df$mes %>% levels# CUando se convierte en factor, cambia el orden
-```
-
-```{r message=FALSE, warning=FALSE}
-
-require(dplyr)
 month_id = c(4,8,12,1,2,7,6,3,5,11,10,9)
 levels(df$mes) = month_id
 df$mes = df$mes %>% as.character()
 ```
+Cuando se aplica la funcion as.factor, el orden de los mismos cambia. Entonces simplemente, se cambiará los niveles de la variable como factor a un valor numerico, siendo 1 enero, 2 febrero y asi sucesivamente. Luego, se transforma en string (Caracter) para obtener finalmente el mes en numero.
+
+Para adquirir correctamente el formato en date, se ha de tener un dia cualquiera agregado. Se escoge el dia 13. 
 
 ```{r}
 df$dia = replicate(length(df$ano), '13')
@@ -49,13 +75,12 @@ df$ano = df$ano %>% as.character()
 df$date = paste(df$dia,df$mes,df$ano,sep = '-')
 df$date = as.Date(df$date, format = '%d-%m-%Y')
 # Con esto, se tiene la base de datos lista para trabajar
+
+df = df[order(df$date),] # ordenando por fecha mas vieja
 ```
 
-Se procede a graficas la serie de tiempo de los cerdos
 
 ```{r}
-df = df[order(df$date),] # ordenando por fecha mas vieja
-
 plot(df$date, df$sacrificio_totales, type = 'l',main = 'Sacrificios totales',xlab = 'Fecha',ylab = 'Total sacrificios ')
 ```
 
