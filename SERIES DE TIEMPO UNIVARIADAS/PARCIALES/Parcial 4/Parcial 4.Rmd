@@ -16,15 +16,6 @@ require(janitor)
 
 
 # Base de datos cerditos
-
-
-## Marco teorico: Por qué los cerditos?
-
-## Procesamiento de la base de datos
-
-El primer paso es la lectura de los datos. Note que los nombres
-de la serie se encuentran inapropiados para trabajar con ellos.
-
 ```{r}
 df = read.csv('cerdos.csv', sep = ';')
 df %>% head(3)
