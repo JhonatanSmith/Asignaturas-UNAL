@@ -12,6 +12,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 require(dplyr)
 require(tidyverse)
+require(latticeExtra)
+require(datetime)
+library(tidyverse)
+library(lubridate)
+library(readxl)
 require(forecast)
 require(readr)
 require(janitor)
@@ -83,6 +88,35 @@ df$date = as.Date(df$date, format = '%d-%m-%Y')
 df = df[order(df$date),] # ordenando por fecha mas vieja
 ```
 
+## Grafico de la serie
+
+## Total por Macho y Hembra
+
+
+```{r}
+
+xyplot(sacrificios_porcinos_machos+ sacrificio_porcinos_hembras ~ date, df, type = "l", col=c("steelblue", "#69b3a2") , lwd=2)
+```
+
+
+## Total de sacrificios porcinos
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+require(ggplot2)
+require(hrbrthemes)
+
+x = df$date
+y = df$sacrificio_totales
+
+# plot 
+
+ggplot(df, aes(x=date,y=sacrificio_totales))+
+  geom_line(color = '#69b3a2', size = 1.5, alpha = 0.9)+
+  theme_ipsum()+
+  ggtitle('Total de sacrificios porcinos')
+
+```
+
 
 ```{r}
 plot(df$date, df$sacrificio_totales, type = 'l',main = 'Sacrificios totales',xlab = 'Fecha',ylab = 'Total sacrificios ')
@@ -96,6 +130,7 @@ summary(mod1)
 ```{r}
 acf(df$sacrificio_totales) # cae lento
 ```
+
 ```{r}
 pacf(df$sacrificio_totales) # ¿No es un buen problema?
 ```
@@ -107,15 +142,23 @@ ASi que se decide trabajar con otra base de datos mas grande
 ## Mismo problema, otros cerditos.
 
 ```{r}
-library(readxl)
 cerditos_2_la_venganza <- read_excel("cerditos 2 la venganza.xls", 
     sheet = "Cuadro 3", skip = 9)
-View(cerditos_2_la_venganza)
+cerditos_2_la_venganza = df2
 
-df = cerditos_2_la_venganza
-df %>% head(3)
 ```
 
+```{r}
+plot(df2$Fecha, df2$`T Cabezas`, 'l')
+```
+
+
+```{r}
+
+a=df2$`T Cabezas`
+test = auto.arima(na.omit(a))
+test
+```
 
 
 # Base de datos nacimientos hospital 
@@ -192,11 +235,6 @@ plot.armaroots <- function(x, xlab="Real", ylab="Imaginary",
 ```
 
 
-```{r include=FALSE}
-library(tidyverse)
-library(lubridate)
-```
-
 Inicialmente se desea trabajar con un indice. Proporcion de niñas nacidas vs niños nacidos ; es decir:
 
 Hembra/ macho; queremos ver si es igual, menor y si esto tiene una evolucion en el tiempo.
@@ -205,6 +243,10 @@ Hembra/ macho; queremos ver si es igual, menor y si esto tiene una evolucion en 
 datos <- read.csv("Nacidos_Vivos_en_Hospital_Manuel_Uribe_Angel.csv")
 datos$FECHA.NACIMIENTO <- gsub(" \\d+:\\d+:\\d+ .*", "", datos$FECHA.NACIMIENTO)
 datos$FECHA.NACIMIENTO <- as.Date(datos$FECHA.NACIMIENTO, format = "%m/%d/%Y")
+```
+
+
+```{r warning=FALSE}
 datos <- datos %>%
   mutate(Anio = year(FECHA.NACIMIENTO), semana = week(FECHA.NACIMIENTO)) %>% 
   group_by(Anio, semana) %>% 
