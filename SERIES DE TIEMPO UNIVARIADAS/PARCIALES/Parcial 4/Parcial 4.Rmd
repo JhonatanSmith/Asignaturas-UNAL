@@ -151,6 +151,12 @@ df2 %>% head(3)
 ```{r}
 plot(df2$fecha, df2$t_cabezas, 'l')
 ```
+```{r}
+acf(df2$t_cabezas)
+```
+```{r}
+pacf(df2$t_cabezas)
+```
 
 
 ```{r}
