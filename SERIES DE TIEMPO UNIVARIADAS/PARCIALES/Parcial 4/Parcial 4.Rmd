@@ -14,7 +14,6 @@ require(dplyr)
 require(tidyverse)
 require(latticeExtra)
 require(datetime)
-library(tidyverse)
 library(lubridate)
 library(readxl)
 require(forecast)
@@ -147,24 +146,23 @@ ASi que se decide trabajar con otra base de datos mas grande
 ```{r}
 cerditos_2_la_venganza <- read_excel("cerditos 2 la venganza.xls", 
     sheet = "Cuadro 3", skip = 9)
-cerditos_2_la_venganza = df2
+df2 =cerditos_2_la_venganza 
 
-<<<<<<< Updated upstream
-=======
-df = cerditos_2_la_venganza
-df = df %>% clean_names()
-df %>% head(3)
->>>>>>> Stashed changes
+
+df2 = cerditos_2_la_venganza
+df2 = df %>% clean_names()
+df2 %>% head(3)
+
 ```
 
 ```{r}
-plot(df2$Fecha, df2$`T Cabezas`, 'l')
+plot(df2$date, df2$sacrificio_totales, 'l')
 ```
 
 
 ```{r}
 
-a=df2$`T Cabezas`
+a=df$sacrificio_totales
 test = auto.arima(na.omit(a))
 test
 ```
