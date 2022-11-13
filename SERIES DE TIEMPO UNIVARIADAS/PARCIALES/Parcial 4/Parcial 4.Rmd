@@ -17,7 +17,6 @@ require(janitor)
 
 # Base de datos cerditos
 
-
 ## Marco teorico: Por qué los cerditos?
 
 ## Procesamiento de la base de datos
