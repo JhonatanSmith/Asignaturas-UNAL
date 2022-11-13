@@ -10,7 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-
 # Base de datos cerditos
 
 ## Marco teorico: ¿Por qué los cerditos?
@@ -80,6 +79,7 @@ df = df[order(df$date),] # ordenando por fecha mas vieja
 ```
 
 
+
 ```{r}
 plot(df$date, df$sacrificio_totales, type = 'l',main = 'Sacrificios totales',xlab = 'Fecha',ylab = 'Total sacrificios ')
 ```
@@ -93,6 +93,7 @@ summary(mod1)
 ```{r}
 acf(df$sacrificio_totales) # cae lento
 ```
+
 ```{r}
 pacf(df$sacrificio_totales) # ¿No es un buen problema?
 ```
@@ -104,15 +105,28 @@ ASi que se decide trabajar con otra base de datos mas grande
 ## Mismo problema, otros cerditos.
 
 ```{r}
-library(readxl)
 cerditos_2_la_venganza <- read_excel("cerditos 2 la venganza.xls", 
     sheet = "Cuadro 3", skip = 9)
-View(cerditos_2_la_venganza)
+df2 =cerditos_2_la_venganza 
 
-df = cerditos_2_la_venganza
-df %>% head(3)
+
+df2 = cerditos_2_la_venganza
+df2 = df %>% clean_names()
+df2 %>% head(3)
+
 ```
 
+```{r}
+plot(df2$date, df2$sacrificio_totales, 'l')
+```
+
+
+```{r}
+
+a=df$sacrificio_totales
+test = auto.arima(na.omit(a))
+test
+```
 
 
 # Base de datos nacimientos hospital 
@@ -189,11 +203,6 @@ plot.armaroots <- function(x, xlab="Real", ylab="Imaginary",
 ```
 
 
-```{r include=FALSE}
-library(tidyverse)
-library(lubridate)
-```
-
 Inicialmente se desea trabajar con un indice. Proporcion de niñas nacidas vs niños nacidos ; es decir:
 
 Hembra/ macho; queremos ver si es igual, menor y si esto tiene una evolucion en el tiempo.
@@ -202,6 +211,10 @@ Hembra/ macho; queremos ver si es igual, menor y si esto tiene una evolucion en 
 datos <- read.csv("Nacidos_Vivos_en_Hospital_Manuel_Uribe_Angel.csv")
 datos$FECHA.NACIMIENTO <- gsub(" \\d+:\\d+:\\d+ .*", "", datos$FECHA.NACIMIENTO)
 datos$FECHA.NACIMIENTO <- as.Date(datos$FECHA.NACIMIENTO, format = "%m/%d/%Y")
+```
+
+
+```{r warning=FALSE}
 datos <- datos %>%
   mutate(Anio = year(FECHA.NACIMIENTO), semana = week(FECHA.NACIMIENTO)) %>% 
   group_by(Anio, semana) %>% 
