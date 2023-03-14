@@ -1,8 +1,0 @@
-"0","genera <- function(cedula){"
-"0","  "
-"0","set.seed(1039705595) # Aqui va la cedula"
-"0","data <- uno[sample(1:465,100),]"
-"0","data"
-"0","}"
-"0","datos = genera(uno)"
-"0","attach(datos)"

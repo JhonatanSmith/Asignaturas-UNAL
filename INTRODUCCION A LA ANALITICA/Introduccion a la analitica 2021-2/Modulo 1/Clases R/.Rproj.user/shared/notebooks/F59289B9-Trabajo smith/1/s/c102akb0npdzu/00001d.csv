@@ -1,4 +1,0 @@
-"0","ggplot(datos, aes(x=EDAD)) +"
-"0","  geom_freqpoly(bins=20, aes(color=GENERO)) +"
-"0","  labs(color=""Género"")"
-"0",""

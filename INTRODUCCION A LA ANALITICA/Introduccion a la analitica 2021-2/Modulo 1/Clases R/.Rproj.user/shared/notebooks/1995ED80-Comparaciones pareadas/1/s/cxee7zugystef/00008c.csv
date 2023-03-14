@@ -1,2 +1,0 @@
-"0","plot(fitted(mrlm),rstandard(mrlm),main=""residuos estudentizados vs. ajustados\nMRLM"","
-"0"," ylim=c(-2.5,2.5),cex=1.5)"

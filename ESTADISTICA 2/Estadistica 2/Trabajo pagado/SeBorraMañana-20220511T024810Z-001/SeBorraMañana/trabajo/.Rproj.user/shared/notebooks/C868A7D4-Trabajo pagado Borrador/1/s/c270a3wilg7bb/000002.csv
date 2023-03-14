@@ -1,2 +1,0 @@
-"0","# Ajuste del modelo de RLM"
-"0","    modelo=lm(Y~X1+X2+X3+X4)"

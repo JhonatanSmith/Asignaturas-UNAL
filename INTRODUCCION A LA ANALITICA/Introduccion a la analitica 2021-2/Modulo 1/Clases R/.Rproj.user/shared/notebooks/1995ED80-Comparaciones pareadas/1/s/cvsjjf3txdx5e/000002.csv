@@ -1,4 +1,0 @@
-"0","#INDICADORAS"
-"0","I1=ifelse(Técnico==""1"",1,0); I2=ifelse(Técnico==""2"",1,0); Z1=ifelse(muestra==""1"",1,0); Z2=ifelse(muestra==""2"",1,0)"
-"0","Z3=ifelse(muestra==""3"",1,0); Z4=ifelse(muestra==""4"",1,0); Z5=ifelse(muestra==""5"",1,0); Z6=ifelse(muestra==""6"",1,0)"
-"0","Z7=ifelse(muestra==""7"",1,0); Z8=ifelse(muestra==""8"",1,0)"

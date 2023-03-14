@@ -1,2 +1,0 @@
-"0","stripchart(rstandard(modeloanova)~Técnico, main=""residuos estudentizados vs. Técnico\nModelo ANOVA"","
-"0"," xlab=""Técnico"",vertical=T, ylim=c(-2.5,2.5),pch=1:2,col=c(1:2),cex=1.5)"

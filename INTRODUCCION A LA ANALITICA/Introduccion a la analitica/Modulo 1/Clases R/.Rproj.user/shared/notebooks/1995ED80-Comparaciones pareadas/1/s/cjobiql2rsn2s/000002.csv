@@ -1,3 +1,0 @@
-"0","#Gráficos descriptivo"
-"0","plot(as.numeric(muestra),Pureza,col=as.numeric(Técnico),pch=as.numeric(Técnico),"
-"0"," xlab=""muestra"",cex=1.5,ylim=c(70,75))"

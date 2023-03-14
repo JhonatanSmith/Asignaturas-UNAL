@@ -1,3 +1,0 @@
-"0","legend(""top"",legend=c(expression(paste(""Técnico 1"",sep="" "",""("",sep="""",X==+1,sep="""","")"")),"
-"0"," expression(paste(""Técnico 2"",sep="" "",""("",sep="""",X==-1,sep="""","")""))),"
-"0"," pch=1:2,col=1:2,bg=""cornsilk"")"

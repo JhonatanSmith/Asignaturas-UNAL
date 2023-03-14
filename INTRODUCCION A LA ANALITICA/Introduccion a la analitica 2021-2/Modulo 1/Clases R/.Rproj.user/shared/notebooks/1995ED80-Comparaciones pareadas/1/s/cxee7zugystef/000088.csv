@@ -1,2 +1,0 @@
-"0","stripchart(rstandard(modeloanova)~muestra,main=""residuos estudentizados vs. muestra\nModelo ANOVA"","
-"0"," ylim=c(-2.5,2.5),xlab=""muestra"",vertical=T,pch=1,cex=1.5)"

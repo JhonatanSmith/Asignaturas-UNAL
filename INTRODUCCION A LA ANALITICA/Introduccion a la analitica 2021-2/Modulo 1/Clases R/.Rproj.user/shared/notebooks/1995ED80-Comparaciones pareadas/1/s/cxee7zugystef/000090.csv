@@ -1,2 +1,0 @@
-"0","plot(X,rstandard(mrlm),xlab=""X"",main=""residuos estudentizados vs. X\nModelo de efectos con MRLM"","
-"0"," ylim=c(-2.5,2.5), pch=as.numeric(Técnico),col=as.numeric(Técnico),cex=1.5)"

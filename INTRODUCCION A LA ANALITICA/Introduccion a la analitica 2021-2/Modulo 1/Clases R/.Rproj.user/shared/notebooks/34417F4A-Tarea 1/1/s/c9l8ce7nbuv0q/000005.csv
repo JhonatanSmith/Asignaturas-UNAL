@@ -1,2 +1,0 @@
-"0","a = read.csv(file.choose(), sep = "";"")"
-"0","datos = data.frame(a)"

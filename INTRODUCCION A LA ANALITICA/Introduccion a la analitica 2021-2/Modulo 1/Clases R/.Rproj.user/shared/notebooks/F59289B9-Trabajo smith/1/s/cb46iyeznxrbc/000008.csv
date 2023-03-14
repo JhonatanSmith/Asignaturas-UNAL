@@ -1,5 +1,0 @@
-"0","library(haven)"
-"0","library(ggplot2)"
-"0",""
-"0","g2 <- ggplot(datos, aes(GENERO, EDAD))"
-"0","g2 + geom_boxplot(aes(fill = GENERO))"

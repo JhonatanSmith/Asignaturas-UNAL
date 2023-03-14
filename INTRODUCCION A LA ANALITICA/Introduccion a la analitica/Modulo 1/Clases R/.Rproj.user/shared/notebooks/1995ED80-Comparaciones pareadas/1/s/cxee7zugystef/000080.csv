@@ -1,5 +1,0 @@
-"0","#GRÁFICO DE RESIDUOS ESTUDENTIZADOS INTERNAMENTE"
-"0","win.graph(width=8.5,height=6)"
-"0","layout(rbind(c(1,1,2,2,3,3),c(4,4,5,5,6,6)))"
-"0","plot(fitted(modeloanova),rstandard(modeloanova),main=""residuos estudentizados vs. ajustados\nModelo ANOVA"","
-"0"," ylim=c(-2.5,2.5),cex=1.5)"

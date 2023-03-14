@@ -1,3 +1,0 @@
-sexo es_alto es_bajo
-F 73279 204012
-M 72930 161371

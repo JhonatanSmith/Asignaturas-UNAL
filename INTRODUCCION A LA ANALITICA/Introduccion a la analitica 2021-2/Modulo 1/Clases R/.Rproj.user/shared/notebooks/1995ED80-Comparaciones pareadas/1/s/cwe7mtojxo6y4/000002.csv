@@ -1,8 +1,0 @@
-"0","rm(list=ls(all=TRUE))"
-"0","datos9= data.frame(Técnico=factor(rep(c(1,2),each=8)),muestra=factor(rep(1:8,times=2)),"
-"0"," Pureza=scan())"
-"0","74.0 73.1 73.5 73.9 71.2 72.5 73.0 74.3"
-"0","73.0 71.3 73.2 71.1 70.3 71.5 73.4 72.4"
-"0",""
-"2","Read 16 items
-"

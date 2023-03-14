@@ -1,0 +1,255 @@
+---
+title: "Trabajo 1 Modelos mixtos"
+author: "Jhonatan Smith Garcia"
+date: "2023-03-07"
+output: rmdformats::readthedown
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+## pachages
+library(ggridges)
+library(hrbrthemes)
+library(dplyr)
+library(tidyr)
+library(viridis)
+require(readxl)
+require(lattice)
+require(tidyverse)
+require(kableExtra)
+require(ggplot2)
+```
+
+
+```{r}
+# lectura base de datos
+
+df = read_excel("Datos_Experimento_ Tiempo_Pasos.xlsx")
+df %>% head() # Correctamente leida la base de datos
+
+```
+
+Esta base de datos es de un experimento que busca medir tiempo promedio que se tarda en recorrer 35 metros. Cada participante se tiene el genero y $T_i$, le tiempo registrado en segundos que tarda en recorrer la distancia del experimento.
+
+# 1) Transforme los datos a un formato de datos largo. 
+
+Para ello, note que tenemos los datos generados por formato ancho, para transformarlos en datos largos se realiza lo siguiente:
+
+
+```{r}
+
+df =pivot_longer(data = df, cols = c(3:5),names_to = "Experimento",  values_to = "Tiempo")
+attach(df)
+
+```
+
+
+# 2 y 5: Calcule estadísticos resumen de acuerdo a la variable género y a la variable tiempo. 
+
+## Boxplot
+
+```{r}
+# Definimos un vector de colores
+
+colores = c("#69b3a2", "#404080")
+
+ggplot( data = df, aes(x = Genero, y = Tiempo, fill = Genero))+
+  geom_boxplot(alpha =0.35, # saturacion color
+               size = 1) +
+  stat_summary(fun.y = mean, geom = "point", shape = 20, size = 4, color = "red") +
+  scale_fill_manual(values = colores)+
+  labs(x = "Genero", y = "Tiempo", title = "Distribucion del tiempo por genero")+
+  theme_classic()+
+  theme(axis.text = element_text(color = "black", size = 12, face = "bold"), 
+        axis.title = element_text(color = "black", size = 14, face = "bold"),
+        plot.title = element_text(color = "black", size = 16, face = "bold")) +
+  guides(fill = guide_legend(title = "Genero", ncol = 1))
+
+  
+  
+```
+
+
+De manera muy rápida, se puede identificar que los valores promedio para cada uno de los participantes se difiere por género. 
+
+Suponga F es Femenino y M masculino. Para este caso se tiene entonces que los hombres terminan el proceso ligeramente más rápido que las mujeres.
+
+Esto se evidencia en el grafico donde las medias de ambos procesos (punto rojo dentro de los respectivos boxplots) se encuentran ligeramente una por encima de la otra. Esto también se evidencia al ver que una de las cajas esta más encima que la otra (Sin solaparse mucho)
+
+Este grafico analiza la variable en función de la muestra tomada. Un buen ejercicio seria analizar cómo se categorizan los datos dada las observaciones. A continuación se presenta dicho analisís. 
+
+
+```{r}
+# Que algun sapo lo haga mas bonito 
+ggplot(df, aes(x = Experimento, y = Tiempo, fill = Genero)) +
+  geom_boxplot() +
+  labs(title = "Tiempo por Experimento y Género",
+       x = "Experimento",
+       y = "Tiempo") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
+
+```
+
+
+Nuevamente, la apreciación se mantiene. Existe la intución de que la media en general, de las mujeres para cada experimento fue ligeramente mayor que la de los hombres. Lo que se traduce en que estas tardan más en recorrer los 35 metros.
+
+## Density plot
+
+
+```{r}
+mean.data=  aggregate(x = df$Tiempo, by = list(df$Genero), FUN= mean)
+
+names(mean.data) = (c("Genero", "tiempo"))
+  
+  
+p2 <- ggplot(data=df, aes(x=Tiempo, group=Genero, fill=Genero)) +
+    geom_density(adjust=1.5, alpha=.4) + 
+  geom_vline(data = mean.data, aes(xintercept =tiempo, color = Genero), linetype = "dashed")+
+  scale_color_manual(values = c("red", "blue","blue"))
+ p2
+```
+
+La dendisad del tiempo por genero parece normal en cada caso. Aunque para las mujeres (F) parece mas irregular. Nuevamente, mire que la curva de densidad de las mujeres esta mas a la derecha, junto con la media del proceso. Esto es nuevamente una sospecha de que para cada grupo (Sin categorizar por muestras en el tiempo) se tiene procesos de medias diferentes. 
+
+## Comparacion de medias:
+
+Se procede a realizar una comparacion de medias para ver de manera descriptiva si en efecto, dichos procesos tienen medias diferentes. 
+
+```{r}
+mean.data
+```
+
+Lo anterior representa la media individual para cada grupo. Con esto en mente; intentemos realizar una prueba de diferencia de medias.
+
+```{r}
+df =df %>% as.data.frame()
+df.M = df[df$Genero== "M",] 
+df.M = df.M$Tiempo
+df.F = df[df$Genero== "F",] 
+df.F = df.F$Tiempo
+test =t.test(x = df.M,y = df.F) 
+test
+```
+
+Como indica el test, claramente se tienen medias diferentes para ambos procesos. Con esto en mente, podemos entender entones que ambos grupos tienen medias diferentes, lo que nuevamente, es un indicio de que lass recorren los 35 metros del experimento ligeramente mas lento que los hombres.
+
+VIVA EL PATRIARCADO MACHITO OPRESOR!
+
+## Ridgeplot
+
+```{r}
+ 
+# Diamonds dataset is provided by R natively
+#head(diamonds)
+ 
+# basic example
+ggplot(df, aes(x = Tiempo, y = Genero, fill = Genero)) +
+  geom_density_ridges() +
+  theme_ridges() + 
+  theme(legend.position = "none")+
+  labs(title = "Densidad por genero")+
+  xlab("Tiempo")+
+  ylab("Genero")
+```
+
+
+Siguen habiendo las mismas conclusiones. Ahora, recuerde que el parametro de suavizado podria afectar el comportamiendo de la "forma" de un density plot. Para este caso, vemos que las mujeres parecen tener dos modas. Ahora, en cualquier caso se observa que los datos de las mujeres se encuentran ligeramente mas hacia la derecha. Esto implica, nuevamente, que estas medias son diferentes y; a su vez, los valores de una es mayor que la otra (respectivamente; F>M).
+
+# 3) Obtenga un grafico de linea para cada sujeto. 
+
+Se procede a graficar cada sujeto con su respectiva observacion en el tiempo.
+
+```{r}
+
+# Un posile grafico identificando a sujetos. Ta feo pero se deja por si acaso
+ggplot(df,aes(x=Experimento,y=Tiempo,
+             group=ID,color=factor(ID)))+
+         geom_point()+geom_line()
+
+
+```
+
+```{r}
+
+ggplot(df, aes(x = Experimento, y = Tiempo, group = ID, color = factor(ID))) +
+  geom_point() +
+  geom_line() +
+  guides(color = FALSE) +
+  theme(legend.position = "none")+
+  labs(title = "Grafico de lineas para cada sujeto")
+
+
+```
+
+En general, parece que el intercepto y pendiente de estos sujetos parece ser aleatorio. ¿Que tal si categorizamos por genero?
+
+
+```{r}
+ggplot(df, aes(x = Experimento, y = Tiempo, group = ID, color = Genero)) +
+  geom_point() +
+  geom_line()  +
+  labs(title = "Grafico Spaguetti categorizado por genero")
+
+```
+
+Ahora, con estos graficos se evidencia que en general, el proceso de los hombres (M) se encuentra ligeraente por debajo que el de las mujeres.
+
+NOTA: Aparentemente, se tiene intercepto y pendiente aleatorias.
+
+# 4) Otenga un grafico de rejilla (Trellis plot) con una linea superpuesta para cada persona.
+
+
+EHMM ALGUNA AYUDA DESGRACIADOS?? Lo intenté hacer pero meh
+
+```{r}
+
+# Crear el gráfico
+ggplot(df, aes(x = Experimento, y = Tiempo, group = ID)) +
+  geom_line() 
+
+
+```
+
+
+# 6) Obtenga graficos de linea promedio de acuerdo al genero:
+
+
+```{r}
+ggplot(df, aes(x = Experimento, y = Tiempo, group = ID, color = Genero))+
+  stat_summary(aes(group = Genero, col = Genero),
+               geom = "line", fun = mean, size = 1.2)+
+labs(title = "Grafico curvas promedio por genero")
+```
+# 7) Obtenga un gráco de líneas promedio con boxplots de acuerdo al género. Interprete
+
+```{r}
+ggplot(df, aes(x=factor(Experimento), y=Tiempo, fill=Genero)) +
+geom_boxplot(alpha=0.5,position = "identity", width=0.5)+
+geom_line(alpha=0)+
+stat_summary(fun=mean, aes(group=Genero,col=Genero), geom="line",
+size=2)+
+stat_summary(fun=mean, aes(group=Genero,col=Genero), geom="point",
+size=2,col="yellow")+
+xlab("Time")
+
+```
+
+
+Claramente existe una diferencia entre los boxplot. Los boxplot de los hombres se encuentran ligeramente por debajo del de las muejeres. indicando que estos caminan mas rapido. Ahora, esto tambien se puede evidenciar al analizar el grafico de medias (puntos amarillos). Esto representa la media de tanto hombres, como mujeres; en cada experimento. De esta forma, la media de los hombres se encuentra debajo de las muejers.
+
+# 8) parece haber alguna diferencia en los tiempos registrados por mujeres y hombres?
+
+Despues de realizados los analisis descriptivos, se concluye que en efecto existe una diferencia entre el tiempo que le toma a las mujeres vs a los hombres. 
+
+Segun en analisis desciptivo, las mujeres tardan un poco mas que los hombres en recorrer los 35 metros del experimento. Esto basado en que en cada grafico aqui presentado, el tiempo asociado a F > M, lo que implica que las mujeres tardan mas que los hombres. 
+
+
+

@@ -1,1 +1,0 @@
-"0","legend(""topleft"",legend=rbind(c(""Statistic W"",""p.value""),round(c(test$statistic,test$p.value),digits=5)),cex=1.2)"

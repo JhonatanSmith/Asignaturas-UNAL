@@ -1,4 +1,0 @@
-"0","hii.criterio <- 2*(5/50)"
-"0","with(base.diagnosticos,"
-"0","     plot(hii.value, xlab = ""Observación"", ylab = ""hii"","
-"0","          main = ""Valores diagonales de la matriz sombrero"", pch = 20))"
