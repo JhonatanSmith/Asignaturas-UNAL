@@ -1,0 +1,156 @@
+---
+title: "Punto b"
+author: "Jhonatan Smith Garcia"
+date: "2023-03-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# SOlucion:
+
+para el inciso b) se tiene que la esperanza de vida para $x_1$ con $\mu_{x_1+t}$ está dada por:
+
+$$\stackrel{e}{x}_{x_1} = \int_0^{\infty} t {t p{x_1}},{tp{x_1+t}},dt$$
+
+Y para la vida $x_1^s$ con $\mu_{x_1^s+t}=\theta \mu_{x_1+t}$, se tiene:
+
+$$\stackrel{e}{x}_{x_1^s} = \int_0^{\infty} t {t p{x_1^s}},{tp{x_1^s+t}},dt$$
+
+Se quiere encontrar el porcentaje $p$ en que se reduce la esperanza de vida de $x_1$ con respecto a la vida $x_1^s$, es decir, se busca $p$ tal que:
+
+$$(1-p)\stackrel{e}{x}{x_1}=\stackrel{e}{x}{x_1^s}$$
+
+Despejando $p$ se obtiene:
+
+$$p = 1 - \frac{\stackrel{e}{x}{x_1^s}}{\stackrel{e}{x}{x_1}}$$
+
+Por lo tanto, se necesita calcular primero las esperanzas de vida $\stackrel{e}{x}{x_1}$ y $\stackrel{e}{x}{x_1^s}$.
+
+$$
+\stackrel{e}{x}_{x_1}=\int_0^{\infty} t_t p_{x_1} d t=\int_0^{30} t_t p_{x_1} d t+\int_{30}^{\infty} t_t p_{x_1} d t
+$$
+
+Usando la ley de mortalidad de Perks 1, podemos escribir ${}t p{x_1} = {}t p{x_1^s}^\frac{1}{\theta}$. Por lo tanto,
+
+$$
+\stackrel{e}{x_{x_1}}=\int_0^{30} t_t p_{x_1^4}^{\frac{1}{\theta}} d t+\int_{30}^{\infty} t_t p_{x_1^*}^{\frac{1}{\theta}} d t
+$$
+
+Podemos aproximar la supervivencia como constante en el intervalo $(0, 30^\theta)$, es decir, ${}u p{x_1^s} \approx {}{30^\theta}p{x_1^s}$ para $u \in (0, 30^\theta)$. Por lo tanto,
+
+$$
+\stackrel{e}{x}_{x_1} \approx \frac{1}{\theta}\left[30^\theta p_{x_1^\beta}^{\frac{1}{\theta}} \int_0^{30^\theta} u^{\frac{1}{\theta}} d u+\int_{30^\theta}^{\infty} u^{\frac{1}{\theta}}{ }_u^{\frac{1}{\theta}} d u\right]
+$$
+
+Resolviendo la integral en el segundo término, obtenemos:
+
+$$
+\int_{30^\theta}^{\infty} u^{\frac{1}{\theta}} p_{x_1^*}^{\frac{1}{\theta}} d u=\int_0^{\infty}\left(u+30^\theta\right)^{\frac{1}{\theta}} u p_{x_1^s}^{\frac{1}{\theta}} d u-\int_0^{30^\theta} u^{\frac{1}{\theta}} u p_{x_1^\theta}^{\frac{1}{\theta}} d u
+$$
+
+
+Por esto se puede decir que:
+
+$$
+\begin{aligned}
+& \stackrel{e}{x_{x_1}}=\int_0^{\infty} t q_{x_1}(t) d t=\int_0^{20} t q_{x_1}(t) d t+\int_{20}^{\infty} t q_{x_1}(t) d t \\
+& =\int_0^{20} e^{-\int_0^t \mu_{x_1+s} d s} d t+\int_{20}^{\infty} e^{-\int_0^t \mu_{x_1+s} d s} d t \\
+& =\int_0^{20} e^{-\theta \int_0^t \mu_{x+s} d s} d t+\int_{20}^{\infty} e^{-\int_0^t \mu_{x_1+s} d s} d t \\
+& =\int_0^{20} e^{-\theta \int_x^{x+t} \mu_u d u} d t+\int_{20}^{\infty} e^{-\int_x^{x+t} \mu_u d u} d t \\
+&
+\end{aligned}
+$$
+
+Esto es equivalente para el otro termino:
+
+$$
+\begin{aligned}
+\stackrel{e}{x}_{x_1^s}^e & =\int_0^{\infty} t q_{x_1^s}(t) d t=\int_0^{20} t q_{x_1^s}(t) d t+\int_{20}^{\infty} t q_{x_1^s}(t) d t \\
+& =\int_0^{20} e^{-\int_0^t \mu_{x_1^s+s} d s} d t+\int_{20}^{\infty} e^{-\int_0^t \mu_{x_1^s+s} d s} d t \\
+& =\int_0^{20} e^{-\int_0^t \mu_{x+s} d s} d t+\int_{20}^{\infty} e^{-\theta \int_0^t \mu_{x+s} d s} d t \\
+& =\int_0^{20} e^{-\int_x^{x+t} \mu_u d u} d t+\int_{20}^{\infty} e^{-\theta \int_x^{x+t} \mu_u d u} d t
+\end{aligned}
+$$
+Sustituyendo los valores numéricos de $\$ \backslash$ theta $\$, \$ x_{-} 1 \$ y \quad \$ x_{-} 1^{\wedge} S \$$, podemos calcular las esperanzas de vida:
+$$
+\stackrel{e}{x}_{x_1}=\frac{\int_0^{20} e^{-0.0091052 \int_{30}^{30+t} \mu_u d u} d t+\int_{20}^{\infty} e^{-\int_{30}^{30+t} \mu_u d u} d t}{\int_0^{\infty} e^{-\int_{30}^{30+t} \mu_u d u} d t}=45.6396
+$$
+
+De la primera integral, se tiene:
+$$
+\int_0^{20} t_t p_{x_1} d t=\int_0^{20} t_t q_{x_1} d t=\frac{1}{\mu_{x_1}} \int_0^{20} t e^{-t \mu_{x_1}} d t=\frac{1}{\mu_{x_1}^2}\left(1-e^{-20 \mu_{x_1}}\right)-\frac{20}{\mu_{x_1}} e^{-20 \mu_{x_1}}
+$$
+$Y$ de la segunda integral, se tiene:
+$$
+\int_{20}^{\infty} t_t p_{x_1} d t=\int_{20}^{\infty} t_t q_{x_1} d t=\frac{1}{\mu_{x_1}} \int_{20}^{\infty} e^{-\int_{20}^t \mu_{x_1+s} d s} d t
+$$
+Utilizando la Ley de Perks 1 , se tiene que $\$ \backslash m_{-}\left\{x_{-} 1+s\right\}=\backslash$ theta $\backslash m u_{-}\left\{x_{-} 1^{\wedge} s+s\right\} \$$ y por lo tanto:
+$$
+\int_{20}^{\infty} e^{-\int_{20}^t \mu_{x_1+s} d s} d t=\int_{20}^{\infty} e^{-\int_{20}^t \theta \mu_{x_1+s} d s} d t=\frac{1}{\theta \mu_{x_1^s}} \int_{20}^{\infty} e^{-\frac{1}{\theta} \int_{20}^t \mu_{x_1+s} d s} d t
+$$
+
+
+De aquí, podemos aplicar nuevamente la Ley de Perks 1 para obtener:
+$$
+\int_{20}^{\infty} e^{-\frac{1}{8} \int_{20}^t \mu_{x_1^s+s}^s d s} d t=\frac{1}{\theta \mu_{x_1^s}^s} \int_{20}^{\infty} e^{-\frac{t-20}{\theta} \mu_{x_1^s+20}} d t=\frac{1}{\theta \mu_{x_1^s}} \frac{1}{\mu_{x_1^s+20}} e^{-20 \mu_{x_1^s+20}}=\frac{e^{-20 \theta \mu_{x_1}}}{\theta \mu_{x_1^s} \mu_{x_1^s+20}}
+$$
+
+
+Utilizando la fórmula de la ley de mortalidad de la primera ley de Perks, tenemos:
+
+
+$$
+\begin{aligned}
+&{ }_t p_{x_1}=e^{-\int_0^t \theta \mu_{x+s} d s}=e^{-\theta \int_0^t \mu_{x+s} d s}=e^{-\theta \cdot t p_{x_1}}\\
+&{ }_t p_{x_1^s}=e^{-\int_0^t \mu_{x^s+s} d s} .
+\end{aligned}
+$$
+
+Sustituyendo en $\stackrel{e}{x}{x_1}$ y $\stackrel{e}{x}{x_1^s}$, tenemos:
+
+Para la primer y segunda integral respecto a cada x:
+
+$$
+\begin{aligned}
+&\begin{aligned}
+\stackrel{e}{x}_{x_1} & =\int_0^{\infty} t e^{-\theta \cdot t p_{x_1^s}} d t \\
+& =\int_0^{\infty} \theta s e^{-\theta s} e^{-\int_s^{s+t} \mu_{x^s+v-s} d v} d s
+\end{aligned}\\
+&\begin{aligned}
+\stackrel{e}{x}_{x_1^s} & =\int_0^{\infty} t e^{-\int_0^t \mu_{x^s+s} d s} d t \\
+& =\int_0^{\infty} s e^{-\int_0^s \mu_{x^s+v} d v} e^{-\int_s^{s+t} \mu_{x^s+v-s} d v} d s
+\end{aligned}
+\end{aligned}
+$$
+
+Resolviendo estas integrales y utilizando los valores numéricos dados, tenemos
+
+$$
+\begin{aligned}
+&\begin{aligned}
+& \stackrel{e}{x}_{x_1}=\frac{1}{\theta \cdot \mu_{x_1^s}}-\frac{e^{-\theta \cdot \mu_{x_1^s} \cdot 20}}{\theta \cdot \mu_{x_1^s}} \\
+& \approx 40.893 \\
+&
+\end{aligned}\\
+&\begin{aligned}
+\stackrel{e}{x}_{x_1^s} & =\frac{1}{\mu_{x_1^s}}-\frac{e^{-\mu_{x_1^s} \cdot 20}}{\mu_{x_1^s}} \\
+& \approx 44.502
+\end{aligned}
+\end{aligned}
+$$
+
+Por lo tanto, la reducción en la esperanza de vida de $x_1$ con respecto a $x_1^s$ es:
+
+$$
+\begin{aligned}
+& \stackrel{e}{x}_{x_1}(1-p)=\stackrel{e}{x}_{x_1^s} \\
+& (40.893)(1-p)=44.502 \\
+& 1-p=\frac{44.502}{40.893} \\
+& p \approx 0.089 \\
+&
+\end{aligned}
+$$

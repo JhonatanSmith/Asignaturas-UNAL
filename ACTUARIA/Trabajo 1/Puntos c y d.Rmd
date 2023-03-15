@@ -1,0 +1,160 @@
+---
+title: "Punto b y c"
+author: "Jhonatan Smith Garcia"
+date: "2023-03-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Definiendo tpx con perks
+
+```{r}
+
+muxt.pe1 = function(t,x,pars){
+  
+  a1 = pars[1]
+  a2 = pars[2]
+  a3 = pars[3]
+  m = (a1+a2*exp(a3*(x+t)))/(1+a2*exp(a3*(x+t)))
+  
+}
+
+# Definicion tpx
+
+tpx.pe1 = function(t,x,pars){
+  a1 = pars[1]
+  a2 = pars[2]
+  a3 = pars[3]
+  g = (1-a1)/a3
+  v = exp(-a1*t)*((a2*exp(a3*x)+1)/(a2*exp(a3*(x+t))+1))^g
+return(v)}
+
+# Parametros para la perks 1
+
+pars = c(0.00025748 ,0.00002553 ,0.10128397)
+
+# calculos 
+
+t = 20
+x = 30
+```
+
+
+
+# Solucion b)
+
+
+Se tiene los valoresde $tPx$ y $tP^{\theta}x$ hallados en el inciso anterior se ha de encontrar los respectivos $\stackrel{e}{x}_x$ y  $\stackrel{\circ}{e}_{x_1^s}$
+
+
+De esto, se sabe que por definicion, los valores esperados son tal que:
+
+$$
+\stackrel{\circ}{e}_{x_i}=\int_0^{110-30}{ }_t p_x d t
+$$
+
+$$
+\stackrel{\circ}{e}_{x_i}=\int_0^{110-30}{ }_t p^\theta_x d t
+$$
+
+
+```{r}
+t =20
+x = 30
+f <- function(t)
+  {tpx.pe1(t,x,pars)}
+pars = c(0.00025748 ,0.00002553 ,0.10128397)
+(integrate(f, lower = 0, upper = 80)$value)
+```
+
+```{r}
+
+f <- function(t)
+  {tpx.pe1(t,x,pars)^(1.2)}
+(integrate(f, lower = 0, upper = 80)$value)
+
+```
+De esta manera, se tiene que los valores son:
+
+$$
+\begin{gathered}
+\stackrel{\circ}{e}_x= 46.61603 \\
+\stackrel{\circ}{e}_{x_1^s}=44.74436
+\end{gathered}
+$$
+Entonces, reemplazando en la ecuacion: 
+
+Despejando $p$ se obtiene:
+
+
+$$
+p = 1 - \frac{\stackrel{e}{x}{x_1^s}}{\stackrel{e}{x}{x_1}}
+$$
+
+```{r}
+P = 1 - (44.74436)/46.61603
+P
+
+
+```
+Por lo tanto el porcetanje en que se reduce la esperanza de vida de $(x_1)$ con respecto a la vida ($x_1^s$) 4.015 % aproximadamente. 
+
+*Solucion:*
+
+c) 
+
+Sea A = $P(T(x)>S$, entonces por TPT (Teorema probabilidad total), se puede ver que:
+
+$$
+\begin{aligned}
+P(A) & =\int_0^{w-x} P(T(x)>S \mid T(x)=t)_t p_x \mu_{x+t} d t \\
+& =\int_0^{w-x} P(S>t)_t p_x \mu_{x+t} d t
+\end{aligned}
+$$
+ Dado que 
+ 
+$$
+P(S>t)=e^{-t / e_x}
+$$
+ Entonces:
+ 
+ $$
+\int_0^{w-x} e^{-t / \grave{e}_x} t p_x \mu_{x+t} d t
+$$
+
+Pero como se vio en el ejercicio anterior, dichas integrales se tienen y es 46.61603 entonces ha de reemplazarse en dicha formula de tal manera que:
+
+$$
+P(A)=\int_0^{110-30} e^{-t / 46.61603}{ }_t p_x \mu_{x+t} d t
+$$
+
+
+
+```{r}
+
+PA = function(t)
+{exp(-t/46.61603)*tpx.pe1(t,x,pars)*muxt.pe1(t,x,pars)}
+(integrate(PA,lower=0,upper=80)$value)
+```
+
+
+En consecuencia, la probabilidad pedida del evento es:
+
+$$
+
+P(A) = 0.3828208
+$$
+
+
+
+
+
+
+
+
+
+
+
