@@ -379,5 +379,8 @@ $$
 \end{array}
 $$
 
+\section{Ejercicio 5}
+
+Haga los mismo del numeral anterior pero usando SAS o R con -Log(S(t))
 
 
